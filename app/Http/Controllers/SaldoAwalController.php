@@ -111,4 +111,16 @@ class SaldoAwalController extends Controller
 
         return redirect()->back()->with('success', 'Saldo awal berhasil diperbarui.');
     }
+
+    public function hapus_saldo_awal($id)
+    {   
+        $saldo_awal = SaldoAwal::find($id);
+        if ($saldo_awal) {
+            SaldoAwal::where('id', $id)->delete();
+            return redirect()->back()->with('success', 'Saldo awal berhasil dihapus.');
+        } else {
+            return redirect()->back()->with('error', 'Saldo awal tidak ditemukan.');
+        }
+        
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\SaldoAwal;
+use App\Models\RiwayatTransaksi;
 use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
@@ -18,5 +19,10 @@ class Department extends Model
     public function SaldoAwal()
     {
         return $this->hasMany(SaldoAwal::class);
+    }
+
+    public function RiwayatTransaksi()
+    {
+        return $this->hasMany(RiwayatTransaksi::class);
     }
 }
