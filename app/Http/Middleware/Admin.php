@@ -16,7 +16,8 @@ class Admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->jabatan_id == 1 && Auth::user()->department_id == 1) {
+        // if (Auth::check() && Auth::user()->jabatan_id == 1 && Auth::user()->department_id == 1) {
+        if (Auth::check()) {
             return $next($request);
         }
         return abort(403);

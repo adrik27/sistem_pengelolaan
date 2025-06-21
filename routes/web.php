@@ -17,7 +17,7 @@ Route::group(['middleware' => 'guest'], function () {
     Route::post('/login', [AuthenticateController::class, 'proses_login'])->name('proses_login');
 });
 
-Route::group(['middleware' => 'admin'], function () {
+Route::group(['middleware' => 'auth'], function () {
     // ## Dashboard Admin
     Route::get('/dashboard-admin', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
 
