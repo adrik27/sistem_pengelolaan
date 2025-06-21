@@ -27,9 +27,9 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        <form id="formSaldo" method="POST" action="{{ url('/saldo-awal') }}">
-                                            @csrf
+                                    <form id="formSaldo" method="POST" action="{{ url('/saldo-awal') }}">
+                                        @csrf
+                                        <div class="modal-body">
                                             <table class="table table-bordered table-hover table-responsive mt-3"
                                                 id="table-create">
                                                 <thead>
@@ -86,13 +86,14 @@
                                                     </tr>
                                                 </tfoot>
                                             </table>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Tutup</button>
-                                        <button type="submit" form="formSaldo" class="btn btn-primary">Simpan</button>
-                                    </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Tutup</button>
+                                            <button type="submit" form="formSaldo"
+                                                class="btn btn-primary">Simpan</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -133,12 +134,12 @@
                                 <td>{{ currency($item->saldo_awal) }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ url('/saldo-awal/edit/', $item->id) }}"
-                                            class="btn btn-sm btn-primary ">
+                                        <a class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#update{{ $item->id }}">
                                             Edit
-                                            {{-- <i class="btn-icon-prepend" data-feather="edit"></i> --}}
                                         </a>
-                                        <a href="{{ url('/saldo-awal/hapus/', $item->id) }}"
+
+                                        <a href="{{ url('/saldo-awal/hapus/'.$item->id) }}"
                                             class="btn btn-sm btn-danger ">
                                             Hapus
                                             {{-- <i class="btn-icon-prepend" data-feather="trash"></i> --}}
@@ -156,6 +157,87 @@
 </div> <!-- row -->
 
 @endsection
+
+@foreach ($datas as $item)
+<!-- Modal -->
+<div class="modal fade" id="update{{ $item->id }}" tabindex="-1" aria-labelledby="update{{ $item->id }}Label"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="update{{ $item->id }}Label">Update Saldo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formSaldoUpdate{{ $item->id }}" method="POST" action="{{ url('/saldo-awal/edit/'.$item->id) }}"
+                enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <table class="table table-bordered table-hover table-responsive mt-3" id="table-create">
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Tahun</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select name="department_id"
+                                        class="form-control @error('deoartment_id') is-invalid @enderror" required>
+                                        <option value="">Pilih Department</option>
+                                        @foreach ($departments as $itemDepart)
+                                        <option value="{{ $itemDepart->id }}" {{ $item->department_id == $itemDepart->id
+                                            ? 'selected' : '' }}>{{ ucwords($itemDepart->nama)
+                                            }}</option>
+                                        @endforeach
+                                    </select>
+                                    <br>
+                                    @error('department_id')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </td>
+                                <td>
+                                    @php
+                                    $tahunSekarang = date('Y');
+                                    @endphp
+                                    <select name="tahun" class="form-control @error('tahun') is-invalid @enderror"
+                                        required>
+                                        <option value="">Pilih Tahun</option>
+                                        @for ($i = 0; $i <= 10; $i++) <option value="{{ $tahunSekarang - $i }}" {{
+                                            $item->tahun == $tahunSekarang - $i ? 'selected' : '' }}>{{
+                                            $tahunSekarang - $i }}</option>
+                                            @endfor
+                                    </select>
+                                    <br>
+                                    @error('tahun')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </td>
+                                <td>
+                                    <input type="text" name="saldo_awal"
+                                        class="form-control currency-input @error('saldo_awal') is-invalid @enderror"
+                                        value="{{ currency($item->saldo_awal) }}" required>
+                                    <input type="hidden" name="saldo" value="{{ $item->saldo_awal }}"
+                                        class="saldo-hidden">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 
 @section('js')
 <script>

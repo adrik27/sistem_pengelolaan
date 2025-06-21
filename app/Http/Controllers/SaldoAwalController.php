@@ -26,7 +26,7 @@ class SaldoAwalController extends Controller
             'department_id'   => 'required|array',
             'department_id.*' => 'required|exists:departments,id',
             'tahun'           => 'required|array',
-            'tahun.*'         => 'required|integer|min:2000',
+            'tahun.*'         => 'required|integer',
             'saldo'           => 'required|array',
             'saldo.*'         => 'required|numeric|min:0',
         ]);
@@ -80,5 +80,35 @@ class SaldoAwalController extends Controller
         }
 
         return redirect()->back()->with('success', 'Saldo awal berhasil ditambahkan.');
+    }
+
+    public function update_saldo_awal(Request $request, $id)
+    {
+        $request->validate([
+            'department_id' => 'required',
+            'tahun'         => 'required|integer',
+            'saldo'         => 'required|min:0',
+        ]);
+
+        // Cek duplikat di DB
+        $exists = DB::table('saldo_awals')
+            ->where('department_id', $request->department_id)
+            ->where('tahun', $request->tahun)
+            ->exists();
+        $find_department = Department::find($request->department_id);
+        if ($exists) {
+            return redirect()->back()->with('error', "Data dengan Nama Departemen: $find_department->nama dan Tahun: $request->tahun sudah ada di database.");
+        }
+
+        $data = [
+            'department_id' => $request->department_id,
+            'tahun'         => $request->tahun,
+            'saldo_awal'    => $request->saldo,
+            'updated_at'    => now(),
+        ];
+
+        SaldoAwal::where('id', $id)->update($data);
+
+        return redirect()->back()->with('success', 'Saldo awal berhasil diperbarui.');
     }
 }
