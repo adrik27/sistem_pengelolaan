@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('kategori');
             $table->string('satuan');
             $table->integer('harga');
+            $table->integer('qty_awal')->default(0);
+            $table->integer('qty_digunakan')->default(0);
             $table->timestamps();
         });
     }

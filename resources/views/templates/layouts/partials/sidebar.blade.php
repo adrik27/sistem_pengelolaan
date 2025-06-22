@@ -31,14 +31,14 @@
                     <span class="link-title">Saldo Awal</span>
                 </a>
             </li>
-            <li class="nav-item {{ request()->is('penerimaan-transaksi/*') ? 'active' : '' }}">
-                <a href="{{ url('/penerimaan-transaksi') }}" class="nav-link">
+            <li class="nav-item {{ request()->is('penerimaan/*') ? 'active' : '' }}">
+                <a href="{{ url('/penerimaan') }}" class="nav-link">
                     <i class="link-icon" data-feather="plus-square"></i>
                     <span class="link-title">Penerimaan</span>
                 </a>
             </li>
-            <li class="nav-item {{ request()->is('pengeluaran-transaksi/*') ? 'active' : '' }}">
-                <a href="{{ url('/pengeluaran-transaksi') }}" class="nav-link">
+            <li class="nav-item {{ request()->is('pengeluaran/*') ? 'active' : '' }}">
+                <a href="{{ url('/pengeluaran') }}" class="nav-link">
                     <i class="link-icon" data-feather="minus-square"></i>
                     <span class="link-title">Pengeluaran</span>
                 </a>

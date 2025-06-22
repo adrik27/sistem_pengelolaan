@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('department_id')->nullable();
             $table->integer('tahun')->nullable();
             $table->integer('saldo_awal')->default(0)->nullable();
+            $table->integer('saldo_digunakan')->default(0)->nullable();
             $table->timestamps();
         });
     }

@@ -7,7 +7,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-baseline mb-2">
-                    <h6 class="card-title mb-0">Data Master Barang</h6>
+                    <h6 class="card-title mb-0">Transaksi Penerimaan</h6>
 
                 </div>
 
@@ -16,7 +16,7 @@
                         <div class="tambah-data">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#TambahData">
-                                Tambah Data </button>
+                                Tambah Transaksi Penerimaan </button>
 
                             <!-- Modal Tambah Data -->
                             <div class="modal fade" id="TambahData" tabindex="-1" aria-labelledby="TambahDataLabel"
@@ -24,54 +24,65 @@
                                 <div class="modal-dialog modal-xl">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="TambahDataLabel">Tambah Data Barang
+                                            <h1 class="modal-title fs-5" id="TambahDataLabel">Tambah Data Transaksi
+                                                Penerimaan
                                             </h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
-                                        <form id="formCreate" method="POST" action="{{ url('/data-master') }}">
+                                        <form id="formCreate" method="POST" action="{{ url('/penerimaan/create') }}">
                                             @csrf
                                             <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-12 d-flex justify-content-center gap-3">
+                                                        <div class="label">
+                                                            Total Saldo Tersedia :
+                                                        </div>
+                                                        <div class="value-buget" id="budget-awal"
+                                                            data-budget="{{ ($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0) }}">
+                                                            {{ currency(($budget_awal->saldo_awal ?? 0) -
+                                                            ($budget_awal->saldo_digunakan ?? 0)) }} </div>
+                                                    </div>
+                                                </div>
                                                 <table class="table table-bordered table-hover table-responsive mt-3"
                                                     id="table-create">
                                                     <thead>
                                                         <tr>
-                                                            <th>Kode</th>
                                                             <th>Nama</th>
-                                                            <th>Kategori</th>
-                                                            <th>Satuan</th>
                                                             <th>Harga</th>
-                                                            <th>Stok Awal</th>
+                                                            <th>Qty</th>
+                                                            <th>Total Harga</th>
                                                             <th>Aksi</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <input type="number" class="form-control" name="kode[]"
-                                                                    id="kode" required>
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control" name="nama[]"
-                                                                    id="nama" required>
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control"
-                                                                    name="kategori[]" id="kategori" required>
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control" name="satuan[]"
-                                                                    id="satuan" required>
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control currency-input"
+                                                                <select class="form-control" name="kode[]" id="kode"
                                                                     required>
-                                                                <input type="hidden" name="harga[]"
-                                                                    class="harga-hidden">
+                                                                    <option value="">Pilih Barang</option>
+                                                                    @foreach ($data_barang as $barang)
+                                                                    <option value="{{ $barang->kode_barang }}">{{
+                                                                        ucwords($barang->nama) }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text"
+                                                                    class="form-control harga currency-input" readonly>
+                                                                <input type="hidden" class="harga-hidden"
+                                                                    name="harga[]">
                                                             </td>
                                                             <td>
                                                                 <input type="number" min="1" class="form-control"
                                                                     name="qty[]" id="qty" required>
+                                                            </td>
+                                                            <td>
+                                                                <input type="hidden" class="form-control"
+                                                                    name="total_harga[]" id="total_harga_hidden"
+                                                                    readonly>
+                                                                <input type="text" class="form-control" id="total_harga"
+                                                                    readonly>
                                                             </td>
                                                             <td>
                                                                 <button type="button" class="btn btn-danger"
@@ -80,6 +91,23 @@
                                                         </tr>
                                                     </tbody>
                                                     <tfoot>
+                                                        <tr class="bg-light">
+                                                            <td colspan="3" class="text-end">
+                                                                Total Biaya
+                                                            </td>
+                                                            <td>
+                                                                <div class="total-biaya">
+                                                                    <input type="text" class="form-control" readonly
+                                                                        id="total_biaya" value="0">
+
+                                                                    <input type="hidden" name="saldo_awal"
+                                                                        class="form-control"
+                                                                        value="{{ $budget_awal->saldo_awal ?? 0 }}">
+                                                                    <input type="hidden" name="saldo_digunakan"
+                                                                        class="form-control" id="total_biaya_hidden">
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                         <tr>
                                                             <td colspan="7">
                                                                 <button type="button"
@@ -95,81 +123,7 @@
                                                 <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">Tutup</button>
                                                 <button type="submit" form="formCreate"
-                                                    class="btn btn-primary">Simpan</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tambah-stok">
-                            <button type="button" class="btn btn-warning text-white" data-bs-toggle="modal"
-                                data-bs-target="#TambahStok">
-                                Tambah Stok </button>
-
-                            <!-- Modal Tambah Data -->
-                            <div class="modal fade" id="TambahStok" tabindex="-1" aria-labelledby="TambahStokLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-xl">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="TambahStokLabel">Tambah Stok Barang
-                                            </h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <form id="formCreateStok" method="POST"
-                                            action="{{ url('/data-master/tambah-stok') }}">
-                                            @csrf
-                                            <div class="modal-body">
-                                                <table class="table table-bordered table-hover table-responsive mt-3"
-                                                    id="table-create-stok">
-                                                    <thead>
-                                                        <tr>
-                                                            <th width="60%">Nama</th>
-                                                            <th width="30%">Tambah Stok</th>
-                                                            <th>Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <select class="form-control" name="kode[]" id="kode"
-                                                                    required>
-                                                                    <option value="">Pilih Barang</option>
-                                                                    @foreach ($datas as $data)
-                                                                    <option value="{{ $data->kode_barang }}">{{
-                                                                        ucwords($data->nama) }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" min="1" class="form-control"
-                                                                    name="qty[]" id="qty" required>
-                                                            </td>
-                                                            <td>
-                                                                <button type="button" class="btn btn-danger"
-                                                                    onclick="HapusRowStok(this)">X</button>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <td colspan="3">
-                                                                <button type="button"
-                                                                    class="btn btn-primary d-block text-left"
-                                                                    onclick="TambahRowStok()">+ Tambah
-                                                                    Baris</button>
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Tutup</button>
-                                                <button type="submit" form="formCreateStok"
-                                                    class="btn btn-primary">Simpan</button>
+                                                    class="btn btn-primary simpan">Simpan</button>
                                             </div>
                                         </form>
                                     </div>
@@ -200,30 +154,29 @@
                         <thead>
                             <tr class="text-center">
                                 <th>No</th>
+                                <th>Tanggal</th>
                                 <th>Kode</th>
                                 <th>Nama</th>
-                                <th>Kategori</th>
                                 <th>Satuan</th>
+                                <th>Qty</th>
                                 <th>Harga</th>
-                                <th>Stok Awal</th>
-                                <th>Sisa Stok</th>
-                                <th>Jumlah Harga</th>
+                                <th>Total Harga</th>
+                                <th>Sisa Saldo</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($datas as $item)
-                            {{-- @dd($item) --}}
+                            @foreach ($data as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->kode_barang }}</td>
-                                <td>{{ $item->nama }}</td>
-                                <td>{{ $item->kategori }}</td>
-                                <td>{{ $item->satuan }}</td>
-                                <td>{{ currency($item->harga) }}</td>
-                                <td>{{ $item->qty_awal }}</td>
-                                <td>{{ $item->qty_awal - $item->qty_digunakan }}</td>
-                                <td>{{ currency($item->qty_awal * $item->harga) }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
                                         <div class="edit">
@@ -234,7 +187,7 @@
                                         </div>
 
                                         <div class="hapus">
-                                            <form action="{{ url('/data-master/hapus/'.$item->id) }}" method="post">
+                                            <form action="{{ url('/penerimaan/hapus/'.$item->id) }}" method="post">
                                                 @csrf
 
                                                 <button type="submit" class="btn btn-sm btn-danger">
@@ -256,7 +209,7 @@
 
 @endsection
 
-@foreach ($datas as $item)
+{{-- @foreach ($datas as $item)
 <!-- Modal Update-->
 <div class="modal fade" id="update{{ $item->id }}" tabindex="-1" aria-labelledby="update{{ $item->id }}Label"
     aria-hidden="true">
@@ -318,7 +271,7 @@
         </div>
     </div>
 </div>
-@endforeach
+@endforeach --}}
 
 @section('js')
 <script>
@@ -327,73 +280,124 @@
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".currency-input").forEach(input => {
-            input.addEventListener("input", function () {
-                formatRupiahInput(this);
-            });
+        // Event delegation untuk handle dinamis
+        const tableBody = document.querySelector("#table-create tbody");
+
+        tableBody.addEventListener("change", function (e) {
+            if (e.target && e.target.matches("select[name='kode[]']")) {
+                const row = e.target.closest("tr");
+                const kode = e.target.value;
+
+                // AJAX ambil harga barang
+                fetch(`/get-harga-barang/${kode}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const hargaInput = row.querySelector(".harga");
+                        const hargaHidden = row.querySelector(".harga-hidden");
+
+                        hargaHidden.value = data.harga;
+                        hargaInput.value = formatRupiah(data.harga);
+
+                        updateTotalPerRow(row);
+                        updateTotalBiaya();
+                    });
+            }
+        });
+
+        tableBody.addEventListener("input", function (e) {
+            if (e.target && e.target.matches("input[name='qty[]']")) {
+                const row = e.target.closest("tr");
+                updateTotalPerRow(row);
+                updateTotalBiaya();
+            }
         });
     });
 
-    function formatRupiahInput(input) {
-        let value = input.value.replace(/[^0-9]/g, "");
-        let formatted = new Intl.NumberFormat("id-ID", {
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
             minimumFractionDigits: 0
-        }).format(value);
-
-        input.value = formatted;
-
-        // Set hidden input value
-        const hiddenInput = input.closest("td").querySelector(".harga-hidden");
-        hiddenInput.value = value;
+        }).format(angka);
     }
 
+    function parseAngka(str) {
+        return parseInt(str.replace(/[^\d]/g, "")) || 0; 
+    }
+
+    function updateTotalPerRow(row) {
+        const harga = parseAngka(row.querySelector(".harga-hidden").value);
+        const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
+        const total = harga * qty;
+
+        row.querySelector("#total_harga_hidden").value = total;
+        row.querySelector("#total_harga").value = formatRupiah(total);
+    }
+
+    function updateTotalBiaya() {
+        const total = getTotalBiaya();
+        const budget = parseInt(document.querySelector("#budget-awal").dataset.budget);
+        document.querySelector("#total_biaya").value = formatRupiah(total);
+        document.querySelector("#total_biaya_hidden").value = total;
+        
+        const btnTambah = document.querySelector("button[onclick='TambahRow()']");
+        const btnSimpan = document.querySelector(".simpan");
+
+        if (total > budget) {
+            document.querySelector("#total_biaya").style.color = 'red';
+            btnTambah.disabled = true;
+            btnTambah.classList.add('disabled');
+            btnSimpan.disabled = true;
+            btnSimpan.classList.add('disabled');
+        } else {
+            document.querySelector("#total_biaya").style.color = 'black';
+            btnTambah.disabled = false;
+            btnTambah.classList.remove('disabled');
+            btnSimpan.disabled = false;
+            btnSimpan.classList.remove('disabled');
+        }
+    }
+
+
     function TambahRow() {
+        const totalBiaya = getTotalBiaya(); // jumlah total harga semua baris
+        const budget = parseInt(document.querySelector("#budget-awal").dataset.budget);
+
+        if (totalBiaya >= budget) {
+            alert("Total biaya sudah mencapai batas budget. Tidak bisa menambah baris lagi.");
+            return;
+        }
+
         const table = document.querySelector("#table-create tbody");
         const newRow = table.rows[0].cloneNode(true);
 
-        newRow.querySelectorAll("input").forEach(el => el.value = "");
-        newRow.querySelectorAll(".currency-input").forEach(el => {
-            el.value = "";
-            el.addEventListener("input", function () {
-                formatRupiahInput(this);
-            });
-        });
-        newRow.querySelectorAll(".harga-hidden").forEach(el => el.value = "");
+        newRow.querySelector("select").value = "";
+        newRow.querySelector(".harga").value = "";
+        newRow.querySelector(".harga-hidden").value = "";
+        newRow.querySelector("input[name='qty[]']").value = "";
+        newRow.querySelector("#total_harga").value = "";
+        newRow.querySelector("#total_harga_hidden").value = "";
 
         table.appendChild(newRow);
+        updateTotalBiaya();
     }
-    
+
+    function getTotalBiaya() {
+        let total = 0;
+        document.querySelectorAll("#table-create tbody tr").forEach(row => {
+            const harga = parseAngka(row.querySelector(".harga-hidden").value);
+            const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
+            total += harga * qty;
+        });
+        return total;
+    }
+
+
     function HapusRow(button) {
         const table = document.querySelector("#table-create tbody");
         if (table.rows.length > 1) {
             button.closest("tr").remove();
-        } else {
-            alert("Minimal satu baris harus ada!");
-        }
-    }
-
-    function TambahRowStok() {
-        const table = document.querySelector("#table-create-stok tbody");
-        const newRow = table.rows[0].cloneNode(true);
-
-        newRow.querySelectorAll("select").forEach(el => el.value = "");
-        newRow.querySelectorAll(".currency-input").forEach(el => {
-            el.value = "";
-            el.addEventListener("input", function () {
-                formatRupiahInput(this);
-            });
-        });
-        newRow.querySelectorAll(".harga-hidden").forEach(el => el.value = "");
-
-        table.appendChild(newRow);
-    }
-    
-    function HapusRowStok(button) {
-        const table = document.querySelector("#table-create-stok tbody");
-        if (table.rows.length > 1) {
-            button.closest("tr").remove();
+            updateTotalBiaya();
         } else {
             alert("Minimal satu baris harus ada!");
         }

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('riwayat_transaksis', function (Blueprint $table) {
+        Schema::create('transaksi_masuks', function (Blueprint $table) {
             $table->id();
             $table->date('tgl_transaksi');
             $table->foreignId('department_id');
@@ -21,8 +21,6 @@ return new class extends Migration
             $table->integer('qty');
             $table->integer('harga_satuan');
             $table->integer('total_harga');
-            $table->integer('saldo_awal');
-            $table->integer('sisa_saldo');
             $table->string('status')->default('pending');
             $table->timestamps();
         });
@@ -33,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('riwayat_transaksis');
+        Schema::dropIfExists('transaksi_masuks');
     }
 };
