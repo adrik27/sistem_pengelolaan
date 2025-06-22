@@ -114,6 +114,9 @@ class TransaksiMasukController extends Controller
                         'status' => 'pending'
                     ]);
                 }
+                DB::table('data_masters')
+                    ->where('kode_barang', $kode_barang)
+                    ->increment('qty_digunakan', $qty);
             }
 
             // Update saldo_awals: tambah saldo_digunakan

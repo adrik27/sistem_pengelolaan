@@ -122,6 +122,8 @@
                                 <th>Department</th>
                                 <th>Tahun</th>
                                 <th>Saldo Awal</th>
+                                <th>Saldo Terpakai</th>
+                                <th>Sisa Saldo</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -132,6 +134,8 @@
                                 <td>{{ $item->Department->nama }}</td>
                                 <td>{{ $item->tahun }}</td>
                                 <td>{{ currency($item->saldo_awal) }}</td>
+                                <td>{{ currency($item->saldo_digunakan) }}</td>
+                                <td>{{ currency(($item->saldo_awal - $item->saldo_digunakan)) }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
                                         <div class="edit">

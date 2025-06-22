@@ -74,8 +74,9 @@
                                                                     name="harga[]">
                                                             </td>
                                                             <td>
-                                                                <input type="number" min="1" class="form-control"
+                                                                <input type="number" min="1" class="form-control qty"
                                                                     name="qty[]" id="qty" required>
+                                                                <input type="hidden" class="stok-hidden" value="">
                                                             </td>
                                                             <td>
                                                                 <input type="hidden" class="form-control"
@@ -294,21 +295,41 @@
                     .then(data => {
                         const hargaInput = row.querySelector(".harga");
                         const hargaHidden = row.querySelector(".harga-hidden");
+                        const stokHidden = row.querySelector(".stok-hidden");
 
                         hargaHidden.value = data.harga;
                         hargaInput.value = formatRupiah(data.harga);
+                        stokHidden.value = data.sisa_qty;
 
                         updateTotalPerRow(row);
                         updateTotalBiaya();
-                    });
+                    })
             }
         });
 
         tableBody.addEventListener("input", function (e) {
             if (e.target && e.target.matches("input[name='qty[]']")) {
                 const row = e.target.closest("tr");
+                const qtyInput = e.target;
+                const qty = parseInt(qtyInput.value) || 0;
+                const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
+
+                if (qty > stok) {
+                    alert("Qty melebihi stok tersedia: " + stok);
+                    qtyInput.classList.add("is-invalid");
+                    qtyInput.setCustomValidity("Qty melebihi stok");
+
+                    // Nonaktifkan tombol
+                    document.querySelector("button[onclick='TambahRow()']").disabled = true;
+                    document.querySelector(".simpan").disabled = true;
+                } else {
+                    qtyInput.classList.remove("is-invalid");
+                    qtyInput.setCustomValidity("");
+
+                    updateTotalBiaya(); // tetap update
+                }
+
                 updateTotalPerRow(row);
-                updateTotalBiaya();
             }
         });
     });
@@ -337,27 +358,30 @@
     function updateTotalBiaya() {
         const total = getTotalBiaya();
         const budget = parseInt(document.querySelector("#budget-awal").dataset.budget);
-        document.querySelector("#total_biaya").value = formatRupiah(total);
-        document.querySelector("#total_biaya_hidden").value = total;
-        
+
         const btnTambah = document.querySelector("button[onclick='TambahRow()']");
         const btnSimpan = document.querySelector(".simpan");
 
-        if (total > budget) {
-            document.querySelector("#total_biaya").style.color = 'red';
+        const isQtyValid = [...document.querySelectorAll("input[name='qty[]']")].every(input => {
+            const row = input.closest("tr");
+            const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
+            const qty = parseInt(input.value) || 0;
+            return qty <= stok;
+        });
+
+        document.querySelector("#total_biaya").value = formatRupiah(total);
+        document.querySelector("#total_biaya_hidden").value = total;
+
+        if (total > budget || !isQtyValid) {
             btnTambah.disabled = true;
-            btnTambah.classList.add('disabled');
             btnSimpan.disabled = true;
-            btnSimpan.classList.add('disabled');
+            document.querySelector("#total_biaya").style.color = 'red';
         } else {
-            document.querySelector("#total_biaya").style.color = 'black';
             btnTambah.disabled = false;
-            btnTambah.classList.remove('disabled');
             btnSimpan.disabled = false;
-            btnSimpan.classList.remove('disabled');
+            document.querySelector("#total_biaya").style.color = 'black';
         }
     }
-
 
     function TambahRow() {
         const totalBiaya = getTotalBiaya(); // jumlah total harga semua baris
@@ -374,6 +398,7 @@
         newRow.querySelector("select").value = "";
         newRow.querySelector(".harga").value = "";
         newRow.querySelector(".harga-hidden").value = "";
+        newRow.querySelector(".stok-hidden").value = "";
         newRow.querySelector("input[name='qty[]']").value = "";
         newRow.querySelector("#total_harga").value = "";
         newRow.querySelector("#total_harga_hidden").value = "";

@@ -152,7 +152,8 @@ class DataMasterController extends Controller
     {
         $barang = DataMaster::where('kode_barang', $kode)->first();
         return response()->json([
-            'harga' => $barang->harga
+            'harga' => $barang->harga,
+            'sisa_qty' => $barang->qty_awal - $barang->qty_digunakan
         ]);
     }
 
