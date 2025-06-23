@@ -27,7 +27,7 @@ class TransaksiMasukController extends Controller
                         ->get();
                         
         } else if(Auth::user()->jabatan_id == 2) { // pengurus barang (admin bukan super admin)
-            $req_status = 'pending';
+            $req_status = $request->input('status') ?? 'verifikasi';
             $data = TransaksiMasuk::whereYear('tgl_transaksi', $req_year)
                         ->where('status', $req_status)
                         ->where('department_id', Auth::user()->department_id)

@@ -153,9 +153,10 @@
                         @endif
                     </div>
 
-                    @if (Auth::user()->jabatan_id == 2) {{-- jabatan_id == 2 (pengurus barang) --}}
+                    {{-- jabatan_id == 2 (pengurus barang) --}}
+                    {{-- @if (Auth::user()->jabatan_id == 2)
 
-                    @else
+                    @else --}}
                     <div class="col-12 mt-2">
                         <form action="{{ url('/penerimaan') }}" method="post">
                             <div class="row d-flex gap-2">
@@ -187,7 +188,7 @@
                             </div>
                         </form>
                     </div>
-                    @endif
+                    {{-- @endif --}}
                 </div>
 
                 <div class="table-responsive">
@@ -259,7 +260,9 @@
                                                 @csrf
 
                                                 <button type="submit" form="verifikasiForm"
-                                                    class="btn btn-sm btn-danger" onclick="verifikasiform(this)">
+                                                    class="btn btn-sm btn-danger" onclick="verifikasiform(this)" {{
+                                                    $item->status == 'verifikasi' ?
+                                                    'disabled' : '' }}>
                                                     Verifikasi
                                                 </button>
                                             </form>
