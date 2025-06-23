@@ -417,7 +417,6 @@
         return total;
     }
 
-
     function HapusRow(button) {
         const table = document.querySelector("#table-create tbody");
         if (table.rows.length > 1) {
