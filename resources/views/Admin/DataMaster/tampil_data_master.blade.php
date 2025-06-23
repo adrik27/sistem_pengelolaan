@@ -1,5 +1,6 @@
 @extends('templates.master')
 
+
 @section('content')
 
 <div class="row">
@@ -94,8 +95,8 @@
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">Tutup</button>
-                                                <button type="submit" form="formCreate"
-                                                    class="btn btn-primary">Simpan</button>
+                                                <button type="submit" form="formCreate" class="btn btn-primary"
+                                                    onclick="createform(this)">Simpan</button>
                                             </div>
                                         </form>
                                     </div>
@@ -168,8 +169,8 @@
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">Tutup</button>
-                                                <button type="submit" form="formCreateStok"
-                                                    class="btn btn-primary">Simpan</button>
+                                                <button type="submit" form="formCreateStok" class="btn btn-primary"
+                                                    onclick="createform(this)">Simpan</button>
                                             </div>
                                         </form>
                                     </div>
@@ -237,7 +238,8 @@
                                             <form action="{{ url('/data-master/hapus/'.$item->id) }}" method="post">
                                                 @csrf
 
-                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="deleteform(this)">
                                                     Hapus
                                                 </button>
                                             </form>
@@ -312,7 +314,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-primary" form="formUpdate{{ $item->id }}"
+                        onclick="updateform(this)">Save changes</button>
                 </div>
             </form>
         </div>
@@ -321,10 +324,84 @@
 @endforeach
 
 @section('js')
+{{-- sweet alert --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     $(document).ready(function() {
         $('#table').DataTable();
     });
+
+    function createform(button) {
+        event.preventDefault();
+
+        const form = document.getElementById(button.getAttribute("form"));
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        Swal.fire({
+            title: "Apakah Anda yakin menambah data ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, save!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function updateform(button) {
+        event.preventDefault();
+
+        const form = document.getElementById(button.getAttribute("form"));
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        Swal.fire({
+            title: "Apakah Anda yakin melakukan update ini ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, update!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function deleteform(button) {
+        event.preventDefault();
+
+        const form = button.closest('form');
+
+        Swal.fire({
+            title: "Apakah Anda yakin menghapus data ?",
+            text: "Data yang dihapus tidak dapat dikembalikan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".currency-input").forEach(input => {

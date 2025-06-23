@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         // Data Seeder Department
         $departments = [
             [
@@ -75,13 +73,38 @@ class DatabaseSeeder extends Seeder
         }
 
         // Data Seeder User
-        User::create([
-            'jabatan_id' => 1,
-            'department_id' => 1,
-            'nip' => 111111111,
-            'nama' => 'Administrator',
-            'email' => 'administrator@gmail.com',
-            'password' => Hash::make('password'),
-        ]);
+         $users = [
+            // administrator
+            [
+                'jabatan_id' => 1,
+                'department_id' => 1,
+                'nip' => 111111111,
+                'nama' => 'Administrator',
+                'email' => 'administrator@gmail.com',
+                'password' => Hash::make('password'),
+            ],
+            // pengurus barang
+            [
+                'jabatan_id' => 2,
+                'department_id' => 2,
+                'nip' => 222222222,
+                'nama' => 'Pengurus Barang',
+                'email' => 'pengurusbarang@gmail.com',
+                'password' => Hash::make('password'),
+            ],
+            // pengguna barang
+            [
+                'jabatan_id' => 3,
+                'department_id' => 2,
+                'nip' => 333333333,
+                'nama' => 'Pengguna Barang',
+                'email' => 'penggunabarang@gmail.com',
+                'password' => Hash::make('password'),
+            ],
+        ];
+
+        foreach ($users as $user) {
+            User::create($user);
+        }
     }
 }

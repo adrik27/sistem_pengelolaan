@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('harga');
             $table->integer('qty_awal')->default(0);
             $table->integer('qty_digunakan')->default(0);
+            $table->foreignId('pembuat_id')->nullable();
             $table->timestamps();
         });
     }

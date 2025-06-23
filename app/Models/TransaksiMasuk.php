@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\DataMaster;
 use App\Models\Department;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +19,16 @@ class TransaksiMasuk extends Model
 
     public function DataMaster()
     {
-        return $this->belongsTo(DataMaster::class, 'kode_barang', 'kode_barang')->with('RiwayatStok');
+        return $this->belongsTo(DataMaster::class, 'kode_barang', 'kode_barang')->with('User');
+    }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'pembuat_id', 'id');
+    }
+
+    public function Verifikator()
+    {
+        return $this->belongsTo(User::class, 'verifikator_id', 'id');
     }
 }

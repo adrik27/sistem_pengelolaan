@@ -13,6 +13,9 @@
 
                 <div class="row mt-4">
                     <div class="col-12 d-flex gap-3 align-items-center">
+                        @if (Auth::user()->jabatan_id == 2) {{-- jabatan_id == 2 (pengurus barang) --}}
+
+                        @else
                         <div class="tambah-data">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#TambahData">
@@ -123,14 +126,15 @@
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">Tutup</button>
-                                                <button type="submit" form="formCreate"
-                                                    class="btn btn-primary simpan">Simpan</button>
+                                                <button type="submit" form="formCreate" class="btn btn-primary simpan"
+                                                    onclick="createform(this)">Simpan</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
                 <div class="row mb-4">
@@ -148,6 +152,43 @@
                         </div>
                         @endif
                     </div>
+
+                    {{-- jabatan_id == 2 (pengurus barang) --}}
+                    {{-- @if (Auth::user()->jabatan_id == 2)
+
+                    @else --}}
+                    <div class="col-12 mt-2">
+                        <form action="{{ url('/penerimaan') }}" method="post">
+                            <div class="row d-flex gap-2">
+                                @csrf
+                                <div class="col-4">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="pending" {{ $req_status=='pending' ? 'selected' : '' }}>Pending
+                                        </option>
+                                        <option value="verifikasi" {{ $req_status=='verifikasi' ? 'selected' : '' }}>
+                                            Terverifikasi</option>
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    @php
+                                    $tahunSekarang = date('Y');
+                                    @endphp
+                                    <label for="year">Tahun</label>
+                                    <select name="tahun" id="year" class="form-control" required>
+                                        @for ($i = 0; $i <= 10; $i++) <option value="{{ $tahunSekarang - $i }}" {{
+                                            $req_year==$tahunSekarang - $i ? 'selected' : '' }}>{{
+                                            $tahunSekarang - $i }}</option>
+                                            @endfor
+                                    </select>
+                                </div>
+                                <div class="col align-self-center pt-3">
+                                    <button type="submit" class="btn btn-sm btn-success">Cari</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {{-- @endif --}}
                 </div>
 
                 <div class="table-responsive">
@@ -163,26 +204,40 @@
                                 <th>Harga</th>
                                 <th>Total Harga</th>
                                 <th>Sisa Saldo</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($data as $item)
+                            {{-- @dd($item) --}}
                             <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>{{ $item->tgl_transaksi }}</td>
+                                <td>{{ $item->Department->nama }}</td>
+                                <td>{{ $item->kode_barang }}</td>
+                                <td>{{ $item->nama_barang }}</td>
+                                <td>{{ $item->nama_satuan }}</td>
+                                <td>{{ $item->qty }}</td>
+                                <td>{{ currency($item->harga_satuan) }}</td>
+                                <td>{{ currency($item->total_harga) }}</td>
+                                <td>
+                                    {{ currency(($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0))
+                                    }}
+                                </td>
+                                <td>
+                                    @if ($item->status == 'pending')
+                                    <span class="badge bg-warning">Pending</span>
+                                    @else
+                                    <span class="badge bg-primary">Terverifikasi</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
+                                        @if (Auth::user()->jabatan_id == 3) {{-- pengurus barang --}}
                                         <div class="edit">
                                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#update{{ $item->id }}">
+                                                data-bs-target="#update{{ $item->id }}" {{ $item->status == 'verifikasi'
+                                                ? 'disabled' : '' }}>
                                                 Edit
                                             </button>
                                         </div>
@@ -191,11 +246,28 @@
                                             <form action="{{ url('/penerimaan/hapus/'.$item->id) }}" method="post">
                                                 @csrf
 
-                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="deleteform(this)" {{ $item->status == 'verifikasi' ?
+                                                    'disabled' : '' }}>
                                                     Hapus
                                                 </button>
                                             </form>
                                         </div>
+                                        @else
+                                        <div class="verifikasi">
+                                            <form form="verifikasiForm"
+                                                action="{{ url('/penerimaan/verifikasi/'.$item->id) }}" method="post">
+                                                @csrf
+
+                                                <button type="submit" form="verifikasiForm"
+                                                    class="btn btn-sm btn-danger" onclick="verifikasiform(this)" {{
+                                                    $item->status == 'verifikasi' ?
+                                                    'disabled' : '' }}>
+                                                    Verifikasi
+                                                </button>
+                                            </form>
+                                        </div>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -210,75 +282,81 @@
 
 @endsection
 
-{{-- @foreach ($datas as $item)
-<!-- Modal Update-->
-<div class="modal fade" id="update{{ $item->id }}" tabindex="-1" aria-labelledby="update{{ $item->id }}Label"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="update{{ $item->id }}Label">Update Data Barang</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="formUpdate{{ $item->id }}" method="POST" action="{{ url('/data-master/edit/'.$item->id) }}"
-                enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <table class="table table-bordered  table-responsive mt-3" id="table-update">
-                        <thead>
-                            <tr>
-                                <th>Kode <span class="text-danger" style="font-size: 8px;">*tidak bisa di ubah</span>
-                                </th>
-                                <th>Nama</th>
-                                <th>Kategori</th>
-                                <th>Satuan</th>
-                                <th>Harga</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <input type="number" class="form-control" name="kode" id="kode"
-                                        value="{{ $item->kode_barang }}" readonly
-                                        style="background: #00000024; cursor: not-allowed">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" name="nama" id="nama"
-                                        value="{{ $item->nama }}" required>
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" name="kategori" id="kategori"
-                                        value="{{ $item->kategori }}" required>
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" name="satuan" id="satuan"
-                                        value="{{ $item->satuan }}" required>
-                                </td>
-                                <td>
-                                    <input type="text"
-                                        class="form-control currency-input @error('harga') is-invalid @enderror"
-                                        value="{{ currency($item->harga) }}" required>
-                                    <input type="hidden" name="harga" value="{{ $item->harga }}" class="harga-hidden">
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@endforeach --}}
+
 
 @section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     $(document).ready(function() {
         $('#table').DataTable();
     });
+
+    function verifikasiform(button) {
+        event.preventDefault();
+
+        const form = button.closest("form");
+
+        Swal.fire({
+            title: "Apakah Anda yakin verifikasi data ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Verifikasi!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function createform(button) {
+        event.preventDefault();
+
+        const form = document.getElementById(button.getAttribute("form"));
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        Swal.fire({
+            title: "Apakah Anda yakin menambah data ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, save!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function deleteform(button) {
+        event.preventDefault();
+
+        const form = button.closest('form');
+
+        Swal.fire({
+            title: "Apakah Anda yakin menghapus data ?",
+            text: "Data yang dihapus tidak dapat dikembalikan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         // Event delegation untuk handle dinamis
@@ -311,25 +389,24 @@
             if (e.target && e.target.matches("input[name='qty[]']")) {
                 const row = e.target.closest("tr");
                 const qtyInput = e.target;
-                const qty = parseInt(qtyInput.value) || 0;
                 const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
+                const kodeBarang = row.querySelector("select[name='kode[]']").value;
+                const totalQty = getTotalQtyPerBarang(kodeBarang);
 
-                if (qty > stok) {
-                    alert("Qty melebihi stok tersedia: " + stok);
+                if (totalQty > stok) {
+                    alert(`Total Qty untuk barang ini melebihi stok tersedia (${stok}). Total saat ini: ${totalQty}`);
                     qtyInput.classList.add("is-invalid");
                     qtyInput.setCustomValidity("Qty melebihi stok");
 
-                    // Nonaktifkan tombol
                     document.querySelector("button[onclick='TambahRow()']").disabled = true;
                     document.querySelector(".simpan").disabled = true;
                 } else {
                     qtyInput.classList.remove("is-invalid");
                     qtyInput.setCustomValidity("");
 
-                    updateTotalBiaya(); // tetap update
+                    updateTotalPerRow(row);
+                    updateTotalBiaya();
                 }
-
-                updateTotalPerRow(row);
             }
         });
     });
@@ -362,11 +439,11 @@
         const btnTambah = document.querySelector("button[onclick='TambahRow()']");
         const btnSimpan = document.querySelector(".simpan");
 
-        const isQtyValid = [...document.querySelectorAll("input[name='qty[]']")].every(input => {
-            const row = input.closest("tr");
+        const isQtyValid = [...document.querySelectorAll("#table-create tbody tr")].every(row => {
+            const kode = row.querySelector("select[name='kode[]']").value;
             const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
-            const qty = parseInt(input.value) || 0;
-            return qty <= stok;
+            const totalQty = getTotalQtyPerBarang(kode);
+            return totalQty <= stok;
         });
 
         document.querySelector("#total_biaya").value = formatRupiah(total);
@@ -413,6 +490,18 @@
             const harga = parseAngka(row.querySelector(".harga-hidden").value);
             const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
             total += harga * qty;
+        });
+        return total;
+    }
+
+    function getTotalQtyPerBarang(kodeBarang) {
+        let total = 0;
+        document.querySelectorAll("#table-create tbody tr").forEach(row => {
+            const kode = row.querySelector("select[name='kode[]']").value;
+            const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
+            if (kode === kodeBarang) {
+                total += qty;
+            }
         });
         return total;
     }

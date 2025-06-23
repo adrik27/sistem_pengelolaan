@@ -6,6 +6,7 @@ use App\Models\SaldoAwal;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class SaldoAwalController extends Controller
 {
@@ -70,6 +71,7 @@ class SaldoAwalController extends Controller
                 'department_id' => $department_id,
                 'tahun'         => $tahun,
                 'saldo_awal'    => $request->saldo[$index],
+                'pembuat_id'    => Auth::user()->id,
                 'created_at'    => now(),
                 'updated_at'    => now(),
             ];
@@ -94,7 +96,9 @@ class SaldoAwalController extends Controller
         $exists = DB::table('saldo_awals')
             ->where('department_id', $request->department_id)
             ->where('tahun', $request->tahun)
+            ->where('saldo_awal', $request->saldo)
             ->exists();
+
         $find_department = Department::find($request->department_id);
         if ($exists) {
             return redirect()->back()->with('error', "Data dengan Nama Departemen: $find_department->nama dan Tahun: $request->tahun sudah ada di database.");
@@ -104,6 +108,7 @@ class SaldoAwalController extends Controller
             'department_id' => $request->department_id,
             'tahun'         => $request->tahun,
             'saldo_awal'    => $request->saldo,
+            'pembuat_id'    => Auth::user()->id,
             'updated_at'    => now(),
         ];
 

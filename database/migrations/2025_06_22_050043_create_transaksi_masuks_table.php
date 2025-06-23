@@ -22,6 +22,8 @@ return new class extends Migration
             $table->integer('harga_satuan');
             $table->integer('total_harga');
             $table->string('status')->default('pending');
+            $table->foreignId('pembuat_id')->nullable();
+            $table->foreignId('verifikator_id')->nullable();
             $table->timestamps();
         });
     }

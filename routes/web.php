@@ -20,6 +20,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     // ## Dashboard Admin
+    Route::get('/dashboard', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
     Route::get('/dashboard-admin', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
 
     // ## Data Master
@@ -40,6 +41,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/get-harga-barang/{kode}', [DataMasterController::class, 'getHarga']);
     Route::post('/penerimaan', [TransaksiMasukController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan/create', [TransaksiMasukController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk');
+    Route::post('/penerimaan/verifikasi/{id}', [TransaksiMasukController::class, 'verifikasi_transaksi_masuk'])->name('verifikasi_transaksi_masuk');
 
     // ## Logout
     Route::post('/logout', [AuthenticateController::class, 'proses_logout'])->name('proses_logout');
