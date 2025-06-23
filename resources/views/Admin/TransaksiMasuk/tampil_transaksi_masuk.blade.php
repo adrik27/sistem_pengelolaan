@@ -199,31 +199,30 @@
                                 <th>Tanggal</th>
                                 <th>Kode</th>
                                 <th>Nama</th>
-                                <th>Satuan</th>
                                 <th>Qty</th>
+                                <th>Satuan</th>
                                 <th>Harga</th>
                                 <th>Total Harga</th>
-                                <th>Sisa Saldo</th>
+                                {{-- <th>Sisa Saldo</th> --}}
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($data as $item)
-                            {{-- @dd($item) --}}
                             <tr>
-                                <td>{{ $item->tgl_transaksi }}</td>
-                                <td>{{ $item->Department->nama }}</td>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $item->tgl_transaksi->format('d-m-Y') }}</td>
                                 <td>{{ $item->kode_barang }}</td>
                                 <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->nama_satuan }}</td>
                                 <td>{{ $item->qty }}</td>
+                                <td>{{ $item->nama_satuan }}</td>
                                 <td>{{ currency($item->harga_satuan) }}</td>
                                 <td>{{ currency($item->total_harga) }}</td>
-                                <td>
+                                {{-- <td>
                                     {{ currency(($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0))
                                     }}
-                                </td>
+                                </td> --}}
                                 <td>
                                     @if ($item->status == 'pending')
                                     <span class="badge bg-warning">Pending</span>
@@ -233,7 +232,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        @if (Auth::user()->jabatan_id == 3) {{-- pengurus barang --}}
+                                        @if (Auth::user()->jabatan_id == 3) {{-- pengguna barang --}}
                                         <div class="edit">
                                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                                 data-bs-target="#update{{ $item->id }}" {{ $item->status == 'verifikasi'
@@ -279,6 +278,102 @@
         </div>
     </div>
 </div> <!-- row -->
+
+<!-- Modal Update Data -->
+@foreach ($data as $item)
+<div class="modal fade" id="update{{ $item->id }}" tabindex="-1" aria-labelledby="update{{ $item->id }}Label"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="update{{ $item->id }}Label">Edit Data Transaksi Penerimaan</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formUpdate{{ $item->id }}" method="POST" action="{{ url('/penerimaan/update/'.$item->id) }}">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-center gap-3">
+                            <div class="label">
+                                Total Saldo Tersedia :
+                            </div>
+                            <div class="value-buget" id="budget-awal-{{ $item->id }}"
+                                data-budget="{{ ($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0) }}">
+                                {{ currency(($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0)) }}
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-bordered table-responsive mt-3" id="table-update-{{ $item->id }}">
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Harga</th>
+                                <th>Qty</th>
+                                <th>Total Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select class="form-control" name="kode" id="kode-{{ $item->id }}" required
+                                        disabled>
+                                        <option value="">Pilih Barang</option>
+                                        @foreach ($data_barang as $barang)
+                                        <option value="{{ $barang->kode_barang }}" {{ $barang->kode_barang ==
+                                            $item->kode_barang ? 'selected' : '' }}>
+                                            {{ ucwords($barang->nama) }}
+                                        </option>
+
+                                        <input type="hidden" class="stok-hidden"
+                                            value="{{ ($barang->qty_awal ?? 0) - ($barang->digunakan ?? 0)  }}">
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control harga currency-input"
+                                        value="{{ currency($item->harga_satuan) }}" readonly>
+                                    <input type="hidden" class="harga-hidden" name="harga"
+                                        value="{{ $item->harga_satuan }}">
+                                </td>
+                                <td>
+                                    <input type="number" min="1" class="form-control qty" name="qty"
+                                        id="qty-{{ $item->id }}" value="{{ $item->qty }}" required>
+                                </td>
+                                <td>
+                                    <input type="hidden" class="form-control" name="total_harga"
+                                        id="total_harga_hidden-{{ $item->id }}" value="{{ $item->total_harga }}">
+                                    <input type="text" class="form-control" id="total_harga-{{ $item->id }}"
+                                        value="{{ currency($item->total_harga) }}" readonly>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-light">
+                                <td colspan="3" class="text-end">Total Biaya</td>
+                                <td>
+                                    <div class="total-biaya">
+                                        <input type="text" class="form-control" readonly
+                                            id="total_biaya-{{ $item->id }}" value="{{ currency($item->total_harga) }}">
+                                        <input type="hidden" name="saldo_awal" class="form-control"
+                                            value="{{ $budget_awal->saldo_awal ?? 0 }}">
+                                        <input type="hidden" name="saldo_digunakan" class="form-control"
+                                            id="total_biaya_hidden-{{ $item->id }}" value="{{ $item->total_harga }}">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" form="formUpdate{{ $item->id }}" class="btn btn-primary simpan"
+                        onclick="updateform(this, {{ $item->id }})">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 
 @endsection
 
@@ -337,6 +432,31 @@
         });
     }
 
+    function updateform(button) {
+        event.preventDefault();
+
+        const form = document.getElementById(button.getAttribute("form"));
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        Swal.fire({
+            title: "Apakah Anda yakin melakukan update ini ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, update!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
     function deleteform(button) {
         event.preventDefault();
 
@@ -359,7 +479,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        // Event delegation untuk handle dinamis
+        // modal tambah
         const tableBody = document.querySelector("#table-create tbody");
 
         tableBody.addEventListener("change", function (e) {
@@ -409,18 +529,49 @@
                 }
             }
         });
+        // end modal tambah
+
+        // modal update
+        document.querySelectorAll("table[id^='table-update-']").forEach(table => {
+            const tbody = table.querySelector("tbody");
+            const id = table.id.split("table-update-")[1];
+
+            tbody.addEventListener("change", function(e) {
+                if (e.target.matches("select[name='kode']")) {
+                handleSelectUpdate(table, id, e.target);
+                }
+            });
+            tbody.addEventListener("input", function(e) {
+                if (e.target.matches("input[name='qty']")) {
+                handleInputUpdate(table, id, e.target);
+                }
+            });
+        });
+        // end modal update
+
     });
 
-    function formatRupiah(angka) {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0
-        }).format(angka);
+    // modal tambah
+    function getTotalBiaya() {
+        let total = 0;
+        document.querySelectorAll("#table-create tbody tr").forEach(row => {
+            const harga = parseAngka(row.querySelector(".harga-hidden").value);
+            const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
+            total += harga * qty;
+        });
+        return total;
     }
 
-    function parseAngka(str) {
-        return parseInt(str.replace(/[^\d]/g, "")) || 0; 
+    function getTotalQtyPerBarang(kodeBarang) {
+        let total = 0;
+        document.querySelectorAll("#table-create tbody tr").forEach(row => {
+            const kode = row.querySelector("select[name='kode[]']").value;
+            const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
+            if (kode === kodeBarang) {
+                total += qty;
+            }
+        });
+        return total;
     }
 
     function updateTotalPerRow(row) {
@@ -484,28 +635,6 @@
         updateTotalBiaya();
     }
 
-    function getTotalBiaya() {
-        let total = 0;
-        document.querySelectorAll("#table-create tbody tr").forEach(row => {
-            const harga = parseAngka(row.querySelector(".harga-hidden").value);
-            const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
-            total += harga * qty;
-        });
-        return total;
-    }
-
-    function getTotalQtyPerBarang(kodeBarang) {
-        let total = 0;
-        document.querySelectorAll("#table-create tbody tr").forEach(row => {
-            const kode = row.querySelector("select[name='kode[]']").value;
-            const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
-            if (kode === kodeBarang) {
-                total += qty;
-            }
-        });
-        return total;
-    }
-
     function HapusRow(button) {
         const table = document.querySelector("#table-create tbody");
         if (table.rows.length > 1) {
@@ -515,5 +644,123 @@
             alert("Minimal satu baris harus ada!");
         }
     }
+    // end modal tambah
+
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0
+        }).format(angka);
+    }
+
+    function parseAngka(str) 
+    {
+        return parseInt(str.replace(/[^\d]/g, "")) || 0; 
+    }
+    // _________________________________________________________________
+
+    // modal update
+    function updateTotalPerRowUpdate(row, id) {
+        const harga = parseAngka(row.querySelector(".harga-hidden").value);
+        const qty = parseInt(row.querySelector("input[name='qty']").value) || 0;
+        const total = harga * qty;
+
+        row.querySelector(`#total_harga_hidden-${id}`).value = total;
+        row.querySelector(`#total_harga-${id}`).value = formatRupiah(total);
+    }
+
+    function updateTotalBiayaUpdate(id) {
+        const table = document.querySelector(`#table-update-${id}`);
+        const rows = table.querySelectorAll("tbody tr");
+
+        let total = 0;
+        let isValid = true;
+
+        rows.forEach(row => {
+            const harga = parseAngka(row.querySelector(".harga-hidden").value);
+            const qty = parseInt(row.querySelector("input[name='qty']").value) || 0;
+            const kode = row.querySelector("select[name='kode']").value;
+            const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
+
+            if (qty > stok) {
+                isValid = false;
+                row.querySelector("input[name='qty']").classList.add("is-invalid");
+                row.querySelector("input[name='qty']").setCustomValidity("Qty melebihi stok");
+            } else {
+                row.querySelector("input[name='qty']").classList.remove("is-invalid");
+                row.querySelector("input[name='qty']").setCustomValidity("");
+            }
+
+            total += harga * qty;
+
+            updateTotalPerRowUpdate(row, id); // perbarui tampilan total di setiap baris
+        });
+
+        const budget = parseInt(document.querySelector(`#budget-awal-${id}`).dataset.budget);
+        const btn = document.querySelector(`#update${id} .simpan`);
+        const totalBiayaInput = document.querySelector(`#total_biaya-${id}`);
+        const totalHiddenInput = document.querySelector(`#total_biaya_hidden-${id}`);
+
+        totalBiayaInput.value = formatRupiah(total);
+        totalHiddenInput.value = total;
+
+        if (total > budget || !isValid) {
+            btn.disabled = true;
+            totalBiayaInput.style.color = 'red';
+        } else {
+            btn.disabled = false;
+            totalBiayaInput.style.color = 'black';
+        }
+    }
+
+    function handleSelectUpdate(table, id, selectEl) {
+        const row = selectEl.closest("tr");
+        const kode = selectEl.value;
+
+        // Reset qty & total saat barang diganti
+        row.querySelector("input[name='qty']").value = "";
+        row.querySelector(".harga-hidden").value = "";
+        row.querySelector(".harga").value = "";
+        row.querySelector(".stok-hidden").value = "";
+        row.querySelector(`#total_harga_hidden-${id}`).value = "";
+        row.querySelector(`#total_harga-${id}`).value = "0";
+
+        fetch(`/get-harga-barang/${kode}`)
+            .then(res => res.json())
+            .then(data => {
+                row.querySelector(".harga-hidden").value = data.harga;
+                row.querySelector(".harga").value = formatRupiah(data.harga);
+                row.querySelector(".stok-hidden").value = data.sisa_qty;
+
+                // Ambil ulang qty jika sudah diisi, lalu hitung total
+                const qty = parseInt(row.querySelector("input[name='qty']").value) || 0;
+                if (qty > 0) {
+                    updateTotalPerRowUpdate(row);
+                    updateTotalBiayaUpdate(id);
+                }
+            });
+    }
+
+
+    function handleInputUpdate(table, id, qtyInput) {
+        const row = qtyInput.closest("tr");
+        const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
+        const kode = row.querySelector("select[name='kode']").value;
+        const totalQty = parseInt(qtyInput.value) || 0;
+        
+        if (totalQty > stok) {
+            alert(`Qty melebihi stok tersedia (${stok}).`);
+            qtyInput.classList.add("is-invalid");
+            qtyInput.setCustomValidity("Qty melebihi stok");
+        } else {
+            qtyInput.classList.remove("is-invalid");
+            qtyInput.setCustomValidity("");
+            
+            updateTotalPerRowUpdate(row, id);
+            updateTotalBiayaUpdate(id);
+        }
+    }
+    // end modal update
 </script>
 @endsection

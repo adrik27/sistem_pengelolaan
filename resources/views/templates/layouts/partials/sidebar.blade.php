@@ -19,12 +19,6 @@
                     <span class="link-title">Dashboard</span>
                 </a>
             </li>
-            <li class="nav-item {{ request()->is('data-master/*') ? 'active' : '' }}">
-                <a href="{{ url('/data-master') }}" class="nav-link">
-                    <i class="link-icon" data-feather="server"></i>
-                    <span class="link-title">Data Master Barang</span>
-                </a>
-            </li>
             <li class="nav-item {{ request()->is('saldo-awal/*') ? 'active' : '' }}">
                 <a href="{{ url('/saldo-awal') }}" class="nav-link">
                     <i class="link-icon" data-feather="dollar-sign"></i>

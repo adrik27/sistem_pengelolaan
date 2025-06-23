@@ -12,6 +12,13 @@ class TransaksiMasuk extends Model
     protected $table = 'transaksi_masuks';
     protected $guarded = ['id'];
 
+    protected function casts(): array
+    {
+        return [
+            'tgl_transaksi' => 'datetime',
+        ];
+    }
+
     public function Department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
@@ -31,4 +38,5 @@ class TransaksiMasuk extends Model
     {
         return $this->belongsTo(User::class, 'verifikator_id', 'id');
     }
+    
 }

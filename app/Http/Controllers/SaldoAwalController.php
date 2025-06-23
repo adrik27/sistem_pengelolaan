@@ -12,7 +12,18 @@ class SaldoAwalController extends Controller
 {
     public function tampil_saldo_awal()
     {
-        $datas = SaldoAwal::query()->with('Department')->get();
+        if (Auth::user()->jabatan_id == 3) {
+            $datas = SaldoAwal::where('department_id', Auth::user()->department_id)
+                    ->with('User')
+                    ->with('Department')
+                    ->get();
+        } else {
+            $datas = SaldoAwal::query()
+                    ->with('User')
+                    ->with('Department')
+                    ->get();
+        }
+        
         $departments = Department::where('status', 'aktif')->whereNot('id', 1)->get();
         return view('Admin.SaldoAwal.tampil_saldo_awal',[
             'datas' => $datas,

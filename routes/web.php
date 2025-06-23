@@ -42,6 +42,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/penerimaan', [TransaksiMasukController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan/create', [TransaksiMasukController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk');
     Route::post('/penerimaan/verifikasi/{id}', [TransaksiMasukController::class, 'verifikasi_transaksi_masuk'])->name('verifikasi_transaksi_masuk');
+    Route::post('/penerimaan/update/{id}', [TransaksiMasukController::class, 'update_transaksi_masuk'])->name('update_transaksi_masuk');
 
     // ## Logout
     Route::post('/logout', [AuthenticateController::class, 'proses_logout'])->name('proses_logout');

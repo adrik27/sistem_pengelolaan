@@ -123,21 +123,7 @@ class TransaksiMasukController extends Controller
                         'pembuat_id'    => Auth::user()->id,
                     ]);
                 }
-                // Update data_masters: tambah qty_digunakan
-                // DB::table('data_masters')
-                //     ->where('kode_barang', $kode_barang)
-                //     ->increment('qty_digunakan', $qty);
             }
-
-            // Update saldo_awals: tambah saldo_digunakan
-            // $saldoAwal = SaldoAwal::where('department_id', $department_id)
-            //     ->where('tahun', now()->year)
-            //     ->first();
-
-            // if ($saldoAwal) {
-            //     $saldoAwal->saldo_digunakan += array_sum(array_column($mergedItems, 'total_harga'));
-            //     $saldoAwal->save();
-            // }
 
             DB::commit();
 
@@ -177,6 +163,21 @@ class TransaksiMasukController extends Controller
             }
 
             return redirect()->back()->with('success', 'Transaksi berhasil diverifikasi.');
+        } else {
+            return redirect()->back()->with('error', 'Transaksi tidak ditemukan.');
+        }
+    }
+
+    public function update_transaksi_masuk(Request $request, $id) 
+    {
+        $TransaksiMasuk = TransaksiMasuk::where('id', $id)->first();
+
+        if ($TransaksiMasuk) {
+            $TransaksiMasuk->update([
+                'qty' => $request->qty,
+                'total_harga' => $request->total_harga,
+            ]);
+            return redirect()->back()->with('success', 'Transaksi berhasil diperbarui.');
         } else {
             return redirect()->back()->with('error', 'Transaksi tidak ditemukan.');
         }

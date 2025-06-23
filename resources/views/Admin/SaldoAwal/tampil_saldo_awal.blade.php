@@ -13,9 +13,13 @@
 
                 <div class="row  mt-4 mb-4">
                     <div class="col-12">
+                        @if (Auth::user()->jabatan_id == 3)
+
+                        @else
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#TambahSaldo">
                             Tambah Saldo </button>
+                        @endif
 
                         <!-- Modal -->
                         <div class="modal fade" id="TambahSaldo" tabindex="-1" aria-labelledby="TambahSaldoLabel"
@@ -124,7 +128,11 @@
                                 <th>Saldo Awal</th>
                                 <th>Saldo Terpakai</th>
                                 <th>Sisa Saldo</th>
+                                @if (Auth::user()->jabatan_id == 3)
+
+                                @else
                                 <th>Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -136,6 +144,9 @@
                                 <td>{{ currency($item->saldo_awal) }}</td>
                                 <td>{{ currency($item->saldo_digunakan) }}</td>
                                 <td>{{ currency(($item->saldo_awal - $item->saldo_digunakan)) }}</td>
+                                @if (Auth::user()->jabatan_id == 3)
+
+                                @else
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
                                         <div class="edit">
@@ -157,6 +168,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
