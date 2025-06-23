@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('tahun')->nullable();
             $table->integer('saldo_awal')->default(0)->nullable();
             $table->integer('saldo_digunakan')->default(0)->nullable();
+            $table->foreignId('pembuat_id')->nullable();
             $table->timestamps();
         });
     }

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataMaster;
-use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DataMasterController extends Controller
 {
@@ -56,6 +56,7 @@ class DataMasterController extends Controller
                     'satuan'      => $satuan,
                     'harga'       => $harga,
                     'qty_awal'    => $qty,
+                    'pembuat_id'  => Auth::user()->id,
                 ]);
             }
 
@@ -118,10 +119,11 @@ class DataMasterController extends Controller
 
             // Update DataMaster
             $dataMaster->update([
-                'nama'     => $request->nama,
-                'kategori' => $request->kategori,
-                'satuan'   => $request->satuan,
-                'harga'    => $request->harga,
+                'nama'          => $request->nama,
+                'kategori'      => $request->kategori,
+                'satuan'        => $request->satuan,
+                'harga'         => $request->harga,
+                'pembuat_id'    => Auth::user()->id,
             ]);
 
             DB::commit();
@@ -156,67 +158,4 @@ class DataMasterController extends Controller
             'sisa_qty' => $barang->qty_awal - $barang->qty_digunakan
         ]);
     }
-
-    // public function create_data_master(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'kode'     => 'required|array',
-    //         'nama'     => 'required|array',
-    //         'kategori' => 'required|array',
-    //         'satuan'   => 'required|array',
-    //         'harga'    => 'required|array',
-    //         'qty'      => 'required|array',
-    //     ]);
-
-    //     DB::beginTransaction();
-    //     try {
-    //         foreach ($request->kode as $i => $kodeBarang) {
-    //             $nama     = $request->nama[$i];
-    //             $kategori = $request->kategori[$i];
-    //             $satuan   = $request->satuan[$i];
-    //             $harga    = (int) str_replace('.', '', $request->harga[$i]);
-    //             $qty      = (int) $request->qty[$i];
-
-    //             // Cek apakah kode_barang sudah ada
-    //             $dataMaster = DataMaster::where('kode_barang', $kodeBarang)->first();
-
-    //             if ($dataMaster) {
-    //                 // Jika sudah ada: update harga (jumlahkan) dan update stok awal
-    //                 $dataMaster->update([
-    //                     'harga' => $dataMaster->harga + $harga
-    //                 ]);
-
-    //                 $stok = RiwayatStok::where('kode_barang', $dataMaster->kode_barang)->first();
-    //                 if ($stok) {
-    //                     $stok->increment('qty_awal', $qty);
-    //                 } else {
-    //                     RiwayatStok::create([
-    //                         'kode_barang' => $kodeBarang,
-    //                         'qty_awal'    => $qty,
-    //                     ]);
-    //                 }
-    //             } else {
-    //                 // Jika belum ada: buat baru
-    //                 $new = DataMaster::create([
-    //                     'kode_barang' => $kodeBarang,
-    //                     'nama'        => $nama,
-    //                     'kategori'    => $kategori,
-    //                     'satuan'      => $satuan,
-    //                     'harga'       => $harga,
-    //                 ]);
-
-    //                 RiwayatStok::create([
-    //                     'kode_barang' => $kodeBarang,
-    //                     'qty_awal'    => $qty,
-    //                 ]);
-    //             }
-    //         }
-
-    //         DB::commit();
-    //         return redirect()->back()->with('success', 'Data berhasil disimpan.');
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-    //     }
-    // }
 }

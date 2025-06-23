@@ -12,6 +12,45 @@
     <div class="sidebar-body">
         <ul class="nav">
             <li class="nav-item nav-category">Main Menu</li>
+            @can('user')
+            <li class="nav-item {{ request()->is('dashboard-admin/*') ? 'active' : '' }}">
+                <a href="{{ url('/dashboard-admin') }}" class="nav-link">
+                    <i class="link-icon" data-feather="box"></i>
+                    <span class="link-title">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->is('data-master/*') ? 'active' : '' }}">
+                <a href="{{ url('/data-master') }}" class="nav-link">
+                    <i class="link-icon" data-feather="server"></i>
+                    <span class="link-title">Data Master Barang</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->is('saldo-awal/*') ? 'active' : '' }}">
+                <a href="{{ url('/saldo-awal') }}" class="nav-link">
+                    <i class="link-icon" data-feather="dollar-sign"></i>
+                    <span class="link-title">Saldo Awal</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->is('penerimaan/*') ? 'active' : '' }}">
+                <a href="{{ url('/penerimaan') }}" class="nav-link">
+                    <i class="link-icon" data-feather="plus-square"></i>
+                    <span class="link-title">Penerimaan</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->is('pengeluaran/*') ? 'active' : '' }}">
+                <a href="{{ url('/pengeluaran') }}" class="nav-link">
+                    <i class="link-icon" data-feather="minus-square"></i>
+                    <span class="link-title">Pengeluaran</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->is('laporan-persediaan/*') ? 'active' : '' }}">
+                <a href="{{ url('/laporan-persediaan') }}" class="nav-link">
+                    <i class="link-icon" data-feather="archive"></i>
+                    <span class="link-title">Laporan Persediaan</span>
+                </a>
+            </li>
+            @endcan
+
             @can('admin')
             <li class="nav-item {{ request()->is('dashboard-admin/*') ? 'active' : '' }}">
                 <a href="{{ url('/dashboard-admin') }}" class="nav-link">
