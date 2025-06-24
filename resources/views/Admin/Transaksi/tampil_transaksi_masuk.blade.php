@@ -153,10 +153,6 @@
                         @endif
                     </div>
 
-                    {{-- jabatan_id == 2 (pengurus barang) --}}
-                    {{-- @if (Auth::user()->jabatan_id == 2)
-
-                    @else --}}
                     <div class="col-12 mt-2">
                         <form action="{{ url('/penerimaan') }}" method="post">
                             <div class="row d-flex gap-2">
@@ -168,6 +164,8 @@
                                         </option>
                                         <option value="verifikasi" {{ $req_status=='verifikasi' ? 'selected' : '' }}>
                                             Terverifikasi</option>
+                                        <option value="tolak" {{ $req_status=='tolak' ? 'selected' : '' }}>
+                                            Tolak</option>
                                     </select>
                                 </div>
                                 <div class="col-4">
@@ -188,7 +186,6 @@
                             </div>
                         </form>
                     </div>
-                    {{-- @endif --}}
                 </div>
 
                 <div class="table-responsive">
@@ -226,8 +223,10 @@
                                 <td>
                                     @if ($item->status == 'pending')
                                     <span class="badge bg-warning">Pending</span>
+                                    @elseif($item->status == 'verifikasi')
+                                    <span class="badge bg-primary">Verifikasi</span>
                                     @else
-                                    <span class="badge bg-primary">Terverifikasi</span>
+                                    <span class="badge bg-danger">Tolak</span>
                                     @endif
                                 </td>
                                 <td>
@@ -235,7 +234,9 @@
                                         @if (Auth::user()->jabatan_id == 3) {{-- pengguna barang --}}
                                         <div class="edit">
                                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#update{{ $item->id }}" {{ $item->status == 'verifikasi'
+                                                data-bs-target="#update{{ $item->id }}" {{ ($item->status ==
+                                                'verifikasi' ||
+                                                $item->status == 'tolak')
                                                 ? 'disabled' : '' }}>
                                                 Edit
                                             </button>
@@ -246,25 +247,44 @@
                                                 @csrf
 
                                                 <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="deleteform(this)" {{ $item->status == 'verifikasi' ?
-                                                    'disabled' : '' }}>
+                                                    onclick="deleteform(this)" {{ ($item->status == 'verifikasi' ||
+                                                    $item->status == 'tolak')
+                                                    ? 'disabled' : '' }}>
                                                     Hapus
                                                 </button>
                                             </form>
                                         </div>
                                         @else
-                                        <div class="verifikasi">
-                                            <form form="verifikasiForm"
-                                                action="{{ url('/penerimaan/verifikasi/'.$item->id) }}" method="post">
-                                                @csrf
+                                        <div class="d-flex gap-2">
+                                            <div class="verifikasi">
+                                                <form form="verifikasiForm"
+                                                    action="{{ url('/penerimaan/verifikasi/'.$item->id) }}"
+                                                    method="post">
+                                                    @csrf
 
-                                                <button type="submit" form="verifikasiForm"
-                                                    class="btn btn-sm btn-danger" onclick="verifikasiform(this)" {{
-                                                    $item->status == 'verifikasi' ?
-                                                    'disabled' : '' }}>
-                                                    Verifikasi
-                                                </button>
-                                            </form>
+                                                    <button type="submit" form="verifikasiForm"
+                                                        class="btn btn-sm btn-primary" onclick="verifikasiform(this)" {{
+                                                        ($item->status == 'verifikasi' ||
+                                                        $item->status == 'tolak')
+                                                        ? 'disabled' : '' }}>
+                                                        Verifikasi
+                                                    </button>
+                                                </form>
+                                            </div>
+
+                                            <div class="tolak">
+                                                <form form="tolakForm"
+                                                    action="{{ url('/penerimaan/tolak/'.$item->id) }}" method="post">
+                                                    @csrf
+
+                                                    <button type="submit" form="tolakForm" class="btn btn-sm btn-danger"
+                                                        onclick="tolakForm(this)" {{ ($item->status == 'verifikasi' ||
+                                                        $item->status == 'tolak')
+                                                        ? 'disabled' : '' }}>
+                                                        Tolak
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                         @endif
                                     </div>
@@ -386,6 +406,26 @@
     $(document).ready(function() {
         $('#table').DataTable();
     });
+
+    function tolakForm(button) {
+        event.preventDefault();
+
+        const form = button.closest("form");
+
+        Swal.fire({
+            title: "Apakah Anda yakin menolak data ini ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Tolak!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
 
     function verifikasiform(button) {
         event.preventDefault();

@@ -42,14 +42,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan/create', [TransaksiController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk');
     Route::post('/penerimaan/verifikasi/{id}', [TransaksiController::class, 'verifikasi_transaksi_masuk'])->name('verifikasi_transaksi_masuk');
+    Route::post('/penerimaan/tolak/{id}', [TransaksiController::class, 'tolak_transaksi_masuk'])->name('tolak_transaksi_masuk');
     Route::post('/penerimaan/update/{id}', [TransaksiController::class, 'update_transaksi_masuk'])->name('update_transaksi_masuk');
     Route::post('/penerimaan/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_masuk'])->name('hapus_transaksi_masuk');
-
+    
     // ## Pengeluaran (Transaksi Keluar)
     Route::get('/pengeluaran', [TransaksiController::class, 'tampil_transaksi_keluar'])->name('tampil_transaksi_keluar');
     Route::post('/pengeluaran', [TransaksiController::class, 'tampil_transaksi_keluar'])->name('tampil_transaksi_keluar');
     Route::post('/pengeluaran/create', [TransaksiController::class, 'create_transaksi_keluar'])->name('create_transaksi_keluar');
     Route::post('/pengeluaran/verifikasi/{id}', [TransaksiController::class, 'verifikasi_transaksi_keluar'])->name('verifikasi_transaksi_keluar');
+    Route::post('/pengeluaran/tolak/{id}', [TransaksiController::class, 'tolak_transaksi_keluar'])->name('tolak_transaksi_keluar');
     Route::post('/pengeluaran/update/{id}', [TransaksiController::class, 'update_transaksi_keluar'])->name('update_transaksi_keluar');
     Route::post('/pengeluaran/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_keluar'])->name('hapus_transaksi_keluar');
 

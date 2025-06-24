@@ -99,6 +99,13 @@ class TransaksiController extends Controller
                 $barang = DB::table('data_masters')->where('kode_barang', $kode_barang)->first();
                 if (!$barang) continue;
 
+                // cek saldo awal mencukupi tidak
+                $saldo_awal = SaldoAwal::where('department_id', $department_id)->where('tahun', now()->year)->first();
+                if ($total > $saldo_awal->saldo_awal) {
+                    DB::rollback();
+                    return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                }
+
                 // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
                 $existing = Transaksi::where('tgl_transaksi', $tgl_transaksi)
                     ->where('department_id', $department_id)
@@ -108,6 +115,13 @@ class TransaksiController extends Controller
                     ->first();
 
                 if ($existing) {
+                    // cek ketersediaan stok di database
+                    $total_qty_exis = $qty + $existing->qty ?? 0;
+                    if ($total_qty_exis > $barang->qty_awal) {
+                        DB::rollback();
+                        return redirect()->back()->with('error', 'Terjadi kesalahan: Stok barang ' . ucwords($barang->nama) . ' tidak mencukupi.');
+                    }
+
                     // Update qty dan saldo_digunakan
                     $existing->qty += $qty;
                     $existing->total_harga += $total_harga;
@@ -151,7 +165,6 @@ class TransaksiController extends Controller
                 ]
             );
 
-
             $saldoAwal = SaldoAwal::where('department_id', $Transaksi->department_id)
                 ->where('tahun', $year)
                 ->first();
@@ -168,6 +181,23 @@ class TransaksiController extends Controller
             }
 
             return redirect()->back()->with('success', 'Transaksi penerimaan berhasil diverifikasi.');
+        } else {
+            return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
+        }
+    }
+
+    public function tolak_transaksi_masuk($id)
+    {
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi masuk')->first();
+
+        if ($Transaksi) {
+            $Transaksi->update(
+                [
+                    'status' => 'tolak',
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Transaksi penerimaan berhasil ditolak.');
         } else {
             return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
         }
@@ -273,10 +303,11 @@ class TransaksiController extends Controller
             foreach ($request->kode as $index => $kode) {
                 if (!$kode) continue; // skip jika kosong
 
-                $qty = (int) $request->qty[$index];
-                $harga = (int) $request->harga[$index];
-                $total = (int) $request->total_harga[$index];
+                $qty    = (int) $request->qty[$index];
+                $harga  = (int) $request->harga[$index];
+                $total  = (int) $request->total_harga[$index];
 
+                // proses merge
                 if (isset($mergedItems[$kode])) {
                     $mergedItems[$kode]['qty'] += $qty;
                     $mergedItems[$kode]['total_harga'] += $total;
@@ -295,9 +326,15 @@ class TransaksiController extends Controller
                 $qty = $item['qty'];
                 $harga = $item['harga'];
                 $total_harga = $item['total_harga'];
-
                 $barang = DB::table('data_masters')->where('kode_barang', $kode_barang)->first();
                 if (!$barang) continue;
+
+                // cek saldo awal mencukupi tidak
+                $saldo_awal = SaldoAwal::where('department_id', $department_id)->where('tahun', now()->year)->first();
+                if ($total > $saldo_awal->saldo_awal) {
+                    DB::rollback();
+                    return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                }
 
                 // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
                 $existing = Transaksi::where('tgl_transaksi', $tgl_transaksi)
@@ -308,11 +345,19 @@ class TransaksiController extends Controller
                     ->first();
 
                 if ($existing) {
+                    // cek ketersediaan stok di database
+                    $total_qty_exis = $qty + $existing->qty ?? 0;
+                    if ($total_qty_exis > $barang->qty_awal) {
+                        DB::rollback();
+                        return redirect()->back()->with('error', 'Terjadi kesalahan: Stok barang ' . ucwords($barang->nama) . ' tidak mencukupi.');
+                    }
+
                     // Update qty dan saldo_digunakan
                     $existing->qty += $qty;
                     $existing->total_harga += $total_harga;
                     $existing->save();
                 } else {
+
                     Transaksi::create([
                         'tgl_transaksi'     => $tgl_transaksi,
                         'department_id'     => $department_id,
@@ -368,6 +413,23 @@ class TransaksiController extends Controller
             }
 
             return redirect()->back()->with('success', 'Transaksi pengeluaran berhasil diverifikasi.');
+        } else {
+            return redirect()->back()->with('error', 'Transaksi pengeluaran tidak ditemukan.');
+        }
+    }
+
+    public function tolak_transaksi_keluar($id)
+    {
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi keluar')->first();
+
+        if ($Transaksi) {
+            $Transaksi->update(
+                [
+                    'status' => 'tolak',
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Transaksi pengeluaran berhasil ditolak.');
         } else {
             return redirect()->back()->with('error', 'Transaksi pengeluaran tidak ditemukan.');
         }
