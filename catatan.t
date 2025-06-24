@@ -10,4 +10,4 @@
 # 1. ;extension=gd aktifkan tanpa tanda ";" 
 
 
-
+# export pdf rencana akan menggunakan = https://github.com/barryvdh/laravel-snappy
