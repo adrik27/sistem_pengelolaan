@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\SaldoAwal;
-use App\Models\TransaksiMasuk;
+use App\Models\Transaksi;
 use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
@@ -21,8 +21,8 @@ class Department extends Model
         return $this->hasMany(SaldoAwal::class);
     }
 
-    public function TransaksiMasuk()
+    public function Transaksi()
     {
-        return $this->hasMany(TransaksiMasuk::class);
+        return $this->hasMany(Transaksi::class);
     }
 }

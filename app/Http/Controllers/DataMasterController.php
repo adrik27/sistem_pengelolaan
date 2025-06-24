@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DataMasterController extends Controller
 {
-    public function tampil_data_master() 
+    public function tampil_data_master()
     {
         $datas = DataMaster::all();
         return view('Admin.DataMaster.tampil_data_master', [
@@ -67,7 +67,7 @@ class DataMasterController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-    
+
     public function create_stok_data_master(Request $request)
     {
         $validated = $request->validate([
@@ -88,17 +88,17 @@ class DataMasterController extends Controller
             try {
                 foreach ($kodeArray as $i => $kodeBarang) {
                     $qty      = (int) $request->qty[$i];
-    
+
                     DataMaster::where('kode_barang', $kodeBarang)->increment('qty_awal', $qty);
                 }
-    
+
                 DB::commit();
                 return redirect()->back()->with('success', 'Stok berhasil ditambah.');
             } catch (\Exception $e) {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
             }
-        }else{
+        } else {
             return redirect()->back()->with('error', 'Terjadi kesalahan, nama barang: ' . implode(', ', $duplikatDB) . 'tidak ditemukan di database.');
         }
     }
@@ -156,6 +156,14 @@ class DataMasterController extends Controller
         return response()->json([
             'harga' => $barang->harga,
             'sisa_qty' => $barang->qty_awal - $barang->qty_digunakan
+        ]);
+    }
+    public function getHargaKeluar($kode)
+    {
+        $barang = DataMaster::where('kode_barang', $kode)->first();
+        return response()->json([
+            'harga' => $barang->harga,
+            'sisa_qty' => $barang->qty_digunakan
         ]);
     }
 }

@@ -7,9 +7,9 @@ use App\Models\DataMaster;
 use App\Models\Department;
 use Illuminate\Database\Eloquent\Model;
 
-class TransaksiMasuk extends Model
+class Transaksi extends Model
 {
-    protected $table = 'transaksi_masuks';
+    protected $table = 'transaksis';
     protected $guarded = ['id'];
 
     protected function casts(): array
@@ -38,5 +38,4 @@ class TransaksiMasuk extends Model
     {
         return $this->belongsTo(User::class, 'verifikator_id', 'id');
     }
-    
 }

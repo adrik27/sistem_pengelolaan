@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\TransaksiMasuk;
+use App\Models\Transaksi;
 use Illuminate\Database\Eloquent\Model;
 
 class DataMaster extends Model
@@ -12,9 +12,9 @@ class DataMaster extends Model
     protected $guarded = ['id'];
 
 
-    public function TransaksiMasuk()
+    public function Transaksi()
     {
-        return $this->hasMany(TransaksiMasuk::class);
+        return $this->hasMany(Transaksi::class);
     }
 
     public function User()

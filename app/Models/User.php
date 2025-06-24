@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Jabatan;
+use App\Models\Transaksi;
 use App\Models\Department;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,5 +59,9 @@ class User extends Authenticatable
     public function Department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
+    }
+    public function Transaksi()
+    {
+        return $this->hasMany(Transaksi::class);
     }
 }
