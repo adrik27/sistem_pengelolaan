@@ -140,7 +140,7 @@ class TransaksiController extends Controller
 
     public function verifikasi_transaksi_masuk($id)
     {
-        $Transaksi = Transaksi::where('id', $id)->first();
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi masuk')->first();
         $year = Carbon::parse($Transaksi->tgl_transaksi)->format('Y');
 
         if ($Transaksi) {
@@ -175,7 +175,7 @@ class TransaksiController extends Controller
 
     public function update_transaksi_masuk(Request $request, $id)
     {
-        $Transaksi = Transaksi::where('id', $id)->first();
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi masuk')->first();
 
         if ($Transaksi) {
             $Transaksi->update([
@@ -190,7 +190,7 @@ class TransaksiController extends Controller
 
     public function hapus_transaksi_masuk($id)
     {
-        $Transaksi = Transaksi::where('id', $id)->first();
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi masuk')->first();
 
         if ($Transaksi && $Transaksi->status == 'pending') {
             $Transaksi->delete();
@@ -340,7 +340,7 @@ class TransaksiController extends Controller
 
     public function verifikasi_transaksi_keluar($id)
     {
-        $Transaksi = Transaksi::where('id', $id)->first();
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi keluar')->first();
         $year = Carbon::parse($Transaksi->tgl_transaksi)->format('Y');
 
         if ($Transaksi) {
@@ -370,6 +370,33 @@ class TransaksiController extends Controller
             return redirect()->back()->with('success', 'Transaksi pengeluaran berhasil diverifikasi.');
         } else {
             return redirect()->back()->with('error', 'Transaksi pengeluaran tidak ditemukan.');
+        }
+    }
+
+    public function update_transaksi_keluar(Request $request, $id)
+    {
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi keluar')->first();
+
+        if ($Transaksi) {
+            $Transaksi->update([
+                'qty' => $request->qty,
+                'total_harga' => $request->total_harga,
+            ]);
+            return redirect()->back()->with('success', 'Transaksi pengeluaran berhasil diperbarui.');
+        } else {
+            return redirect()->back()->with('error', 'Transaksi pengeluaran tidak ditemukan.');
+        }
+    }
+
+    public function hapus_transaksi_keluar($id)
+    {
+        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'transaksi keluar')->first();
+
+        if ($Transaksi && $Transaksi->status == 'pending') {
+            $Transaksi->delete();
+            return redirect()->back()->with('success', 'Transaksi pengeluaran berhasil dihapus.');
+        } else {
+            return redirect()->back()->with('error', 'Transaksi pengeluaran tidak ditemukan atau statusnya sudah terverifikasi.');
         }
     }
     // ### END TRANSAKSI KELUAR ###
