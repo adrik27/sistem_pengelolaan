@@ -2,13 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DataMasterExport;
 use App\Models\DataMaster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DataMasterController extends Controller
 {
+    public function export()
+    {
+        $datas = DataMaster::all();
+
+        // jika pdf
+        return Excel::download(new DataMasterExport($datas), 'data_master.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+
+        // // jika excel
+        // return Excel::download(new DataMasterExport($datas), 'data_master.xlsx');
+    }
     public function tampil_data_master()
     {
         $datas = DataMaster::all();
@@ -50,6 +62,7 @@ class DataMasterController extends Controller
                 $qty      = (int) $request->qty[$i];
 
                 DataMaster::create([
+                    'tgl_buat'    => date('Y-m-d'),
                     'kode_barang' => $kodeBarang,
                     'nama'        => $nama,
                     'kategori'    => $kategori,

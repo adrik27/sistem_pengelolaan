@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('data_masters', function (Blueprint $table) {
             $table->id();
+            $table->date('tgl_buat')->nullable();
             $table->string('kode_barang');
             $table->string('nama');
             $table->string('kategori');

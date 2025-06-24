@@ -2,14 +2,12 @@
 
 
 @section('content')
-
 <div class="row">
     <div class="col-12 col-xl-12 stretch-card">
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-baseline mb-2">
                     <h6 class="card-title mb-0">Data Master Barang</h6>
-
                 </div>
 
                 <div class="row mt-4">
@@ -197,19 +195,28 @@
                 </div>
 
                 <div class="table-responsive">
+                    <div class="row">
+                        <div class="col-12">
+                            <a href="{{ url('/export-excel') }}" class="btn btn-success">
+                                <i class="fa fa-file-excel"></i> Export Excel
+                            </a>
+                        </div>
+                    </div>
                     <table class="table table-hover table-bordered table-striped" id="table">
                         <thead>
+                            <tr class="text-center align-middle">
+                                <th rowspan="2">No</th>
+                                <th rowspan="2">Kode Barang</th>
+                                <th rowspan="2">Nama Barang</th>
+                                <th rowspan="2">Satuan</th>
+                                <th colspan="3">Saldo Awal</th>
+                                <th rowspan="2">Aksi</th>
+                            </tr>
                             <tr class="text-center">
-                                <th>No</th>
-                                <th>Kode</th>
-                                <th>Nama</th>
-                                <th>Kategori</th>
-                                <th>Satuan</th>
+                                <th>Qty</th>
                                 <th>Harga</th>
-                                <th>Stok Awal</th>
-                                <th>Sisa Stok</th>
-                                <th>Jumlah Harga</th>
-                                <th>Aksi</th>
+                                {{-- <th>Sisa Stok</th> --}}
+                                <th>Nilai</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -219,11 +226,10 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $item->kode_barang }}</td>
                                 <td>{{ $item->nama }}</td>
-                                <td>{{ $item->kategori }}</td>
                                 <td>{{ $item->satuan }}</td>
                                 <td>{{ currency($item->harga) }}</td>
                                 <td>{{ $item->qty_awal }}</td>
-                                <td>{{ $item->qty_awal - $item->qty_digunakan }}</td>
+                                {{-- <td>{{ $item->qty_awal - $item->qty_digunakan }}</td> --}}
                                 <td>{{ currency($item->qty_awal * $item->harga) }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">

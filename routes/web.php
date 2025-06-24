@@ -28,16 +28,19 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/data-master/tambah-stok', [DataMasterController::class, 'create_stok_data_master'])->name('create_stok_data_master');
     Route::post('/data-master/edit/{id}', [DataMasterController::class, 'update_data_master'])->name('update_data_master');
     Route::post('/data-master/hapus/{id}', [DataMasterController::class, 'delete_data_master'])->name('delete_data_master');
+    Route::get('/export-excel', [DataMasterController::class, 'export'])->name('export');
 
     // ## Saldo Awal
     Route::get('/saldo-awal', [SaldoAwalController::class, 'tampil_saldo_awal'])->name('tampil_saldo_awal');
     Route::post('/saldo-awal', [SaldoAwalController::class, 'create_saldo_awal'])->name('create_saldo_awal');
     Route::post('/saldo-awal/edit/{id}', [SaldoAwalController::class, 'update_saldo_awal'])->name('update_saldo_awal');
     Route::post('/saldo-awal/hapus/{id}', [SaldoAwalController::class, 'hapus_saldo_awal'])->name('hapus_saldo_awal');
+    
 
     // ## Penerimaan (Transaksi Masuk)
     Route::get('/get-harga-barang/{kode}', [DataMasterController::class, 'getHarga']);
     Route::get('/get-harga-barang-keluar/{kode}', [DataMasterController::class, 'getHargaKeluar']);
+
     Route::get('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan/create', [TransaksiController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk');
