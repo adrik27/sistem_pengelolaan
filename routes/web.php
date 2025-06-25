@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataMasterController;
+use App\Http\Controllers\LaporanPersediaanController;
 use App\Http\Controllers\SaldoAwalController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/saldo-awal', [SaldoAwalController::class, 'create_saldo_awal'])->name('create_saldo_awal');
     Route::post('/saldo-awal/edit/{id}', [SaldoAwalController::class, 'update_saldo_awal'])->name('update_saldo_awal');
     Route::post('/saldo-awal/hapus/{id}', [SaldoAwalController::class, 'hapus_saldo_awal'])->name('hapus_saldo_awal');
-    
+
 
     // ## Penerimaan (Transaksi Masuk)
     Route::get('/get-harga-barang/{kode}', [DataMasterController::class, 'getHarga']);
@@ -48,7 +49,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/penerimaan/tolak/{id}', [TransaksiController::class, 'tolak_transaksi_masuk'])->name('tolak_transaksi_masuk');
     Route::post('/penerimaan/update/{id}', [TransaksiController::class, 'update_transaksi_masuk'])->name('update_transaksi_masuk');
     Route::post('/penerimaan/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_masuk'])->name('hapus_transaksi_masuk');
-    
+
     // ## Pengeluaran (Transaksi Keluar)
     Route::get('/pengeluaran', [TransaksiController::class, 'tampil_transaksi_keluar'])->name('tampil_transaksi_keluar');
     Route::post('/pengeluaran', [TransaksiController::class, 'tampil_transaksi_keluar'])->name('tampil_transaksi_keluar');
@@ -57,6 +58,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/pengeluaran/tolak/{id}', [TransaksiController::class, 'tolak_transaksi_keluar'])->name('tolak_transaksi_keluar');
     Route::post('/pengeluaran/update/{id}', [TransaksiController::class, 'update_transaksi_keluar'])->name('update_transaksi_keluar');
     Route::post('/pengeluaran/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_keluar'])->name('hapus_transaksi_keluar');
+
+    // ## Laporan Persediaan
+    Route::get('/laporan-persediaan', [LaporanPersediaanController::class, 'tampil_laporan_persediaan'])->name('tampil_laporan_persediaan');
+
 
     // ## Logout
     Route::post('/logout', [AuthenticateController::class, 'proses_logout'])->name('proses_logout');
