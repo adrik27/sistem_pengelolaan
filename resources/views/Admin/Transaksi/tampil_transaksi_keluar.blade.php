@@ -42,9 +42,9 @@
                                                             Total Saldo Tersedia :
                                                         </div>
                                                         <div class="value-buget" id="budget-awal"
-                                                            data-budget="{{ ($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0) }}">
-                                                            {{ currency(($budget_awal->saldo_awal ?? 0) -
-                                                            ($budget_awal->saldo_digunakan ?? 0)) }} </div>
+                                                            data-budget="{{  ($budget_awal->saldo_digunakan) }}">
+                                                            {{ currency(
+                                                            ($budget_awal->saldo_digunakan )) }} </div>
                                                     </div>
                                                 </div>
                                                 <table class="table table-bordered table-hover table-responsive mt-3"
@@ -326,8 +326,8 @@
                                 Total Saldo Tersedia :
                             </div>
                             <div class="value-buget" id="budget-awal-{{ $item->id }}"
-                                data-budget="{{ ($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0) }}">
-                                {{ currency(($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0)) }}
+                                data-budget="{{  ($budget_awal->saldo_digunakan ) }}">
+                                {{ currency( ( $budget_awal->saldo_digunakan )) }}
                             </div>
                         </div>
                     </div>

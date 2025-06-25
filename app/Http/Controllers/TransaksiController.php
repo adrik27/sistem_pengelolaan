@@ -101,20 +101,24 @@ class TransaksiController extends Controller
 
                 // cek saldo awal mencukupi tidak
                 $saldo_awal = SaldoAwal::where('department_id', $department_id)->where('tahun', now()->year)->first();
-                if ($total > $saldo_awal->saldo_awal) {
-                    DB::rollback();
-                    return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
-                }
 
                 // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
-                $existing = Transaksi::where('tgl_transaksi', $tgl_transaksi)
-                    ->where('department_id', $department_id)
+                $existing = Transaksi::where('department_id', $department_id)
+                    // ->where('tgl_transaksi', $tgl_transaksi)
                     ->where('kode_barang', $kode_barang)
                     ->where('status', 'pending')
                     ->where('jenis_transaksi', 'transaksi masuk')
                     ->first();
 
+
                 if ($existing) {
+                    // cek saldo 
+                    $total_saldo_exist = $total_harga + $existing->total_harga ?? 0;
+                    if ($total_saldo_exist > $saldo_awal->saldo_awal) {
+                        DB::rollback();
+                        return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                    }
+
                     // cek ketersediaan stok di database
                     $total_qty_exis = $qty + $existing->qty ?? 0;
                     if ($total_qty_exis > $barang->qty_awal) {
@@ -337,14 +341,21 @@ class TransaksiController extends Controller
                 }
 
                 // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
-                $existing = Transaksi::where('tgl_transaksi', $tgl_transaksi)
-                    ->where('department_id', $department_id)
+                $existing = Transaksi::where('department_id', $department_id)
+                    // ->where('tgl_transaksi', $tgl_transaksi)
                     ->where('kode_barang', $kode_barang)
                     ->where('status', 'pending')
                     ->where('jenis_transaksi', 'transaksi keluar')
                     ->first();
 
                 if ($existing) {
+                    // cek saldo di database
+                    $total_saldo_exist = $total_harga + $existing->total_harga ?? 0;
+                    if ($total_saldo_exist > $saldo_awal->saldo_awal) {
+                        DB::rollback();
+                        return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                    }
+
                     // cek ketersediaan stok di database
                     $total_qty_exis = $qty + $existing->qty ?? 0;
                     if ($total_qty_exis > $barang->qty_awal) {
