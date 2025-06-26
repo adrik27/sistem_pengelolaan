@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthenticateController extends Controller
 {
-    public function tampil_login() 
+    public function tampil_login()
     {
         return view('Authenticate.Login');
     }
 
-    public function proses_login(Request $request) 
+    public function proses_login(Request $request)
     {
         // Validasi inputnya
         $credentials = $request->validate([
@@ -23,11 +23,11 @@ class AuthenticateController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            if (Auth::user()->jabatan_id == 1 && Auth::user()->department_id == 1) {
-                return redirect()->intended('/dashboard-admin');
-            }else{
-                return redirect()->intended('/dashboard');
-            }
+            // if (Auth::user()->jabatan_id == 1 && Auth::user()->department_id == 1) {
+            return redirect()->intended('/dashboard-admin');
+            // } else {
+            //     return redirect()->intended('/dashboard-admin');
+            // }
         }
 
         // Jika gagal login

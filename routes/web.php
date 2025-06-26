@@ -20,7 +20,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     // ## Dashboard Admin
-    Route::get('/get-saldo-awal', [DashboardController::class, 'getSaldoAwal']);
+    Route::get('/get-data', [DashboardController::class, 'getDatas']);
 
     Route::get('/dashboard', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
     Route::get('/dashboard-admin', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
