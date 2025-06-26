@@ -194,6 +194,7 @@
                             <tr class="text-center">
                                 <th>No</th>
                                 <th>Tanggal</th>
+                                <th>Department</th>
                                 <th>Kode</th>
                                 <th>Nama</th>
                                 <th>Qty</th>
@@ -210,6 +211,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $item->tgl_transaksi->format('d-m-Y') }}</td>
+                                <td>{{ $item->Department->nama }}</td>
                                 <td>{{ $item->kode_barang }}</td>
                                 <td>{{ $item->nama_barang }}</td>
                                 <td>{{ $item->qty }}</td>

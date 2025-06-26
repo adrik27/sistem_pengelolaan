@@ -2,19 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\SaldoAwal;
 use App\Models\Transaksi;
+use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LaporanPersediaanController extends Controller
 {
 
-    public function tampil_laporan_persediaan()
+    public function tampil_laporan_persediaan(Request $request)
     {
-        $transaksi = Transaksi::where('status', 'verifikasi')
-            ->orderBy('tgl_transaksi')
-            ->get();
 
+        // proses filter
+        $req_department = $request->input('department_id');
+        $tahun_from = $request->input('tahun_from') ?? date('Y');
+        $tahun_to = $request->input('tahun_to') ?? date('Y');
+
+        $range_tahun = [
+            Carbon::createFromDate($tahun_from)->startOfYear()->toDateString(),
+            Carbon::createFromDate($tahun_to)->endOfYear()->toDateString()
+        ];
+
+        if (Auth::user()->jabatan_id == 3) { // pengguna
+            $departments = collect(); // kosong karena user hanya bisa akses departemen tertentu
+            $transaksi = Transaksi::where('status', 'verifikasi')
+                ->where('department_id', Auth::user()->department_id)
+                ->whereBetween('tgl_transaksi', $range_tahun)
+                ->orderBy('tgl_transaksi')
+                ->get();
+        } else {
+            $departments = Department::where('status', 'aktif')->where('id', '!=', 1)->get();
+            $transaksi = Transaksi::where('status', 'verifikasi')
+                ->where('department_id', $req_department)
+                ->whereBetween('tgl_transaksi', $range_tahun)
+                ->orderBy('tgl_transaksi')
+                ->get();
+        }
+
+
+        // proses olah data untuk di tampilkan
         $grouped = [];
 
         // Kelompokkan transaksi masuk & keluar per dept + kode_barang
@@ -45,13 +73,16 @@ class LaporanPersediaanController extends Controller
                 ->where('tahun', $tahun)
                 ->first();
 
+
+            $department = Department::find($dept);
+
             $grouped[$key]['saldo_awal'] = $saldo ? $saldo->saldo_awal : 0;
         }
 
         // Gabungkan masuk dan keluar sejajar per baris
         $laporan = [];
         foreach ($grouped as $key => $data) {
-            $jumlahBaris = max(count($data['masuk']), count($data['keluar']));
+            $jumlahBaris = max((count($data['masuk']) ?? 0), (count($data['keluar']) ?? 0));
             [$dept, $kode] = explode('-', $key);
             $saldo_awal = $data['saldo_awal'];
 
@@ -60,7 +91,7 @@ class LaporanPersediaanController extends Controller
                 $keluar = $data['keluar'][$i] ?? null;
 
                 $laporan[] = [
-                    'department_id' => $dept,
+                    'department_id' => $department->nama,
                     'saldo_awal'    => $saldo_awal,
 
                     'tgl_masuk'     => $masuk?->tgl_transaksi,
@@ -84,8 +115,14 @@ class LaporanPersediaanController extends Controller
         }
 
         return view('Admin.LaporanPersediaan.laporan_persediaan', [
-            'jumlah_merge' => $jumlahBaris,
             'laporan' => $laporan,
+
+            'tahun_from' => $tahun_from,
+            'tahun_to' => $tahun_to,
+            'req_departments' => $req_department,
+            'departments' => $departments,
+
+            // 'jumlah_merge' => $jumlahBaris,
         ]);
     }
 

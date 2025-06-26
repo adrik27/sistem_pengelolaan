@@ -41,9 +41,9 @@
                                                             Total Saldo Tersedia :
                                                         </div>
                                                         <div class="value-buget" id="budget-awal"
-                                                            data-budget="{{  ($budget_awal->saldo_digunakan) }}">
+                                                            data-budget="{{  ($budget_awal->saldo_digunakan ?? 0) }}">
                                                             {{ currency(
-                                                            ($budget_awal->saldo_digunakan )) }} </div>
+                                                            ($budget_awal->saldo_digunakan ?? 0 )) }} </div>
                                                     </div>
                                                 </div>
                                                 <table class="table table-bordered table-hover table-responsive mt-3"
@@ -198,6 +198,7 @@
                             <tr class="text-center">
                                 <th>No</th>
                                 <th>Tanggal</th>
+                                <th>Department</th>
                                 <th>Kode</th>
                                 <th>Nama</th>
                                 <th>Qty</th>
@@ -214,6 +215,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $item->tgl_transaksi->format('d-m-Y') }}</td>
+                                <td>{{ $item->Department->nama }}</td>
                                 <td>{{ $item->kode_barang }}</td>
                                 <td>{{ $item->nama_barang }}</td>
                                 <td>{{ $item->qty }}</td>
@@ -325,8 +327,8 @@
                                 Total Saldo Tersedia :
                             </div>
                             <div class="value-buget" id="budget-awal-{{ $item->id }}"
-                                data-budget="{{  ($budget_awal->saldo_digunakan ) }}">
-                                {{ currency( ( $budget_awal->saldo_digunakan )) }}
+                                data-budget="{{  ($budget_awal->saldo_digunakan?? 0 ) }}">
+                                {{ currency( ( $budget_awal->saldo_digunakan ?? 0 )) }}
                             </div>
                         </div>
                     </div>

@@ -35,7 +35,7 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-12 col-md-12 col-xl-12 text-center">
-                                <h4 class="mb-2">Rp 4.000.000</h4>
+                                <h4 class="mb-2" id="saldo-awal-display">0</h4>
                             </div>
                         </div>
                     </div>
@@ -143,6 +143,33 @@
 <script>
     $(document).ready(function() {
         $('#table-dashboard').DataTable();
+
+        fetchSaldoAwal();
+
+        // Setiap 5 menit (300000 ms)
+        setInterval(fetchSaldoAwal, 300000);
     });
+    
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0
+        }).format(angka);
+    }
+
+    function fetchSaldoAwal() {
+        $.ajax({
+            url: '/get-saldo-awal',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $('#saldo-awal-display').text(formatRupiah(response.data));
+            },
+            error: function(xhr, status, error) {
+                console.error('Gagal memuat saldo:', error);
+            }
+        });
+    }
 </script>
 @endsection

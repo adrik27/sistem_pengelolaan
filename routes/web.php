@@ -20,6 +20,8 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     // ## Dashboard Admin
+    Route::get('/get-saldo-awal', [DashboardController::class, 'getSaldoAwal']);
+
     Route::get('/dashboard', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
     Route::get('/dashboard-admin', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
 
@@ -61,6 +63,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // ## Laporan Persediaan
     Route::get('/laporan-persediaan', [LaporanPersediaanController::class, 'tampil_laporan_persediaan'])->name('tampil_laporan_persediaan');
+    Route::post('/laporan-persediaan', [LaporanPersediaanController::class, 'tampil_laporan_persediaan'])->name('search_laporan_persediaan');
 
 
     // ## Logout

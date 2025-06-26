@@ -279,16 +279,32 @@ class TransaksiController extends Controller
                 ->get();
         }
 
-        $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
-            ->select(
-                'kode_barang',
-                'nama_barang as nama',
-                DB::raw('SUM(qty) as qty_digunakan')
-            )
-            ->where('status', 'verifikasi')
-            ->where('jenis_transaksi', 'transaksi masuk')
-            ->groupBy('kode_barang', 'nama_barang')
-            ->get();
+
+        if (Auth::user()->jabatan_id == 1) {
+            $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
+                ->select(
+                    'kode_barang',
+                    'nama_barang as nama',
+                    DB::raw('SUM(qty) as qty_digunakan')
+                )
+                ->where('status', 'verifikasi')
+                ->where('jenis_transaksi', 'transaksi masuk')
+                ->groupBy('kode_barang', 'nama_barang')
+                ->get();
+        } else {
+            $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
+                ->select(
+                    'kode_barang',
+                    'nama_barang as nama',
+                    DB::raw('SUM(qty) as qty_digunakan')
+                )
+                ->where('department_id', Auth::user()->department_id)
+                ->where('status', 'verifikasi')
+                ->where('jenis_transaksi', 'transaksi masuk')
+                ->groupBy('kode_barang', 'nama_barang')
+                ->get();
+        }
+
 
 
         $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)->where('tahun', now()->year)->first();
