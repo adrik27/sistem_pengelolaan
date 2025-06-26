@@ -229,8 +229,8 @@
                                 <td>{{ $item->kode_barang }}</td>
                                 <td>{{ $item->nama }}</td>
                                 <td>{{ $item->satuan }}</td>
-                                <td>{{ currency($item->harga) }}</td>
                                 <td>{{ $item->qty_awal }}</td>
+                                <td>{{ currency($item->harga) }}</td>
                                 {{-- <td>{{ $item->qty_awal - $item->qty_digunakan }}</td> --}}
                                 <td>{{ currency($item->qty_awal * $item->harga) }}</td>
                                 <td>
@@ -263,8 +263,6 @@
         </div>
     </div>
 </div> <!-- row -->
-
-@endsection
 
 @foreach ($datas as $item)
 <!-- Modal Update-->
@@ -330,6 +328,9 @@
     </div>
 </div>
 @endforeach
+
+@endsection
+
 
 @section('js')
 {{-- sweet alert --}}

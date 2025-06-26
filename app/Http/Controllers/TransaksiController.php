@@ -26,6 +26,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi masuk')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else if (Auth::user()->jabatan_id == 2) { // pengurus barang (admin bukan super admin)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -35,6 +36,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi masuk')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else { // pengguna barang (pegawai input transaksi)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -44,12 +46,15 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi masuk')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         }
 
-        $Data_Barang = DataMaster::all();
+        $Data_Barang = DataMaster::orderBy('nama', 'asc')->get();
 
-        $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)->where('tahun', now()->year)->first();
+        $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)
+            ->where('tahun', now()->year)
+            ->first();
 
         return view('Admin.Transaksi.tampil_transaksi_masuk', [
             'data'          =>  $data,
@@ -250,6 +255,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi keluar')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else if (Auth::user()->jabatan_id == 2) { // pengurus barang (admin bukan super admin)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -259,6 +265,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi keluar')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else { // pengguna barang (pegawai input transaksi)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -268,10 +275,11 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi keluar')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         }
 
-        $Data_Barang = DB::table('transaksis')
+        $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
             ->select(
                 'kode_barang',
                 'nama_barang as nama',
@@ -287,7 +295,7 @@ class TransaksiController extends Controller
 
         return view('Admin.Transaksi.tampil_transaksi_keluar', [
             'data'          =>  $data,
-            'data_barang'   =>  $Data_Barang,
+            'data_barang'   =>  $Data_Barang_By_Transaksi_Masuk,
             'budget_awal'   =>  $Budget_Awal,
             'req_status'    =>  $req_status,
             'req_year'      =>  $req_year,

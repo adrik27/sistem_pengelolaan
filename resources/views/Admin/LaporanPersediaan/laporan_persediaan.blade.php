@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-baseline mb-2">
-                    <h6 class="card-title mb-0">Transaksi Pengeluaran</h6>
+                    <h6 class="card-title mb-0">Laporan Persediaan</h6>
                 </div>
 
 
@@ -40,27 +40,30 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach($laporan as $row)
                             <tr>
-                                <td></td> {{-- No --}}
-                                <td></td> {{-- Department --}}
-                                <td></td> {{-- saldo awal --}}
-                                {{-- penerimaan --}}
-                                <td></td> {{-- Tanggal --}}
-                                <td></td> {{-- kode --}}
-                                <td></td> {{-- nama --}}
-                                <td></td> {{-- harga --}}
-                                <td></td> {{-- jumlah --}}
-                                <td></td> {{-- saldo --}}
-                                {{-- pengeluaran --}}
-                                <td></td> {{-- tanggal --}}
-                                <td></td> {{-- kode --}}
-                                <td></td> {{-- nama --}}
-                                <td></td> {{-- harga --}}
-                                <td></td> {{-- jumlah --}}
-                                <td></td> {{-- saldo --}}
-                                <td></td> {{-- sisa stok --}}
-                                <td></td> {{-- sisa saldo --}}
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $row['department_id'] }}</td>
+                                <td>{{ number_format($row['saldo_awal'], 0, ',', '.') }}</td>
+
+                                <td>{{ optional($row['tgl_masuk'])->format('d M Y') }}</td>
+                                <td>{{ $row['kode_masuk'] }}</td>
+                                <td>{{ $row['nama_masuk'] }}</td>
+                                <td>{{ number_format($row['harga_masuk'], 0, ',', '.') }}</td>
+                                <td>{{ $row['qty_masuk'] }}</td>
+                                <td><strong>{{ number_format($row['saldo_masuk'], 0, ',', '.') }}</strong></td>
+
+                                <td>{{ optional($row['tgl_keluar'])->format('d M Y') }}</td>
+                                <td>{{ $row['kode_keluar'] }}</td>
+                                <td>{{ $row['nama_keluar'] }}</td>
+                                <td>{{ number_format($row['harga_keluar'], 0, ',', '.') }}</td>
+                                <td>{{ $row['qty_keluar'] }}</td>
+                                <td><strong>{{ number_format($row['saldo_keluar'], 0, ',', '.') }}</strong></td>
+
+                                <td>{{ $row['sisa_stok'] }}</td>
+                                <td><strong>{{ number_format($row['sisa_saldo'], 0, ',', '.') }}</strong></td>
                             </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -68,4 +71,15 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+{{-- sweet alert --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#table').DataTable();
+    });
+</script>
 @endsection

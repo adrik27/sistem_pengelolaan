@@ -23,7 +23,7 @@ class DataMasterController extends Controller
     }
     public function tampil_data_master()
     {
-        $datas = DataMaster::all();
+        $datas = DataMaster::orderBy('tgl_buat', 'desc')->get();
         return view('Admin.DataMaster.tampil_data_master', [
             'datas' => $datas,
         ]);
