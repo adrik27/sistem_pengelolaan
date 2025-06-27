@@ -197,10 +197,10 @@ class DataMasterController extends Controller
 
     public function getHarga($kode)
     {
-        $barang = DataMaster::where('kode_barang', $kode)->first();
+        $barang = MasterBarang::where('kode_barang', $kode)->first();
         return response()->json([
             'harga' => $barang->harga,
-            'sisa_qty' => $barang->qty_awal - $barang->qty_digunakan
+            'sisa_qty' => $barang->qty_sisa
         ]);
     }
     public function getHargaKeluar($kode)

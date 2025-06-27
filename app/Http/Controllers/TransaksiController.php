@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use App\Models\SaldoAwal;
 use App\Models\Transaksi;
 use App\Models\DataMaster;
+use App\Models\MasterBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator; // <-- Tambahkan ini
 
 class TransaksiController extends Controller
 {
@@ -50,7 +52,7 @@ class TransaksiController extends Controller
                 ->get();
         }
 
-        $Data_Barang = DataMaster::orderBy('nama', 'asc')->get();
+        $Data_Barang = MasterBarang::orderBy('nama', 'asc')->get();
 
         $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)
             ->where('tahun', now()->year)
@@ -160,6 +162,7 @@ class TransaksiController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function verifikasi_transaksi_masuk($id)
     {

@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('nama');
             $table->foreignId('kategori_id')->constrained('kategoris')->onDelete('cascade');
             $table->string('satuan');
-            $table->decimal('qty_sisa', 15, 2);
-            $table->decimal('harga', 15, 2);
-            $table->decimal('jumlah', 15, 2);
+            $table->decimal('qty_sisa', 15, 0);
+            $table->decimal('harga', 15, 0);
+            $table->decimal('jumlah', 15, 0);
             $table->timestamps();
         });
     }

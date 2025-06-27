@@ -55,7 +55,11 @@ class DatabaseSeeder extends Seeder
         // Data Seeder Jabatan
         $jabatans = [
             [
-                'nama' => 'administrator',
+                'nama' => 'super admin',
+                'status' => 'aktif'
+            ],
+            [
+                'nama' => 'admin',
                 'status' => 'aktif'
             ],
             [
@@ -81,7 +85,7 @@ class DatabaseSeeder extends Seeder
             ],
             // peternakan
             [
-                'jabatan_id' => 2,
+                'jabatan_id' => 3,
                 'department_id' => 2,
                 'nip' => 222222222,
                 'nama' => 'peternakan',
