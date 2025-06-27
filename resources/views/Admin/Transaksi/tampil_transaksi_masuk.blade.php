@@ -194,6 +194,7 @@
                             <tr class="text-center">
                                 <th>No</th>
                                 <th>Tanggal</th>
+                                <th>Department</th>
                                 <th>Kode</th>
                                 <th>Nama</th>
                                 <th>Qty</th>
@@ -210,6 +211,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $item->tgl_transaksi->format('d-m-Y') }}</td>
+                                <td>{{ $item->Department->nama }}</td>
                                 <td>{{ $item->kode_barang }}</td>
                                 <td>{{ $item->nama_barang }}</td>
                                 <td>{{ $item->qty }}</td>
@@ -539,6 +541,10 @@
                         hargaInput.value = formatRupiah(data.harga);
                         stokHidden.value = data.sisa_qty;
 
+                        console.log(data);
+                        
+                        // console.log(`Stok untuk ${kode}: ${data.qty_sisa}`);
+                        
                         updateTotalPerRow(row);
                         updateTotalBiaya();
                     })
@@ -553,6 +559,8 @@
                 const kodeBarang = row.querySelector("select[name='kode[]']").value;
                 const totalQty = getTotalQtyPerBarang(kodeBarang);
 
+                // console.log(`Qty input: ${qtyInput.value}, Stok: ${stok}, Total Qty: ${totalQty}`);
+                
                 if (totalQty > stok) {
                     alert(`Total Qty untuk barang ini melebihi stok tersedia (${stok}). Total saat ini: ${totalQty}`);
                     qtyInput.classList.add("is-invalid");
@@ -617,6 +625,8 @@
     function updateTotalPerRow(row) {
         const harga = parseAngka(row.querySelector(".harga-hidden").value);
         const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
+        console.log(`Harga: ${harga}, Qty: ${qty}`);
+        
         const total = harga * qty;
 
         row.querySelector("#total_harga_hidden").value = total;

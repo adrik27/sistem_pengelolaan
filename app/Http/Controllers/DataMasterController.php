@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Exports\DataMasterExport;
 use App\Models\DataMaster;
+use App\Models\MasterBarang;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -16,14 +18,14 @@ class DataMasterController extends Controller
         $datas = DataMaster::all();
 
         // jika pdf
-        return Excel::download(new DataMasterExport($datas), 'data_master.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        // return Excel::download(new DataMasterExport($datas), 'data_master.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
 
         // // jika excel
         // return Excel::download(new DataMasterExport($datas), 'data_master.xlsx');
     }
     public function tampil_data_master()
     {
-        $datas = DataMaster::all();
+        $datas = MasterBarang::all();
         return view('Admin.DataMaster.tampil_data_master', [
             'datas' => $datas,
         ]);
@@ -83,36 +85,66 @@ class DataMasterController extends Controller
 
     public function create_stok_data_master(Request $request)
     {
+        // 1. Validasi Input
         $validated = $request->validate([
-            'kode'     => 'required|array',
-            'qty'      => 'required|array',
+            'kode'      => 'required|array',
+            'kode.*'    => 'required|string|exists:master_barangs,kode_barang', // Pastikan semua kode ada di DB
+            'qty'       => 'required|array',
+            'qty.*'     => 'required|integer|min:1', // Pastikan semua qty valid
+        ], [
+            'kode.*.exists' => 'Kode barang :input tidak ditemukan di database.',
         ]);
 
-        // Cek duplikasi dalam input
         $kodeArray = $request->kode;
+
+        // 2. Cek Duplikasi dalam Input Form
         if (count($kodeArray) !== count(array_unique($kodeArray))) {
-            return redirect()->back()->with('error', 'Terdapat duplikasi kode barang dalam input.');
+            return redirect()->back()->with('error', 'Terdapat duplikasi kode barang dalam input Anda.')->withInput();
         }
 
-        // Cek duplikat di database
-        $duplikatDB = DataMaster::whereIn('kode_barang', $kodeArray)->pluck('nama')->toArray();
-        if (count($duplikatDB) > 0) {
-            DB::beginTransaction();
-            try {
-                foreach ($kodeArray as $i => $kodeBarang) {
-                    $qty      = (int) $request->qty[$i];
+        // Memulai transaksi database untuk memastikan integritas data
+        DB::beginTransaction();
+        try {
+            // 3. Ambil data semua barang yang relevan dalam satu query untuk efisiensi
+            $masterBarangItems = MasterBarang::whereIn('kode_barang', $kodeArray)->get()->keyBy('kode_barang');
 
-                    DataMaster::where('kode_barang', $kodeBarang)->increment('qty_awal', $qty);
-                }
+            foreach ($kodeArray as $index => $kodeBarang) {
+                $item = $masterBarangItems[$kodeBarang];
+                $qtyTambah = (int) $request->qty[$index];
 
-                DB::commit();
-                return redirect()->back()->with('success', 'Stok berhasil ditambah.');
-            } catch (\Exception $e) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+                // 4. Update Stok di Tabel MasterBarang
+                $item->qty_sisa += $qtyTambah;
+                $item->jumlah = $item->qty_sisa * $item->harga; // Hitung ulang total jumlah harga
+                $item->save();
+
+                // 5. Catat Riwayat di Tabel Transaksi
+                Transaksi::create([
+                    'tgl_transaksi'   => now(),
+                    'department_id' => Auth::user()->department_id,
+                    'kode_barang'     => $item->kode_barang,
+                    'nama_barang'     => $item->nama,
+                    'nama_satuan'     => $item->satuan,
+                    'qty'             => $qtyTambah,
+                    'harga_satuan'    => $item->harga,
+                    'total_harga'     => $qtyTambah * $item->harga,
+                    'status'          => 'selesai', // Atau 'Menunggu Verifikasi', dll.
+                    'jenis_transaksi' => 'masuk', // Menandakan ini adalah penambahan stok
+                    'pembuat_id'      => Auth::id(), // ID user yang sedang login
+                    // 'verifikator_id'  => null, // Bisa diisi nanti saat proses verifikasi
+                    'keterangan'      => 'Penambahan stok dari data master.',
+                ]);
             }
-        } else {
-            return redirect()->back()->with('error', 'Terjadi kesalahan, nama barang: ' . implode(', ', $duplikatDB) . 'tidak ditemukan di database.');
+
+            // Jika semua proses berhasil, commit transaksi
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Stok berhasil ditambah dan riwayat transaksi telah dicatat.');
+        } catch (\Exception $e) {
+            // Jika terjadi kesalahan, batalkan semua perubahan
+            DB::rollBack();
+
+            // Beri pesan error yang informatif
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -165,10 +197,10 @@ class DataMasterController extends Controller
 
     public function getHarga($kode)
     {
-        $barang = DataMaster::where('kode_barang', $kode)->first();
+        $barang = MasterBarang::where('kode_barang', $kode)->first();
         return response()->json([
             'harga' => $barang->harga,
-            'sisa_qty' => $barang->qty_awal - $barang->qty_digunakan
+            'sisa_qty' => $barang->qty_sisa
         ]);
     }
     public function getHargaKeluar($kode)

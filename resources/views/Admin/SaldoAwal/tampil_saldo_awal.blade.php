@@ -179,8 +179,6 @@
     </div>
 </div> <!-- row -->
 
-@endsection
-
 @foreach ($datas as $item)
 <!-- Modal -->
 <div class="modal fade" id="update{{ $item->id }}" tabindex="-1" aria-labelledby="update{{ $item->id }}Label"
@@ -263,6 +261,9 @@
     </div>
 </div>
 @endforeach
+
+@endsection
+
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

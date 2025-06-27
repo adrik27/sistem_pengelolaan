@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataMasterController;
+use App\Http\Controllers\LaporanPersediaanController;
+use App\Http\Controllers\MasterBarangController;
 use App\Http\Controllers\SaldoAwalController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +21,8 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     // ## Dashboard Admin
+    Route::get('/get-data', [DashboardController::class, 'getDatas']);
+
     Route::get('/dashboard', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
     Route::get('/dashboard-admin', [DashboardController::class, 'tampil_dashboard'])->name('tampil_dashboard');
 
@@ -48,7 +52,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/penerimaan/tolak/{id}', [TransaksiController::class, 'tolak_transaksi_masuk'])->name('tolak_transaksi_masuk');
     Route::post('/penerimaan/update/{id}', [TransaksiController::class, 'update_transaksi_masuk'])->name('update_transaksi_masuk');
     Route::post('/penerimaan/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_masuk'])->name('hapus_transaksi_masuk');
-    
+
     // ## Pengeluaran (Transaksi Keluar)
     Route::get('/pengeluaran', [TransaksiController::class, 'tampil_transaksi_keluar'])->name('tampil_transaksi_keluar');
     Route::post('/pengeluaran', [TransaksiController::class, 'tampil_transaksi_keluar'])->name('tampil_transaksi_keluar');
@@ -58,6 +62,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/pengeluaran/update/{id}', [TransaksiController::class, 'update_transaksi_keluar'])->name('update_transaksi_keluar');
     Route::post('/pengeluaran/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_keluar'])->name('hapus_transaksi_keluar');
 
+    // ## Laporan Persediaan
+    Route::get('/laporan-persediaan', [LaporanPersediaanController::class, 'tampil_laporan_persediaan'])->name('tampil_laporan_persediaan');
+    Route::post('/laporan-persediaan', [LaporanPersediaanController::class, 'tampil_laporan_persediaan'])->name('search_laporan_persediaan');
+
+
     // ## Logout
     Route::post('/logout', [AuthenticateController::class, 'proses_logout'])->name('proses_logout');
+
+
+    // riwayat transaksi
+    Route::get('/riwayat-transaksi', [MasterBarangController::class, 'tampil_riwayat_transaksi'])->name('tampil_riwayat_transaksi');
 });

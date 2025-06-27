@@ -14,18 +14,19 @@ class SaldoAwalController extends Controller
     {
         if (Auth::user()->jabatan_id == 3) {
             $datas = SaldoAwal::where('department_id', Auth::user()->department_id)
-                    ->with('User')
-                    ->with('Department')
-                    ->get();
+                ->with('User')
+                ->with('Department')
+                ->orderBy('created_at', 'desc')
+                ->get();
         } else {
             $datas = SaldoAwal::query()
-                    ->with('User')
-                    ->with('Department')
-                    ->get();
+                ->with('User')
+                ->with('Department')
+                ->get();
         }
-        
+
         $departments = Department::where('status', 'aktif')->whereNot('id', 1)->get();
-        return view('Admin.SaldoAwal.tampil_saldo_awal',[
+        return view('Admin.SaldoAwal.tampil_saldo_awal', [
             'datas' => $datas,
             'departments' => $departments,
         ]);
@@ -138,7 +139,7 @@ class SaldoAwalController extends Controller
     }
 
     public function hapus_saldo_awal($id)
-    {   
+    {
         $saldo_awal = SaldoAwal::find($id);
         if ($saldo_awal) {
             SaldoAwal::where('id', $id)->delete();
@@ -146,6 +147,5 @@ class SaldoAwalController extends Controller
         } else {
             return redirect()->back()->with('error', 'Saldo awal tidak ditemukan.');
         }
-        
     }
 }

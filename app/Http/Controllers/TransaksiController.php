@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use App\Models\SaldoAwal;
 use App\Models\Transaksi;
 use App\Models\DataMaster;
+use App\Models\MasterBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator; // <-- Tambahkan ini
 
 class TransaksiController extends Controller
 {
@@ -26,6 +28,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi masuk')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else if (Auth::user()->jabatan_id == 2) { // pengurus barang (admin bukan super admin)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -35,6 +38,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi masuk')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else { // pengguna barang (pegawai input transaksi)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -44,12 +48,15 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi masuk')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         }
 
-        $Data_Barang = DataMaster::all();
+        $Data_Barang = MasterBarang::orderBy('nama', 'asc')->get();
 
-        $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)->where('tahun', now()->year)->first();
+        $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)
+            ->where('tahun', now()->year)
+            ->first();
 
         return view('Admin.Transaksi.tampil_transaksi_masuk', [
             'data'          =>  $data,
@@ -101,20 +108,24 @@ class TransaksiController extends Controller
 
                 // cek saldo awal mencukupi tidak
                 $saldo_awal = SaldoAwal::where('department_id', $department_id)->where('tahun', now()->year)->first();
-                if ($total > $saldo_awal->saldo_awal) {
-                    DB::rollback();
-                    return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
-                }
 
                 // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
-                $existing = Transaksi::where('tgl_transaksi', $tgl_transaksi)
-                    ->where('department_id', $department_id)
+                $existing = Transaksi::where('department_id', $department_id)
+                    // ->where('tgl_transaksi', $tgl_transaksi)
                     ->where('kode_barang', $kode_barang)
                     ->where('status', 'pending')
                     ->where('jenis_transaksi', 'transaksi masuk')
                     ->first();
 
+
                 if ($existing) {
+                    // cek saldo 
+                    $total_saldo_exist = $total_harga + $existing->total_harga ?? 0;
+                    if ($total_saldo_exist > $saldo_awal->saldo_awal) {
+                        DB::rollback();
+                        return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                    }
+
                     // cek ketersediaan stok di database
                     $total_qty_exis = $qty + $existing->qty ?? 0;
                     if ($total_qty_exis > $barang->qty_awal) {
@@ -151,6 +162,7 @@ class TransaksiController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function verifikasi_transaksi_masuk($id)
     {
@@ -246,6 +258,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi keluar')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else if (Auth::user()->jabatan_id == 2) { // pengurus barang (admin bukan super admin)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -255,6 +268,7 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi keluar')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         } else { // pengguna barang (pegawai input transaksi)
             $req_status = $request->input('status') ?? 'verifikasi';
@@ -264,26 +278,43 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'transaksi keluar')
                 ->with('DataMaster')
                 ->with('Department')
+                ->orderBy('tgl_transaksi', 'desc')
                 ->get();
         }
 
-        $Data_Barang = DB::table('transaksis')
-            ->select(
-                'kode_barang',
-                'nama_barang as nama',
-                DB::raw('SUM(qty) as qty_digunakan')
-            )
-            ->where('status', 'verifikasi')
-            ->where('jenis_transaksi', 'transaksi masuk')
-            ->groupBy('kode_barang', 'nama_barang')
-            ->get();
+
+        if (Auth::user()->jabatan_id == 1) {
+            $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
+                ->select(
+                    'kode_barang',
+                    'nama_barang as nama',
+                    DB::raw('SUM(qty) as qty_digunakan')
+                )
+                ->where('status', 'verifikasi')
+                ->where('jenis_transaksi', 'transaksi masuk')
+                ->groupBy('kode_barang', 'nama_barang')
+                ->get();
+        } else {
+            $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
+                ->select(
+                    'kode_barang',
+                    'nama_barang as nama',
+                    DB::raw('SUM(qty) as qty_digunakan')
+                )
+                ->where('department_id', Auth::user()->department_id)
+                ->where('status', 'verifikasi')
+                ->where('jenis_transaksi', 'transaksi masuk')
+                ->groupBy('kode_barang', 'nama_barang')
+                ->get();
+        }
+
 
 
         $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)->where('tahun', now()->year)->first();
 
         return view('Admin.Transaksi.tampil_transaksi_keluar', [
             'data'          =>  $data,
-            'data_barang'   =>  $Data_Barang,
+            'data_barang'   =>  $Data_Barang_By_Transaksi_Masuk,
             'budget_awal'   =>  $Budget_Awal,
             'req_status'    =>  $req_status,
             'req_year'      =>  $req_year,
@@ -337,14 +368,21 @@ class TransaksiController extends Controller
                 }
 
                 // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
-                $existing = Transaksi::where('tgl_transaksi', $tgl_transaksi)
-                    ->where('department_id', $department_id)
+                $existing = Transaksi::where('department_id', $department_id)
+                    // ->where('tgl_transaksi', $tgl_transaksi)
                     ->where('kode_barang', $kode_barang)
                     ->where('status', 'pending')
                     ->where('jenis_transaksi', 'transaksi keluar')
                     ->first();
 
                 if ($existing) {
+                    // cek saldo di database
+                    $total_saldo_exist = $total_harga + $existing->total_harga ?? 0;
+                    if ($total_saldo_exist > $saldo_awal->saldo_awal) {
+                        DB::rollback();
+                        return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                    }
+
                     // cek ketersediaan stok di database
                     $total_qty_exis = $qty + $existing->qty ?? 0;
                     if ($total_qty_exis > $barang->qty_awal) {
