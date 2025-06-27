@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Jabatan;
 use App\Models\Transaksi;
 use App\Models\Department;
+use App\Models\MasterBarang;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -63,5 +64,10 @@ class User extends Authenticatable
     public function Transaksi()
     {
         return $this->hasMany(Transaksi::class);
+    }
+
+    public function MasterBarang()
+    {
+        return $this->hasMany(MasterBarang::class);
     }
 }

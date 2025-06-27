@@ -12,9 +12,7 @@
 
                 <div class="row mt-4">
                     <div class="col-12 d-flex gap-3 align-items-center">
-                        @if (Auth::user()->jabatan_id == 2) {{-- jabatan_id == 2 (pengurus barang) --}}
-
-                        @else
+                        @if (Auth::user()->jabatan_id == 3) {{-- jabatan_id == 3 (user) --}}
                         <div class="tambah-data">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#TambahData">
@@ -133,6 +131,7 @@
                                 </div>
                             </div>
                         </div>
+                        @else
                         @endif
                     </div>
                 </div>
@@ -160,17 +159,15 @@
                         <form action="{{ url('/pengeluaran') }}" method="post">
                             <div class="row d-flex gap-2">
                                 @csrf
-                                <div class="col-4">
+                                {{-- <div class="col-4">
                                     <label for="status">Status</label>
                                     <select name="status" id="status" class="form-control">
-                                        <option value="pending" {{ $req_status=='pending' ? 'selected' : '' }}>Pending
-                                        </option>
-                                        <option value="verifikasi" {{ $req_status=='verifikasi' ? 'selected' : '' }}>
+                                        <option value="selesai" {{ $req_status=='selesai' ? 'selected' : '' }}>
                                             Terverifikasi</option>
                                         <option value="tolak" {{ $req_status=='tolak' ? 'selected' : '' }}>
                                             Tolak</option>
                                     </select>
-                                </div>
+                                </div> --}}
                                 <div class="col-4">
                                     @php
                                     $tahunSekarang = date('Y');
@@ -227,12 +224,10 @@
                                     }}
                                 </td> --}}
                                 <td>
-                                    @if ($item->status == 'pending')
-                                    <span class="badge bg-warning">Pending</span>
-                                    @elseif($item->status == 'verifikasi')
-                                    <span class="badge bg-primary">Verifikasi</span>
+                                    @if ($item->status == 'selesai')
+                                    <span class="badge bg-primary">Selesai</span>
                                     @else
-                                    <span class="badge bg-danger">Tolak</span>
+                                    {{-- <span class="badge bg-danger">Tolak</span> --}}
                                     @endif
                                 </td>
                                 <td>
@@ -241,7 +236,7 @@
                                         <div class="edit">
                                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                                 data-bs-target="#update{{ $item->id }}" {{ ($item->status ==
-                                                'verifikasi' ||
+                                                'selesai' ||
                                                 $item->status == 'tolak')
                                                 ? 'disabled' : '' }}>
                                                 Edit
@@ -254,7 +249,7 @@
 
                                                 <button type="submit" class="btn btn-sm btn-danger"
                                                     onclick="deleteform(this)" {{ ($item->status ==
-                                                    'verifikasi' ||
+                                                    'selesai' ||
                                                     $item->status == 'tolak')
                                                     ? 'disabled' : '' }}>
                                                     Hapus
@@ -272,7 +267,7 @@
                                                     <button type="submit" form="verifikasiForm"
                                                         class="btn btn-sm btn-primary" onclick="verifikasiform(this)" {{
                                                         ($item->status ==
-                                                        'verifikasi' ||
+                                                        'selesai' ||
                                                         $item->status == 'tolak')
                                                         ? 'disabled' : '' }}>
                                                         Verifikasi
@@ -287,7 +282,7 @@
 
                                                     <button type="submit" form="tolakForm" class="btn btn-sm btn-danger"
                                                         onclick="tolakForm(this)" {{ ($item->status
-                                                        == 'verifikasi' ||
+                                                        == 'selesai' ||
                                                         $item->status == 'tolak')
                                                         ? 'disabled' : '' }}>
                                                         Tolak
@@ -349,12 +344,14 @@
                                         <option value="">Pilih Barang</option>
                                         @foreach ($data_barang as $barang)
                                         <option value="{{ $barang->kode_barang }}" {{ $barang->kode_barang ==
-                                            $item->kode_barang ? 'selected' : '' }}>
+                                            $item->kode_barang ? 'selected' : '' }} data-stok="{{
+                                            ($barang->qty_digunakan ??
+                                            0) }}">
                                             {{ ucwords($barang->nama) }}
                                         </option>
 
-                                        <input type="hidden" class="stok-hidden"
-                                            value="{{ $barang->qty_digunakan ?? 0  }}">
+                                        {{-- <input type="hidden" class="stok-hidden"
+                                            value="{{ $barang->qty_digunakan ?? 0  }}"> --}}
                                         @endforeach
                                     </select>
                                 </td>
@@ -794,17 +791,22 @@
 
     function handleInputUpdate(table, id, qtyInput) {
         const row = qtyInput.closest("tr");
-        const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
-        const kode = row.querySelector("select[name='kode']").value;
+        // const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
+        // const kode = row.querySelector("select[name='kode']").value;
+        const select = document.getElementById('kode-{{ $item->id ?? '' }}');
+        const selectedOption = select.options[select.selectedIndex];
+        const stok = selectedOption.getAttribute('data-stok');
         const totalQty = parseInt(qtyInput.value) || 0;
         
         if (totalQty > stok) {
             alert(`Qty melebihi stok tersedia (${stok}).`);
             qtyInput.classList.add("is-invalid");
             qtyInput.setCustomValidity("Qty melebihi stok");
+            document.querySelector("button[onclick='updateform(this, {{ $item->id ?? '' }})']").disabled = true;
         } else {
             qtyInput.classList.remove("is-invalid");
             qtyInput.setCustomValidity("");
+            document.querySelector("button[onclick='updateform(this, {{ $item->id ?? '' }})']").disabled = false;
             
             updateTotalPerRowUpdate(row, id);
             updateTotalBiayaUpdate(id);

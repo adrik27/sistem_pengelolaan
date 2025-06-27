@@ -13,7 +13,11 @@ class MasterBarangController extends Controller
      */
     public function tampil_riwayat_transaksi()
     {
-        $datas = Transaksi::all();
+        $datas = Transaksi::where('jenis_transaksi', 'masuk')
+                    ->where('status', 'selesai')
+                    ->where('verifikator_id', 1)
+                    ->orWhere('pembuat_id', 1)
+                    ->get();
         return view('Admin.Transaksi.seluruh_transaksi', [
             'datas' => $datas,
         ]);

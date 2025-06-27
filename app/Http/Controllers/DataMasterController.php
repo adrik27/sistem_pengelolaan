@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exports\DataMasterExport;
-use App\Models\DataMaster;
+use App\Models\Kategori;
 use App\Models\MasterBarang;
+use App\Models\StokPersediaanBidang;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class DataMasterController extends Controller
 {
     public function export()
     {
-        $datas = DataMaster::all();
+        $datas = MasterBarang::all();
 
         // jika pdf
         // return Excel::download(new DataMasterExport($datas), 'data_master.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
@@ -25,9 +26,11 @@ class DataMasterController extends Controller
     }
     public function tampil_data_master()
     {
-        $datas = MasterBarang::all();
+        $datas = MasterBarang::query()->with('kategori')->get();
+        $kategoris = Kategori::all();
         return view('Admin.DataMaster.tampil_data_master', [
             'datas' => $datas,
+            'kategoris' => $kategoris,
         ]);
     }
 
@@ -49,7 +52,7 @@ class DataMasterController extends Controller
         }
 
         // Cek duplikat di database
-        $duplikatDB = DataMaster::whereIn('kode_barang', $kodeArray)->pluck('nama')->toArray();
+        $duplikatDB = MasterBarang::whereIn('kode_barang', $kodeArray)->pluck('nama')->toArray();
         if (count($duplikatDB) > 0) {
             return redirect()->back()->with('error', 'Terdapat duplikasi data di database, dengan nama barang: ' . implode(', ', $duplikatDB));
         }
@@ -60,18 +63,18 @@ class DataMasterController extends Controller
                 $nama     = $request->nama[$i];
                 $kategori = $request->kategori[$i];
                 $satuan   = $request->satuan[$i];
-                $harga    = (int) str_replace('.', '', $request->harga[$i]);
                 $qty      = (int) $request->qty[$i];
+                $harga    = (int) str_replace('.', '', $request->harga[$i]);
+                $jumlah   = $qty * $harga;
 
-                DataMaster::create([
-                    'tgl_buat'    => date('Y-m-d'),
+                MasterBarang::create([
                     'kode_barang' => $kodeBarang,
                     'nama'        => $nama,
-                    'kategori'    => $kategori,
+                    'kategori_id' => $kategori,
                     'satuan'      => $satuan,
+                    'qty_sisa'    => $qty,
                     'harga'       => $harga,
-                    'qty_awal'    => $qty,
-                    'pembuat_id'  => Auth::user()->id,
+                    'jumlah'      => $jumlah,
                 ]);
             }
 
@@ -160,7 +163,7 @@ class DataMasterController extends Controller
         DB::beginTransaction();
         try {
             // Ambil data master berdasarkan id
-            $dataMaster = DataMaster::findOrFail($id);
+            $dataMaster = MasterBarang::findOrFail($id);
 
             // Update DataMaster
             $dataMaster->update([
@@ -168,7 +171,7 @@ class DataMasterController extends Controller
                 'kategori'      => $request->kategori,
                 'satuan'        => $request->satuan,
                 'harga'         => $request->harga,
-                'pembuat_id'    => Auth::user()->id,
+                'jumlah'        => $dataMaster->qty_sisa * $request->harga,
             ]);
 
             DB::commit();
@@ -183,7 +186,7 @@ class DataMasterController extends Controller
     {
         DB::beginTransaction();
         try {
-            $dataMaster = DataMaster::findOrFail($id);
+            $dataMaster = MasterBarang::findOrFail($id);
             $dataMaster->delete();
             DB::commit();
             return redirect()->back()->with('success', 'Data berhasil dihapus.');
@@ -205,10 +208,11 @@ class DataMasterController extends Controller
     }
     public function getHargaKeluar($kode)
     {
-        $barang = DataMaster::where('kode_barang', $kode)->first();
+        $barang = MasterBarang::where('kode_barang', $kode)->first();
+        $stok_persediaan_bidang = StokPersediaanBidang::where('kode_barang', $kode)->where('department_id', Auth::user()->department_id)->first();
         return response()->json([
             'harga' => $barang->harga,
-            'sisa_qty' => $barang->qty_digunakan
+            'sisa_qty' => $stok_persediaan_bidang ? $stok_persediaan_bidang->qty : 0,
         ]);
     }
 }

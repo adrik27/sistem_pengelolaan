@@ -76,7 +76,7 @@ class DatabaseSeeder extends Seeder
         $users = [
             // administrator
             [
-                'jabatan_id' => 1,
+                'jabatan_id' => 2,
                 'department_id' => 1,
                 'nip' => 111111111,
                 'nama' => 'Administrator',

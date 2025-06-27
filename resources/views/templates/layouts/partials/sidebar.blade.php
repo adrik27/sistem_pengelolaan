@@ -76,12 +76,12 @@
                     <span class="link-title">Penerimaan</span>
                 </a>
             </li>
-            <li class="nav-item {{ request()->is('pengeluaran/*') ? 'active' : '' }}">
+            {{-- <li class="nav-item {{ request()->is('pengeluaran/*') ? 'active' : '' }}">
                 <a href="{{ url('/pengeluaran') }}" class="nav-link">
                     <i class="link-icon" data-feather="minus-square"></i>
                     <span class="link-title">Pengeluaran</span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item {{ request()->is('laporan-persediaan/*') ? 'active' : '' }}">
                 <a href="{{ url('/laporan-persediaan') }}" class="nav-link">
                     <i class="link-icon" data-feather="archive"></i>

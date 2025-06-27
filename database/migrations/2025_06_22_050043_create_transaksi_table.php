@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('jenis_transaksi')->default('pending');
             $table->foreignId('pembuat_id')->nullable();
             $table->foreignId('verifikator_id')->nullable();
-            $table->timestamps();
             $table->string('keterangan')->nullable();
+            $table->timestamps();
         });
     }
 

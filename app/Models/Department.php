@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\SaldoAwal;
 use App\Models\Transaksi;
+use App\Models\StokPersediaanBidang;
 use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
@@ -24,5 +25,10 @@ class Department extends Model
     public function Transaksi()
     {
         return $this->hasMany(Transaksi::class);
+    }
+
+    public function StokPersediaan()
+    {
+        return $this->hasMany(StokPersediaanBidang::class);
     }
 }

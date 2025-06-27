@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\DataMaster;
 use App\Models\Department;
+use App\Models\MasterBarang;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaksi extends Model
@@ -24,9 +24,9 @@ class Transaksi extends Model
         return $this->belongsTo(Department::class, 'department_id', 'id');
     }
 
-    public function DataMaster()
+    public function MasterBarang()
     {
-        return $this->belongsTo(DataMaster::class, 'kode_barang', 'kode_barang')->with('User');
+        return $this->belongsTo(MasterBarang::class, 'kode_barang', 'kode_barang')->with('User');
     }
 
     public function User()

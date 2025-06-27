@@ -27,14 +27,14 @@ class LaporanPersediaanController extends Controller
 
         if (Auth::user()->jabatan_id == 3) { // pengguna
             $departments = collect(); // kosong karena user hanya bisa akses departemen tertentu
-            $transaksi = Transaksi::where('status', 'verifikasi')
+            $transaksi = Transaksi::where('status', 'selesai')
                 ->where('department_id', Auth::user()->department_id)
                 ->whereBetween('tgl_transaksi', $range_tahun)
                 ->orderBy('tgl_transaksi')
                 ->get();
         } else {
             $departments = Department::where('status', 'aktif')->where('id', '!=', 1)->get();
-            $transaksi = Transaksi::where('status', 'verifikasi')
+            $transaksi = Transaksi::where('status', 'selesai')
                 ->where('department_id', $req_department)
                 ->whereBetween('tgl_transaksi', $range_tahun)
                 ->orderBy('tgl_transaksi')
@@ -57,9 +57,9 @@ class LaporanPersediaanController extends Controller
                 ];
             }
 
-            if ($item->jenis_transaksi === 'transaksi masuk') {
+            if ($item->jenis_transaksi === 'masuk') {
                 $grouped[$key]['masuk'][] = $item;
-            } elseif ($item->jenis_transaksi === 'transaksi keluar') {
+            } elseif ($item->jenis_transaksi === 'keluar') {
                 $grouped[$key]['keluar'][] = $item;
             }
         }

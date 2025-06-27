@@ -13,9 +13,7 @@
 
                 <div class="row mt-4">
                     <div class="col-12 d-flex gap-3 align-items-center">
-                        @if (Auth::user()->jabatan_id == 2) {{-- jabatan_id == 2 (pengurus barang) --}}
-
-                        @else
+                        @if (Auth::user()->jabatan_id == 3) {{-- jabatan_id == 3 (User) --}}
                         <div class="tambah-data">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#TambahData">
@@ -134,6 +132,7 @@
                                 </div>
                             </div>
                         </div>
+                        @else
                         @endif
                     </div>
                 </div>
@@ -162,7 +161,7 @@
                                     <select name="status" id="status" class="form-control">
                                         <option value="pending" {{ $req_status=='pending' ? 'selected' : '' }}>Pending
                                         </option>
-                                        <option value="verifikasi" {{ $req_status=='verifikasi' ? 'selected' : '' }}>
+                                        <option value="selesai" {{ $req_status=='selesai' ? 'selected' : '' }}>
                                             Terverifikasi</option>
                                         <option value="tolak" {{ $req_status=='tolak' ? 'selected' : '' }}>
                                             Tolak</option>
@@ -201,7 +200,6 @@
                                 <th>Satuan</th>
                                 <th>Harga</th>
                                 <th>Total Harga</th>
-                                {{-- <th>Sisa Saldo</th> --}}
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -218,26 +216,22 @@
                                 <td>{{ $item->nama_satuan }}</td>
                                 <td>{{ currency($item->harga_satuan) }}</td>
                                 <td>{{ currency($item->total_harga) }}</td>
-                                {{-- <td>
-                                    {{ currency(($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0))
-                                    }}
-                                </td> --}}
                                 <td>
                                     @if ($item->status == 'pending')
                                     <span class="badge bg-warning">Pending</span>
-                                    @elseif($item->status == 'verifikasi')
-                                    <span class="badge bg-primary">Verifikasi</span>
+                                    @elseif($item->status == 'selesai')
+                                    <span class="badge bg-primary">Selesai</span>
                                     @else
                                     <span class="badge bg-danger">Tolak</span>
                                     @endif
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        @if (Auth::user()->jabatan_id == 3) {{-- pengguna barang --}}
+                                        @if (Auth::user()->jabatan_id == 3) {{-- user --}}
                                         <div class="edit">
                                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                                 data-bs-target="#update{{ $item->id }}" {{ ($item->status ==
-                                                'verifikasi' ||
+                                                'selesai' ||
                                                 $item->status == 'tolak')
                                                 ? 'disabled' : '' }}>
                                                 Edit
@@ -249,7 +243,7 @@
                                                 @csrf
 
                                                 <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="deleteform(this)" {{ ($item->status == 'verifikasi' ||
+                                                    onclick="deleteform(this)" {{ ($item->status == 'selesai' ||
                                                     $item->status == 'tolak')
                                                     ? 'disabled' : '' }}>
                                                     Hapus
@@ -266,7 +260,7 @@
 
                                                     <button type="submit" form="verifikasiForm"
                                                         class="btn btn-sm btn-primary" onclick="verifikasiform(this)" {{
-                                                        ($item->status == 'verifikasi' ||
+                                                        ($item->status == 'selesai' ||
                                                         $item->status == 'tolak')
                                                         ? 'disabled' : '' }}>
                                                         Verifikasi
@@ -280,7 +274,7 @@
                                                     @csrf
 
                                                     <button type="submit" form="tolakForm" class="btn btn-sm btn-danger"
-                                                        onclick="tolakForm(this)" {{ ($item->status == 'verifikasi' ||
+                                                        onclick="tolakForm(this)" {{ ($item->status == 'selesai' ||
                                                         $item->status == 'tolak')
                                                         ? 'disabled' : '' }}>
                                                         Tolak
@@ -342,12 +336,13 @@
                                         <option value="">Pilih Barang</option>
                                         @foreach ($data_barang as $barang)
                                         <option value="{{ $barang->kode_barang }}" {{ $barang->kode_barang ==
-                                            $item->kode_barang ? 'selected' : '' }}>
+                                            $item->kode_barang ? 'selected' : '' }} data-stok="{{ ($barang->qty_sisa ??
+                                            0) }}">
                                             {{ ucwords($barang->nama) }}
                                         </option>
 
-                                        <input type="hidden" class="stok-hidden"
-                                            value="{{ ($barang->qty_awal ?? 0) - ($barang->digunakan ?? 0)  }}">
+                                        {{-- <input type="hidden" class="stok-hidden"
+                                            value="{{ ($barang->qty_sisa ?? 0) }}"> --}}
                                         @endforeach
                                     </select>
                                 </td>
@@ -541,10 +536,6 @@
                         hargaInput.value = formatRupiah(data.harga);
                         stokHidden.value = data.sisa_qty;
 
-                        console.log(data);
-                        
-                        // console.log(`Stok untuk ${kode}: ${data.qty_sisa}`);
-                        
                         updateTotalPerRow(row);
                         updateTotalBiaya();
                     })
@@ -559,8 +550,6 @@
                 const kodeBarang = row.querySelector("select[name='kode[]']").value;
                 const totalQty = getTotalQtyPerBarang(kodeBarang);
 
-                // console.log(`Qty input: ${qtyInput.value}, Stok: ${stok}, Total Qty: ${totalQty}`);
-                
                 if (totalQty > stok) {
                     alert(`Total Qty untuk barang ini melebihi stok tersedia (${stok}). Total saat ini: ${totalQty}`);
                     qtyInput.classList.add("is-invalid");
@@ -625,8 +614,6 @@
     function updateTotalPerRow(row) {
         const harga = parseAngka(row.querySelector(".harga-hidden").value);
         const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
-        console.log(`Harga: ${harga}, Qty: ${qty}`);
-        
         const total = harga * qty;
 
         row.querySelector("#total_harga_hidden").value = total;
@@ -782,7 +769,7 @@
                 row.querySelector(".harga-hidden").value = data.harga;
                 row.querySelector(".harga").value = formatRupiah(data.harga);
                 row.querySelector(".stok-hidden").value = data.sisa_qty;
-
+                
                 // Ambil ulang qty jika sudah diisi, lalu hitung total
                 const qty = parseInt(row.querySelector("input[name='qty']").value) || 0;
                 if (qty > 0) {
@@ -795,17 +782,20 @@
 
     function handleInputUpdate(table, id, qtyInput) {
         const row = qtyInput.closest("tr");
-        const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
-        const kode = row.querySelector("select[name='kode']").value;
+        const select = document.getElementById('kode-{{ $item->id ?? '' }}');
+        const selectedOption = select.options[select.selectedIndex];
+        const stok = selectedOption.getAttribute('data-stok');
         const totalQty = parseInt(qtyInput.value) || 0;
         
         if (totalQty > stok) {
             alert(`Qty melebihi stok tersedia (${stok}).`);
             qtyInput.classList.add("is-invalid");
             qtyInput.setCustomValidity("Qty melebihi stok");
+            document.querySelector("button[onclick='updateform(this, {{ $item->id ?? '' }})']").disabled = true;
         } else {
             qtyInput.classList.remove("is-invalid");
             qtyInput.setCustomValidity("");
+            document.querySelector("button[onclick='updateform(this, {{ $item->id ?? '' }})']").disabled = false;
             
             updateTotalPerRowUpdate(row, id);
             updateTotalBiayaUpdate(id);

@@ -50,7 +50,7 @@ use Illuminate\Support\Str;
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <input type="number" class="form-control" name="kode[]"
+                                                                <input type="text" class="form-control" name="kode[]"
                                                                     id="kode" required>
                                                             </td>
                                                             <td>
@@ -58,8 +58,14 @@ use Illuminate\Support\Str;
                                                                     id="nama" required>
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control"
-                                                                    name="kategori[]" id="kategori" required>
+                                                                <select name="kategori[]" id="kategori"
+                                                                    class="form-control" required>
+                                                                    <option value="">Pilih Kategori</option>
+                                                                    @foreach ($kategoris as $kategori)
+                                                                    <option value="{{ $kategori->id }}">{{
+                                                                        strtoupper($kategori->nama_kategori) }}</option>
+                                                                    @endforeach
+                                                                </select>
                                                             </td>
                                                             <td>
                                                                 <input type="text" class="form-control" name="satuan[]"
@@ -179,7 +185,7 @@ use Illuminate\Support\Str;
                             </div>
                         </div>
                         <div class="Riwayat transaksi">
-                            <a href="{{ url('/riwayat-transaksi') }}" class="btn btn-info text-white" 
+                            <a href="{{ url('/riwayat-transaksi') }}" class="btn btn-info text-white"
                                 data-bs-target="#TambahStok">
                                 Riwayat Transaksi </a>
                         </div>
@@ -303,7 +309,7 @@ use Illuminate\Support\Str;
                         <tbody>
                             <tr>
                                 <td>
-                                    <input type="number" class="form-control" name="kode" id="kode"
+                                    <input type="text" class="form-control" name="kode" id="kode"
                                         value="{{ $item->kode_barang }}" readonly
                                         style="background: #00000024; cursor: not-allowed">
                                 </td>
@@ -313,7 +319,7 @@ use Illuminate\Support\Str;
                                 </td>
                                 <td>
                                     <input type="text" class="form-control" name="kategori" id="kategori"
-                                        value="{{ $item->kategori }}" required>
+                                        value="{{ $item->kategori->nama_kategori }}" required>
                                 </td>
                                 <td>
                                     <input type="text" class="form-control" name="satuan" id="satuan"
