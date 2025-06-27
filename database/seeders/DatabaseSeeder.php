@@ -19,31 +19,31 @@ class DatabaseSeeder extends Seeder
         // Data Seeder Department
         $departments = [
             [
-                'nama' => 'admin', 
+                'nama' => 'admin',
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'Peternakan', 
+                'nama' => 'Peternakan',
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'Tanaman Pangan', 
+                'nama' => 'Tanaman Pangan',
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'Perikanan', 
+                'nama' => 'Perikanan',
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'Ketahanan Pangan', 
+                'nama' => 'Ketahanan Pangan',
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'UPTD', 
+                'nama' => 'UPTD',
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'PUSKEWAN DAN RPH', 
+                'nama' => 'PUSKEWAN DAN RPH',
                 'status' => 'aktif'
             ],
         ];
@@ -55,15 +55,11 @@ class DatabaseSeeder extends Seeder
         // Data Seeder Jabatan
         $jabatans = [
             [
-                'nama' => 'administrator', 
+                'nama' => 'administrator',
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'Pengurus Barang', 
-                'status' => 'aktif'
-            ],
-            [
-                'nama' => 'Pengguna Barang', 
+                'nama' => 'User',
                 'status' => 'aktif'
             ],
         ];
@@ -73,7 +69,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Data Seeder User
-         $users = [
+        $users = [
             // administrator
             [
                 'jabatan_id' => 1,
@@ -83,24 +79,16 @@ class DatabaseSeeder extends Seeder
                 'email' => 'administrator@gmail.com',
                 'password' => Hash::make('password'),
             ],
-            // pengurus barang
+            // peternakan
             [
                 'jabatan_id' => 2,
                 'department_id' => 2,
                 'nip' => 222222222,
-                'nama' => 'Pengurus Barang',
-                'email' => 'pengurusbarang@gmail.com',
+                'nama' => 'peternakan',
+                'email' => 'peternakan@gmail.com',
                 'password' => Hash::make('password'),
-            ],
-            // pengguna barang
-            [
-                'jabatan_id' => 3,
-                'department_id' => 2,
-                'nip' => 333333333,
-                'nama' => 'Pengguna Barang',
-                'email' => 'penggunabarang@gmail.com',
-                'password' => Hash::make('password'),
-            ],
+            ]
+
         ];
 
         foreach ($users as $user) {

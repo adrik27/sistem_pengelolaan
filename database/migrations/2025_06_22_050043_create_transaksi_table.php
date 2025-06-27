@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('tgl_transaksi');
             $table->foreignId('department_id');
-            $table->foreignId('kode_barang');
+            $table->string('kode_barang', 50);
             $table->string('nama_barang');
             $table->string('nama_satuan');
             $table->integer('qty');
@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('pembuat_id')->nullable();
             $table->foreignId('verifikator_id')->nullable();
             $table->timestamps();
+            $table->string('keterangan')->nullable();
         });
     }
 

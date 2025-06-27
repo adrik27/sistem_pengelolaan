@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataMasterController;
 use App\Http\Controllers\LaporanPersediaanController;
+use App\Http\Controllers\MasterBarangController;
 use App\Http\Controllers\SaldoAwalController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
@@ -68,4 +69,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     // ## Logout
     Route::post('/logout', [AuthenticateController::class, 'proses_logout'])->name('proses_logout');
+
+
+    // riwayat transaksi
+    Route::get('/riwayat-transaksi', [MasterBarangController::class, 'tampil_riwayat_transaksi'])->name('tampil_riwayat_transaksi');
 });

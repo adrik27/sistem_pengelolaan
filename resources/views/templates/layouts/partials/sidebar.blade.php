@@ -52,10 +52,16 @@
                     <span class="link-title">Dashboard</span>
                 </a>
             </li>
-            <li class="nav-item {{ request()->is('data-master/*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->is('data-master') ? 'active' : '' }}">
                 <a href="{{ url('/data-master') }}" class="nav-link">
                     <i class="link-icon" data-feather="server"></i>
                     <span class="link-title">Data Master Barang</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->is('/riwayat-transaksi') ? 'active' : '' }}">
+                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">
+                    <i class="link-icon" data-feather="server"></i>
+                    <span class="link-title">Riwayat Transaksi</span>
                 </a>
             </li>
             <li class="nav-item {{ request()->is('saldo-awal/*') ? 'active' : '' }}">

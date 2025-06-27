@@ -1,3 +1,6 @@
+@php
+use Illuminate\Support\Str;
+@endphp
 @extends('templates.master')
 
 
@@ -175,6 +178,11 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="Riwayat transaksi">
+                            <a href="{{ url('/riwayat-transaksi') }}" class="btn btn-info text-white" 
+                                data-bs-target="#TambahStok">
+                                Riwayat Transaksi </a>
+                        </div>
                     </div>
                 </div>
                 <div class="row mb-4">
@@ -205,34 +213,37 @@
                     <table class="table table-hover table-bordered table-striped" id="table">
                         <thead>
                             <tr class="text-center align-middle">
-                                <th rowspan="2">No</th>
-                                <th rowspan="2">TanggaL</th>
-                                <th rowspan="2">Kode Barang</th>
-                                <th rowspan="2">Nama Barang</th>
-                                <th rowspan="2">Satuan</th>
-                                <th colspan="3">Saldo Awal</th>
-                                <th rowspan="2">Aksi</th>
+                                <th rowspan="0">No</th>
+                                {{-- <th rowspan="2">TanggaL</th> --}}
+                                <th rowspan="0">Kode Barang</th>
+                                <th rowspan="0">Nama Barang</th>
+                                <th rowspan="0">Kategori</th>
+                                <th rowspan="0">Satuan</th>
+                                <th colspan="0">Qty sisa</th>
+                                <th colspan="0">Harga</th>
+                                <th colspan="0">Jumlah</th>
+                                <th rowspan="0">Aksi</th>
                             </tr>
-                            <tr class="text-center">
-                                <th>Qty</th>
+                            {{-- <tr class="text-center">
+                                <th>Qty_sisa</th>
                                 <th>Harga</th>
-                                {{-- <th>Sisa Stok</th> --}}
                                 <th>Nilai</th>
-                            </tr>
+                            </tr> --}}
                         </thead>
                         <tbody>
                             @foreach ($datas as $item)
                             {{-- @dd($item) --}}
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->tgl_buat->format('d-m-Y') }}</td>
+                                {{-- <td>{{ $item->tgl_buat->format('d-m-Y') }}</td> --}}
                                 <td>{{ $item->kode_barang }}</td>
-                                <td>{{ $item->nama }}</td>
+                                <td>{{ Str::limit($item->nama, 20) }}</td>
+                                <td>{{ Str::limit($item->kategori->nama_kategori, 20) }}</td>
                                 <td>{{ $item->satuan }}</td>
-                                <td>{{ $item->qty_awal }}</td>
+                                <td>{{ (int) $item->qty_sisa }}</td>
                                 <td>{{ currency($item->harga) }}</td>
-                                {{-- <td>{{ $item->qty_awal - $item->qty_digunakan }}</td> --}}
-                                <td>{{ currency($item->qty_awal * $item->harga) }}</td>
+                                <td>{{ currency($item->jumlah) }}</td>
+                                {{-- <td>{{ currency($item->qty_awal * $item->harga) }}</td> --}}
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
                                         <div class="edit">
