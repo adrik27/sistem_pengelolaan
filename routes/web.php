@@ -35,7 +35,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/saldo-awal', [SaldoAwalController::class, 'create_saldo_awal'])->name('create_saldo_awal');
     Route::post('/saldo-awal/edit/{id}', [SaldoAwalController::class, 'update_saldo_awal'])->name('update_saldo_awal');
     Route::post('/saldo-awal/hapus/{id}', [SaldoAwalController::class, 'hapus_saldo_awal'])->name('hapus_saldo_awal');
-    
+
 
     // ## Penerimaan (Transaksi Masuk)
     Route::get('/get-harga-barang/{kode}', [DataMasterController::class, 'getHarga']);
