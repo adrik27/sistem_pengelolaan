@@ -19,6 +19,11 @@
         width: 100%;
         /* max-width: 1200px; */
     }
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
 </style>
 
 <div class="dashboard-container" id="fullscreen-container">
