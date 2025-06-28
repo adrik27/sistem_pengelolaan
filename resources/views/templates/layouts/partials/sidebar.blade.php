@@ -12,6 +12,8 @@
     <div class="sidebar-body">
         <ul class="nav">
             <li class="nav-item nav-category">Main Menu</li>
+
+            {{-- menu user --}}
             @can('user')
             <li class="nav-item {{ request()->is('dashboard-admin/*') ? 'active' : '' }}">
                 <a href="{{ url('/dashboard-admin') }}" class="nav-link">
@@ -45,6 +47,7 @@
             </li>
             @endcan
 
+            {{-- menu admin --}}
             @can('admin')
             <li class="nav-item {{ request()->is('dashboard-admin/*') ? 'active' : '' }}">
                 <a href="{{ url('/dashboard-admin') }}" class="nav-link">
@@ -54,7 +57,7 @@
             </li>
             <li class="nav-item {{ request()->is('data-master') ? 'active' : '' }}">
                 <a href="{{ url('/data-master') }}" class="nav-link">
-                    <i class="link-icon" data-feather="server"></i>
+                    <i class="link-icon" data-feather="database"></i>
                     <span class="link-title">Data Master Barang</span>
                 </a>
             </li>

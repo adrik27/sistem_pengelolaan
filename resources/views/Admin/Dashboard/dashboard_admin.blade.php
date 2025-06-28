@@ -8,7 +8,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 80%;
+        width: 85%;
         height: 100vh;
         overflow: auto;
         padding: 2rem;
@@ -17,7 +17,7 @@
     :fullscreen .dashboard-container>.row,
     :-webkit-full-screen .dashboard-container>.row {
         width: 100%;
-        max-width: 1200px;
+        /* max-width: 1200px; */
     }
 </style>
 
@@ -225,11 +225,15 @@
                 // keluar dari fullscreen
                 if (header) header.style.display = '';
                 if (sidebar) sidebar.style.display = '';
+                if (toggleBtn) toggleBtn.textContent = 'Full Screen';
+
                 isFullscreen = false;
             } else {
                 // masuk fullscreen
                 if (header) header.style.display = 'none';
                 if (sidebar) sidebar.style.display = 'none';
+                // if (toggleBtn) toggleBtn.textContent = 'Minimize Screen';
+                if (toggleBtn) toggleBtn.style.display = 'none';
                 isFullscreen = true;
             }
         });
