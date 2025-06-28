@@ -28,7 +28,11 @@
                 date('Y') }}</h4>
         </div>
         <div class="">
-            <button id="fullscreen-toggle" class="btn btn-primary">Full Screen</button>
+            <button id="fullscreen-toggle" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"
+                data-bs-custom-class="custom-tooltip" data-bs-title="Full Screen">
+                <i class="link-icon" data-feather="maximize-2" style="display: block"></i>
+                {{-- Full Screen --}}
+            </button>
         </div>
 
     </div>
@@ -225,7 +229,7 @@
                 // keluar dari fullscreen
                 if (header) header.style.display = '';
                 if (sidebar) sidebar.style.display = '';
-                if (toggleBtn) toggleBtn.textContent = 'Full Screen';
+                // if (toggleBtn) toggleBtn.textContent = 'Full Screen';
                 if (toggleBtn) toggleBtn.style.display = 'block';
 
                 isFullscreen = false;
