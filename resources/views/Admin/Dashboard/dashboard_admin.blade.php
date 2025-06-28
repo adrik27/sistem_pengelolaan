@@ -164,7 +164,7 @@
                     <div class="d-flex justify-content-between align-items-baseline mb-2">
                         <h6 class="card-title mb-0">Daftar Laporan Saldo Terpakai (Tahun)</h6>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive-xl">
                         <table class="table table-hover mb-0" id="table-dashboard">
                             <thead>
                                 <tr>
