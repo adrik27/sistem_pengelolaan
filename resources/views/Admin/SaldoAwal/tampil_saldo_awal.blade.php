@@ -156,7 +156,7 @@
                                             </button>
                                         </div>
 
-                                        <div class="hapus">
+                                        {{-- <div class="hapus">
                                             <form action="{{ url('/saldo-awal/hapus/'.$item->id) }}" method="post">
                                                 @csrf
 
@@ -165,7 +165,7 @@
                                                     Hapus
                                                 </button>
                                             </form>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </td>
                                 @endif
