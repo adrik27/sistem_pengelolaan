@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('stok_persediaan_bidangs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('kode_barang')->nullable();
+            $table->string('kode_barang', 50)->nullable();
             $table->foreignId('department_id')->nullable();
             $table->decimal('qty', 15, 0)->default(0);
             $table->timestamps();
