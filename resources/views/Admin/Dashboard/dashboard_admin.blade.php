@@ -226,6 +226,7 @@
                 if (header) header.style.display = '';
                 if (sidebar) sidebar.style.display = '';
                 if (toggleBtn) toggleBtn.textContent = 'Full Screen';
+                if (toggleBtn) toggleBtn.style.display = 'block';
 
                 isFullscreen = false;
             } else {
