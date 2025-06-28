@@ -106,11 +106,12 @@ class SaldoAwalController extends Controller
 
         // cek apakah saldo yang masuk lebih kecil
         $cek_saldo = DB::table('saldo_awals')
+            ->select('saldo_awal')
             ->where('id', $id)
-            ->pluck('saldo_awal');
+            ->first();
 
-        if ($cek_saldo > $request->saldo) {
-            return redirect()->back()->with('error', "Terdapat kesalahan : Saldo tidak boleh lebih kecil dari saldo sebelumnya.");
+        if ($request->saldo <= $cek_saldo->saldo_awal) {
+            return redirect()->back()->with('error', "Terdapat kesalahan : Saldo tidak boleh lebih kecil atau sama dengan dari saldo sebelumnya.");
         }
 
         // Cek duplikat di DB
