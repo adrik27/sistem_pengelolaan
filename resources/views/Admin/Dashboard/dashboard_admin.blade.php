@@ -241,7 +241,13 @@
     });
 
     $(document).ready(function() {
-        $('#table-dashboard').DataTable();
+        $('#table-dashboard').DataTable({
+            paging: false,
+            info: false,            // nonaktifkan "Showing x of y entries"
+            searching: false,        // tetap bisa melakukan pencarian (opsional)
+            ordering: false,         // tetap bisa melakukan sorting (opsional)
+            lengthChange: false     // nonaktifkan pilihan jumlah tampil data
+        });
 
         fetchSaldoAwal();
 
