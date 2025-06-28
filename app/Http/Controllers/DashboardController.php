@@ -32,14 +32,14 @@ class DashboardController extends Controller
 
             $penambahan = Transaksi::where('department_id', Auth::user()->department_id)
                 ->whereYear('tgl_transaksi', date('Y'))
-                ->where('status', 'verifikasi')
-                ->where('jenis_transaksi', 'transaksi masuk')
+                ->where('status', 'selesai')
+                ->where('jenis_transaksi', 'masuk')
                 ->sum('total_harga');
 
             $pengeluaran = Transaksi::where('department_id', Auth::user()->department_id)
                 ->whereYear('tgl_transaksi', date('Y'))
-                ->where('status', 'verifikasi')
-                ->where('jenis_transaksi', 'transaksi keluar')
+                ->where('status', 'selesai')
+                ->where('jenis_transaksi', 'keluar')
                 ->sum('total_harga');
 
 
@@ -62,14 +62,14 @@ class DashboardController extends Controller
                 // proses transaksi
                 $penambahan[$value->id] = Transaksi::where('department_id', $value->id)
                     ->whereYear('tgl_transaksi', date('Y'))
-                    ->where('status', 'verifikasi')
-                    ->where('jenis_transaksi', 'transaksi masuk')
+                    ->where('status', 'selesai')
+                    ->where('jenis_transaksi', 'masuk')
                     ->sum('total_harga');
 
                 $pengeluaran[$value->id] = Transaksi::where('department_id', $value->id)
                     ->whereYear('tgl_transaksi', date('Y'))
-                    ->where('status', 'verifikasi')
-                    ->where('jenis_transaksi', 'transaksi keluar')
+                    ->where('status', 'selesai')
+                    ->where('jenis_transaksi', 'keluar')
                     ->sum('total_harga');
 
                 // proses saldo card
