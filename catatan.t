@@ -23,7 +23,7 @@
 # 3. tambah tabel stok_persediaan_bidang => clear
 
 ##### PROSES RIWAYAT TRANSAKSI #####
-1. tmpil data transaksi masuk dan keluar yang statusnya selesai saja.
+# 1. tmpil data transaksi masuk yang statusnya selesai saja.
 
 ##### PROSES TRANSAKSI MASUK #####
 # 1. saat create masuk tidak mau masuk ke db => clear
@@ -32,4 +32,12 @@
 
 ##### PROSES TRANSAKSI KELUAR #####
 # 1. tidak perlu verifikasi ke admin
-2. Saat menambah transaksi keluar stok barang di tabel stok_persediaan_bidang berdasarkan bidangnya akan berkurang. dan di tabel transaksi jenis_transaksi = keluar dan statusnya langsung selesai. 
+# 2. Saat menambah transaksi keluar stok barang di tabel stok_persediaan_bidang berdasarkan bidangnya akan berkurang. dan di tabel transaksi jenis_transaksi = keluar dan statusnya langsung selesai. 
+
+
+##### MASTER BARANG #####
+# 1. Bisa edit qty pada ta  nggal tertentu (sementara aktif terus)
+
+##### MENU BARU #####
+# 1. Tambah menu stock opname
+# 2. Ada tombol ambil data stock akhir, saat di tekan akan mengambil data barang yang di insert di tabel stock opname

@@ -91,6 +91,12 @@
                     <span class="link-title">Laporan Persediaan</span>
                 </a>
             </li>
+            <li class="nav-item {{ request()->is('stock-opname/*') ? 'active' : '' }}">
+                <a href="{{ url('/stock-opname') }}" class="nav-link">
+                    <i class="link-icon" data-feather="clipboard"></i>
+                    <span class="link-title">Stock Opname</span>
+                </a>
+            </li>
             @endcan
         </ul>
     </div>

@@ -155,9 +155,10 @@ class DataMasterController extends Controller
     {
         $validated = $request->validate([
             'nama'     => 'required|string',
-            'kategori' => 'required|string',
+            'kategori' => 'required',
             'satuan'   => 'required|string',
             'harga'    => 'required|numeric',
+            'qty_sisa' => 'numeric',
         ]);
 
         DB::beginTransaction();
@@ -165,13 +166,21 @@ class DataMasterController extends Controller
             // Ambil data master berdasarkan id
             $dataMaster = MasterBarang::findOrFail($id);
 
+            if ($request->qty_sisa != null) {
+                $qty = $request->qty_sisa;
+            } else {
+                $qty = $dataMaster;
+            }
+
+
             // Update DataMaster
             $dataMaster->update([
                 'nama'          => $request->nama,
-                'kategori'      => $request->kategori,
+                'kategori_id'   => $request->kategori,
                 'satuan'        => $request->satuan,
                 'harga'         => $request->harga,
-                'jumlah'        => $dataMaster->qty_sisa * $request->harga,
+                'qty_sisa'      => $qty,
+                'jumlah'        => $qty * $request->harga,
             ]);
 
             DB::commit();

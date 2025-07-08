@@ -6,6 +6,7 @@ use App\Http\Controllers\DataMasterController;
 use App\Http\Controllers\LaporanPersediaanController;
 use App\Http\Controllers\MasterBarangController;
 use App\Http\Controllers\SaldoAwalController;
+use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/laporan-persediaan', [LaporanPersediaanController::class, 'tampil_laporan_persediaan'])->name('tampil_laporan_persediaan');
     Route::post('/laporan-persediaan', [LaporanPersediaanController::class, 'tampil_laporan_persediaan'])->name('search_laporan_persediaan');
 
+
+    // ## Stock Opname
+    Route::get('/stock-opname', [StockOpnameController::class, 'tampil_stock_opname'])->name('tampil_stock_opname');
+    Route::post('/stock-opname', [StockOpnameController::class, 'tampil_stock_opname'])->name('cari_stock_opname');
+    Route::post('/stock-opname/ambil-data', [StockOpnameController::class, 'ambil_stock_opname'])->name('ambil_stock_opname');
 
     // ## Logout
     Route::post('/logout', [AuthenticateController::class, 'proses_logout'])->name('proses_logout');

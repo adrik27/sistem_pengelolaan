@@ -304,6 +304,7 @@ use Illuminate\Support\Str;
                                 <th>Kategori</th>
                                 <th>Satuan</th>
                                 <th>Harga</th>
+                                <th>Qty</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -318,8 +319,13 @@ use Illuminate\Support\Str;
                                         value="{{ $item->nama }}" required>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" name="kategori" id="kategori"
-                                        value="{{ $item->kategori->nama_kategori }}" required>
+                                    <select class="form-control" name="kategori" id="kategori" required>
+                                        @foreach ($kategoris as $kategori)
+                                        <option value="{{ $kategori->id }}" {{ $item->kategori_id == $kategori->id ? 'selected' : '' }}>{{ ucwords($kategori->nama_kategori) }}</option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" name="kategori" id="kategori"
+                                        value="{{ $item->kategori->nama_kategori }}" required> --}}
                                 </td>
                                 <td>
                                     <input type="text" class="form-control" name="satuan" id="satuan"
@@ -330,6 +336,10 @@ use Illuminate\Support\Str;
                                         class="form-control currency-input @error('harga') is-invalid @enderror"
                                         value="{{ currency($item->harga) }}" required>
                                     <input type="hidden" name="harga" value="{{ $item->harga }}" class="harga-hidden">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control @error('qty_sisa') is-invalid @enderror"
+                                        value="{{ $item->qty_sisa }}" name="qty_sisa" readonly >
                                 </td>
                             </tr>
                         </tbody>
