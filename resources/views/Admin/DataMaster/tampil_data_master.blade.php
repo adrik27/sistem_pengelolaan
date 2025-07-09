@@ -321,7 +321,8 @@ use Illuminate\Support\Str;
                                 <td>
                                     <select class="form-control" name="kategori" id="kategori" required>
                                         @foreach ($kategoris as $kategori)
-                                        <option value="{{ $kategori->id }}" {{ $item->kategori_id == $kategori->id ? 'selected' : '' }}>{{ ucwords($kategori->nama_kategori) }}</option>
+                                        <option value="{{ $kategori->id }}" {{ $item->kategori_id == $kategori->id ?
+                                            'selected' : '' }}>{{ ucwords($kategori->nama_kategori) }}</option>
                                         @endforeach
                                     </select>
                                     {{-- <input type="text" class="form-control" name="kategori" id="kategori"
@@ -339,7 +340,7 @@ use Illuminate\Support\Str;
                                 </td>
                                 <td>
                                     <input type="text" class="form-control @error('qty_sisa') is-invalid @enderror"
-                                        value="{{ $item->qty_sisa }}" name="qty_sisa" readonly >
+                                        value="{{ $item->qty_sisa }}" name="qty_sisa">
                                 </td>
                             </tr>
                         </tbody>

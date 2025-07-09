@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('stock_opnames', function (Blueprint $table) {
             $table->id();
-            $table->date('tanggal');
+            $table->integer('tanggal');
             $table->string('kode_barang');
             $table->string('nama');
             $table->foreignId('kategori_id')->constrained('kategoris')->onDelete('cascade');
