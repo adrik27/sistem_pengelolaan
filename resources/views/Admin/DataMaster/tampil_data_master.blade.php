@@ -339,8 +339,15 @@ use Illuminate\Support\Str;
                                     <input type="hidden" name="harga" value="{{ $item->harga }}" class="harga-hidden">
                                 </td>
                                 <td>
+                                    @php
+                                    $today = date('m-d');
+                                    $start = '07-28';
+                                    $end = '07-28';
+                                    @endphp
+
                                     <input type="text" class="form-control @error('qty_sisa') is-invalid @enderror"
-                                        value="{{ $item->qty_sisa }}" name="qty_sisa">
+                                        value="{{ $item->qty_sisa }}" name="qty_sisa" {{ $today>= $start && $today <=
+                                        $end ? 'readonly' : '' }}>
                                 </td>
                             </tr>
                         </tbody>

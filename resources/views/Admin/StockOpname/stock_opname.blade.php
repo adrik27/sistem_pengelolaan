@@ -1,6 +1,34 @@
 @extends('templates.master')
 
 @section('content')
+
+<style>
+    .dot-animate::after {
+        content: '';
+        display: inline-block;
+        animation: dots 1.5s steps(3, end) infinite;
+    }
+
+    @keyframes dots {
+        0% {
+            content: '';
+        }
+
+        33% {
+            content: '.';
+        }
+
+        66% {
+            content: '..';
+        }
+
+        100% {
+            content: '...';
+        }
+    }
+</style>
+
+
 <div class="row">
     <div class="col-12 col-xl-12 stretch-card">
         <div class="card">
@@ -36,11 +64,56 @@
                         </form>
                     </div>
                     <div class="col-12 mt-3">
-                        <form action="{{ url('stock-opname/ambil-data') }}" method="post">
-                            @csrf
-                            <input type="hidden" value="{{ date('Y') }}" name="tahun">
-                            <button type="submit" class="btn btn-sm btn-warning w-40" onclick="GetData(this,{{ date('Y') }})">Ambil Data Stok Akhir</button>
-                        </form>
+
+                        @php
+                        $today = date('m-d');
+                        $start = '07-28';
+                        $end = '07-28';
+                        @endphp
+
+                        @if ($today >= $start && $today <= $end) <button type="button"
+                            class="btn btn-sm btn-warning w-40" data-bs-toggle="modal" data-bs-target="#ModalAlert">
+                            Ambil Data Stok
+                            Akhir
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="ModalAlert" tabindex="-1" aria-labelledby="ModalAlertLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body text-center p-5">
+                                            <h3>Mohon Maaf, Saat ini Bukan Jadwal Pengambilan Data Stok Akhir</h3>
+                                        </div>
+                                        <div class="modal-footer text-center">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @else
+
+                            <form action="{{ url('stock-opname/ambil-data') }}" method="post">
+                                @csrf
+                                <input type="hidden" value="{{ date('Y') }}" name="tahun">
+                                <button type="submit" class="btn btn-sm btn-warning w-40"
+                                    onclick="GetData(this,{{ date('Y') }})">Ambil Data Stok
+                                    Akhir</button>
+                            </form>
+
+                            {{-- animasi processing get data --}}
+                            <div id="loadingSpinner" style="display: none;" class="mt-2 text-center">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <div class="mt-2">
+                                    <span id="loadingText">Processing get data<span
+                                            class="dot-animate">...</span></span>
+                                </div>
+                            </div>
+
+                            @endif
+
                     </div>
                     <div class="col-12 mt-3">
                         @if (session('success'))
@@ -121,6 +194,14 @@
             cancelButtonText: "Batal"
         }).then((result) => {
             if (result.isConfirmed) {
+                // Tampilkan spinner
+                document.getElementById('loadingSpinner').style.display = 'block';
+
+                // Nonaktifkan tombol agar tidak diklik dua kali
+                button.disabled = true;
+                button.innerText = 'Memproses...';
+
+                // Submit form
                 form.submit();
             }
         });
