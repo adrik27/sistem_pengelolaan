@@ -67,14 +67,27 @@
 
                         @php
                         $today = date('m-d');
+                        // $today = '07-28';
                         $start = '07-28';
                         $end = '07-28';
                         @endphp
 
-                        @if ($today >= $start && $today <= $end) <button type="button"
-                            class="btn btn-sm btn-warning w-40" data-bs-toggle="modal" data-bs-target="#ModalAlert">
-                            Ambil Data Stok
-                            Akhir
+                        @if ($today >= $start && $today <= $end) <form action="{{ url('stock-opname/ambil-data') }}"
+                            method="post">
+                            @csrf
+                            <input type="hidden" value="{{ date('Y') }}" name="tahun">
+                            <button type="submit" class="btn btn-sm btn-warning w-40"
+                                onclick="GetData(this,{{ date('Y') }})">Ambil Data Stok
+                                Akhir</button>
+                            </form>
+
+                            @else
+
+
+                            <button type="button" class="btn btn-sm btn-warning w-40" data-bs-toggle="modal"
+                                data-bs-target="#ModalAlert">
+                                Ambil Data Stok
+                                Akhir
                             </button>
 
                             <!-- Modal -->
@@ -92,16 +105,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            @else
-
-                            <form action="{{ url('stock-opname/ambil-data') }}" method="post">
-                                @csrf
-                                <input type="hidden" value="{{ date('Y') }}" name="tahun">
-                                <button type="submit" class="btn btn-sm btn-warning w-40"
-                                    onclick="GetData(this,{{ date('Y') }})">Ambil Data Stok
-                                    Akhir</button>
-                            </form>
 
                             {{-- animasi processing get data --}}
                             <div id="loadingSpinner" style="display: none;" class="mt-2 text-center">

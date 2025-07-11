@@ -341,6 +341,7 @@ use Illuminate\Support\Str;
                                 <td>
                                     @php
                                     $today = date('m-d');
+                                    // $today = '07-28';
                                     $start = '07-28';
                                     $end = '07-28';
                                     @endphp
