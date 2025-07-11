@@ -166,6 +166,13 @@ class DataMasterController extends Controller
             // Ambil data master berdasarkan id
             $dataMaster = MasterBarang::findOrFail($id);
 
+            // cek qty lebih kecil dari sebelumnya atau tidak
+            if ($request->qty_sisa < $dataMaster->qty_sisa) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Gagal memperbarui data: Qty tidak boleh kurang dari ' . $dataMaster->qty_sisa . ' !');
+            }
+
+            // Jika qty_sisa tidak diisi, gunakan qty_sisa sebelumnya
             if ($request->qty_sisa != null) {
                 $qty = $request->qty_sisa;
             } else {
