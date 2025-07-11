@@ -33,7 +33,6 @@ class DataMasterController extends Controller
             'kategoris' => $kategoris,
         ]);
     }
-
     public function create_data_master(Request $request)
     {
         $validated = $request->validate([
@@ -211,6 +210,8 @@ class DataMasterController extends Controller
             return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
     }
+
+
 
 
 

@@ -341,10 +341,11 @@
                                             {{ ucwords($barang->nama) }}
                                         </option>
 
-                                        {{-- <input type="hidden" class="stok-hidden"
-                                            value="{{ ($barang->qty_sisa ?? 0) }}"> --}}
                                         @endforeach
                                     </select>
+                                    @foreach ($data_barang as $barang)
+                                    <input type="hidden" class="stok-hidden" value="{{ ($barang->qty_sisa ?? 0) }}">
+                                    @endforeach
                                 </td>
                                 <td>
                                     <input type="text" class="form-control harga currency-input"
