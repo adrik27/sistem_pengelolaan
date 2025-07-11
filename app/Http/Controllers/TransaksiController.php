@@ -96,10 +96,10 @@ class TransaksiController extends Controller
                 if (!$barang) continue;
 
                 $saldo_awal = SaldoAwal::where('department_id', $department_id)->where('tahun', now()->year)->first();
-                if ($total > $saldo_awal->saldo_awal) {
-                    DB::rollback();
-                    return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
-                }
+                // if ($total > $saldo_awal->saldo_awal) {
+                //     DB::rollback();
+                //     return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                // }
 
                 // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
                 $existing = Transaksi::where('department_id', $department_id)
