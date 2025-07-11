@@ -39,7 +39,6 @@ class TransaksiController extends Controller
                 ->with('Department')
                 ->orderBy('tgl_transaksi', 'desc')
                 ->get();
-            
         }
 
         $Data_Barang = MasterBarang::orderBy('nama', 'asc')->get();
@@ -163,18 +162,52 @@ class TransaksiController extends Controller
         $year = Carbon::parse($Transaksi->tgl_transaksi)->format('Y');
 
         if ($Transaksi) {
-            $Transaksi->update(
-                [
-                    'status' => 'selesai',
-                    'verifikator_id' => Auth::user()->id
-                ]
-            );
-
             $saldoAwal = SaldoAwal::where('department_id', $Transaksi->department_id)
                 ->where('tahun', $year)
                 ->first();
 
             if ($saldoAwal) {
+                // cek saldo
+                $TotalHargaDataTransaksi = Transaksi::where('department_id', $Transaksi->department_id)
+                    ->where('jenis_transaksi', 'masuk')
+                    ->where('status', 'selesai')
+                    ->sum('total_harga') ?? 0;
+
+                if (($Transaksi->total_harga + $TotalHargaDataTransaksi) > $saldoAwal->saldo_awal) {
+                    $Transaksi->update(
+                        [
+                            'status' => 'tolak',
+                        ]
+                    );
+                    return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+                }
+
+                // cek ketersediaan stok
+                $TotalQtyTransaksi = Transaksi::where('department_id', $Transaksi->department_id)
+                    ->where('jenis_transaksi', 'masuk')
+                    ->where('status', 'selesai')
+                    ->sum('qty') ?? 0;
+
+                $DataQtyMasterBarang = MasterBarang::where('kode_barang', $Transaksi->kode_barang)
+                    ->sum('qty_sisa') ?? 0;
+
+                if (($Transaksi->qty + $TotalQtyTransaksi) > $DataQtyMasterBarang) {
+                    $Transaksi->update(
+                        [
+                            'status' => 'tolak',
+                        ]
+                    );
+                    return redirect()->back()->with('error', 'Terjadi kesalahan: Stok barang ' . ucwords($Transaksi->barang->nama) . ' tidak mencukupi.');
+                }
+
+                // Update transaksi
+                $Transaksi->update(
+                    [
+                        'status' => 'selesai',
+                        'verifikator_id' => Auth::user()->id
+                    ]
+                );
+
                 // Update master_barangs: kurangi qty_Sisa
                 DB::table('master_barangs')
                     ->where('kode_barang', $Transaksi->kode_barang)
@@ -195,7 +228,7 @@ class TransaksiController extends Controller
                         'department_id' => $Transaksi->department_id,
                         'qty' => $Transaksi->qty
                     ]);
-                }else{
+                } else {
                     StokPersediaanBidang::where('kode_barang', $Transaksi->kode_barang)
                         ->where('department_id', $Transaksi->department_id)
                         ->increment('qty', $Transaksi->qty);
@@ -307,7 +340,6 @@ class TransaksiController extends Controller
                 ->where('jenis_transaksi', 'masuk')
                 ->groupBy('kode_barang', 'nama_barang')
                 ->get();
-
         }
 
         // ambil nilai budget awal tahun ini
@@ -367,7 +399,7 @@ class TransaksiController extends Controller
                     ->where('department_id', $department_id)
                     ->first();
 
-                    // jika barang di stok_persediaan berdasarkan bidangnya ada, maka stok kurangi
+                // jika barang di stok_persediaan berdasarkan bidangnya ada, maka stok kurangi
                 if ($stok_persediaan_bidang) {
                     $stok_persediaan_bidang->qty -= $qty;
                     $stok_persediaan_bidang->save();
