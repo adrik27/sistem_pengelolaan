@@ -38,7 +38,7 @@
                                                 id="table-create">
                                                 <thead>
                                                     <tr>
-                                                        <th>Department</th>
+                                                        <th>Bidang</th>
                                                         <th>Tahun</th>
                                                         <th>Saldo</th>
                                                         <th>Aksi</th>

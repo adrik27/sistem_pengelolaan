@@ -66,7 +66,7 @@
                         <thead>
                             <tr class="text-center align-middle">
                                 <th rowspan="2">No</th>
-                                <th rowspan="2">Department</th>
+                                <th rowspan="2">Bidang</th>
                                 <th rowspan="2">Saldo Awal</th>
                                 <th colspan="6">Penerimaan</th>
                                 <th colspan="6">Pengeluaran</th>

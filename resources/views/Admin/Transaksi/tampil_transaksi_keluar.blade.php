@@ -195,7 +195,7 @@
                             <tr class="text-center">
                                 <th>No</th>
                                 <th>Tanggal</th>
-                                <th>Department</th>
+                                <th>Bidang</th>
                                 <th>Kode</th>
                                 <th>Nama</th>
                                 <th>Qty</th>
