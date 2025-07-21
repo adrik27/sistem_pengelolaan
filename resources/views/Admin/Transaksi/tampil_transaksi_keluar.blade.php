@@ -95,7 +95,7 @@
 
                     <div class="row mt-4">
                         <div class="col-12 d-flex gap-3 align-items-center">
-                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-sm btn-outline-primary mb-3" data-bs-toggle="modal"
                                 data-bs-target="#TambahData" {{ Auth::user()->jabatan_id == 3 ? '' : 'disabled' }}>
                                 Tambah Data </button>
 
@@ -173,6 +173,35 @@
                                                                         <select name="nama_barang" id="NamaBarang"
                                                                             class="form-control">
                                                                         </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-3">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <h6>QTY</h6>
+                                                            </div>
+                                                            <div class="col-12 mt-2">
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <input type="number" class="form-control"
+                                                                            name="qty" id="qty" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-3">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <h6>Keterangan</h6>
+                                                            </div>
+                                                            <div class="col-12 mt-2">
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <textarea class="form-control" name="keterangan" id="keterangan"> </textarea>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -325,105 +354,23 @@
                         <table class="table table-hover table-bordered table-striped" id="table">
                             <thead>
                                 <tr class="text-center">
-                                    <th>No</th>
-                                    <th>Tanggal</th>
-                                    <th>Bidang</th>
-                                    <th>Kode</th>
-                                    <th>Nama</th>
-                                    <th>Qty</th>
-                                    <th>Satuan</th>
-                                    <th>Harga</th>
-                                    <th>Total Harga</th>
-                                    {{-- <th>Sisa Saldo</th> --}}
-                                    <th>Status</th>
-                                    <th>Aksi</th>
+                                    <th>TGL PEMBUKUAN</th>
+                                    <th>NAMA BARANG(SATUAN)</th>
+                                    <th>STATUS</th>
+                                    <th>QTY</th>
+                                    <th>KETERANGAN</th>
+                                    <th>ACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($data as $item)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->tgl_transaksi->format('d-m-Y') }}</td>
-                                        <td>{{ $item->Department->nama }}</td>
-                                        <td>{{ $item->kode_barang }}</td>
-                                        <td>{{ $item->nama_barang }}</td>
-                                        <td>{{ $item->qty }}</td>
-                                        <td>{{ $item->nama_satuan }}</td>
-                                        <td>{{ currency($item->harga_satuan) }}</td>
-                                        <td>{{ currency($item->total_harga) }}</td>
-                                        {{-- <td>
-                                    {{ currency(($budget_awal->saldo_awal ?? 0) - ($budget_awal->saldo_digunakan ?? 0))
-                                    }}
-                                </td> --}}
-                                        <td>
-                                            @if ($item->status == 'selesai')
-                                                <span class="badge bg-primary">Selesai</span>
-                                            @else
-                                                {{-- <span class="badge bg-danger">Tolak</span> --}}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="d-flex justify-content-center gap-2">
-                                                @if (Auth::user()->jabatan_id == 3)
-                                                    {{-- pengguna barang --}}
-                                                    <div class="edit">
-                                                        <button type="button" class="btn btn-sm btn-primary"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#update{{ $item->id }}"
-                                                            {{ $item->status == 'selesai' || $item->status == 'tolak' ? 'disabled' : '' }}>
-                                                            Edit
-                                                        </button>
-                                                    </div>
-
-                                                    <div class="hapus">
-                                                        <form action="{{ url('/pengeluaran/hapus/' . $item->id) }}"
-                                                            method="post">
-                                                            @csrf
-
-                                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                                onclick="deleteform(this)"
-                                                                {{ $item->status == 'selesai' || $item->status == 'tolak' ? 'disabled' : '' }}>
-                                                                Hapus
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                @else
-                                                    <div class="d-flex gap-2">
-                                                        <div class="verifikasi">
-                                                            <form form="verifikasiForm"
-                                                                action="{{ url('/pengeluaran/verifikasi/' . $item->id) }}"
-                                                                method="post">
-                                                                @csrf
-
-                                                                <button type="submit" form="verifikasiForm"
-                                                                    class="btn btn-sm btn-primary"
-                                                                    onclick="verifikasiform(this)"
-                                                                    {{ $item->status == 'selesai' || $item->status == 'tolak' ? 'disabled' : '' }}>
-                                                                    Verifikasi
-                                                                </button>
-                                                            </form>
-                                                        </div>
-
-                                                        <div class="tolak">
-                                                            <form form="tolakForm"
-                                                                action="{{ url('/pengeluaran/tolak/' . $item->id) }}"
-                                                                method="post">
-                                                                @csrf
-
-                                                                <button type="submit" form="tolakForm"
-                                                                    class="btn btn-sm btn-danger"
-                                                                    onclick="tolakForm(this)"
-                                                                    {{ $item->status == 'selesai' || $item->status == 'tolak' ? 'disabled' : '' }}>
-                                                                    Tolak
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -547,7 +494,9 @@
     <script>
         $(document).ready(function() {
             $('#table').DataTable();
+        });
 
+        $(document).ready(function() {
             // Inisialisasi Select2 untuk dropdown NamaBarang
             $('#NamaBarang').select2({
                 // Tentukan tema yang akan digunakan

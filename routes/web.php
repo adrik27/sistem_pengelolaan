@@ -81,6 +81,5 @@ Route::group(['middleware' => 'auth'], function () {
     // riwayat transaksi
     Route::get('/riwayat-transaksi', [MasterBarangController::class, 'tampil_riwayat_transaksi'])->name('tampil_riwayat_transaksi');
 
-    // Route::get('/seluruh_data_barang', [MasterBarangController::class, 'search'])->name('seluruh_data_barang');
-    Route::get('/seluruh_data_barang', [MasterBarangController::class, 'seluruh_data_barang'])->name('seluruh_data_barang');
+    Route::get('/seluruh_data_barang', [MasterBarangController::class, 'search'])->name('seluruh_data_barang');
 });
