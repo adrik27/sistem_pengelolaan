@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\SaldoAwal;
 use App\Models\Transaksi;
+use App\Models\DataBarang;
 use App\Models\MasterBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -347,12 +348,16 @@ class TransaksiController extends Controller
                 ->get();
         }
 
+        // ambil data barang
+        $Data_Barang = DataBarang::orderBy('nama_barang', 'asc')->get();
+
         // ambil nilai budget awal tahun ini
         $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)->where('tahun', now()->year)->first();
 
         return view('Admin.Transaksi.tampil_transaksi_keluar', [
             'data'          =>  $data,
-            'data_barang'   =>  $Data_Barang_By_Transaksi_Masuk,
+            'data_barang'   =>  $Data_Barang,
+            // 'data_barang'   =>  $Data_Barang_By_Transaksi_Masuk,
             'budget_awal'   =>  $Budget_Awal,
             'req_status'    =>  $req_status,
             'req_year'      =>  $req_year,
