@@ -48,7 +48,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
-    Route::post('/penerimaan/create', [TransaksiController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk');
+    Route::get('/penerimaan/create', [TransaksiController::class, 'tambah_penerimaan'])->name('tambah_penerimaan');
+    // Route::post('/penerimaan/create', [TransaksiController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk');
     Route::post('/penerimaan/verifikasi/{id}', [TransaksiController::class, 'verifikasi_transaksi_masuk'])->name('verifikasi_transaksi_masuk');
     Route::post('/penerimaan/tolak/{id}', [TransaksiController::class, 'tolak_transaksi_masuk'])->name('tolak_transaksi_masuk');
     Route::post('/penerimaan/update/{id}', [TransaksiController::class, 'update_transaksi_masuk'])->name('update_transaksi_masuk');
@@ -79,4 +80,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     // riwayat transaksi
     Route::get('/riwayat-transaksi', [MasterBarangController::class, 'tampil_riwayat_transaksi'])->name('tampil_riwayat_transaksi');
+
+    Route::get('/seluruh_data_barang', [MasterBarangController::class, 'search'])->name('seluruh_data_barang');
 });

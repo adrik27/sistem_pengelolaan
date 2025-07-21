@@ -8,7 +8,7 @@
     <meta name="description" content="Sistem Pengelolaan Stok dan Keuangan">
     <meta name="author" content="MT">
 
-    <title>STOKEU - Sistem Pengelolaan Stok dan Keuangan</title>
+    <title>Pesan Sedia</title>
 
     <!-- Fonts -->
     {{--

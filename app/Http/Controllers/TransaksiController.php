@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Validator; // <-- Tambahkan ini
 class TransaksiController extends Controller
 {
     // ### TRANSAKSI MASUK ###
+
+    public function tambah_penerimaan(Request $request)
+    {
+        return view('Admin.penerimaan.tambah');
+    }
     public function tampil_transaksi_masuk(Request $request)
     {
         $req_status = '';

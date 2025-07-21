@@ -11,9 +11,9 @@
 
                 </div>
 
-                <div class="row mt-4">
+                {{-- <div class="row mt-4">
                     <div class="col-12 d-flex gap-3 align-items-center">
-                        @if (Auth::user()->jabatan_id == 3) {{-- jabatan_id == 3 (User) --}}
+                        @if (Auth::user()->jabatan_id == 3)
                         <div class="tambah-data">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#TambahData">
@@ -135,7 +135,7 @@
                         @else
                         @endif
                     </div>
-                </div>
+                </div> --}}
                 <div class="row mb-4">
                     <div class="col-12 mt-2">
                         @if (session('success'))
@@ -154,20 +154,30 @@
 
                     <div class="col-12 mt-2">
                         <form action="{{ url('/penerimaan') }}" method="post">
-                            <div class="row d-flex gap-2">
+                            <div class="row d-flex gap-2 align-items-center">
                                 @csrf
-                                <div class="col-4">
-                                    <label for="status">Status</label>
-                                    <select name="status" id="status" class="form-control">
-                                        <option value="pending" {{ $req_status=='pending' ? 'selected' : '' }}>Pending
-                                        </option>
-                                        <option value="selesai" {{ $req_status=='selesai' ? 'selected' : '' }}>
-                                            Terverifikasi</option>
-                                        <option value="tolak" {{ $req_status=='tolak' ? 'selected' : '' }}>
-                                            Tolak</option>
+                                <div class="col-2">
+                                    <div>Pilih bulan aktif</div>
+                                </div>
+                                <div class="col-3">
+                                    <label for="bulan">Bulan</label>
+                                    <select name="bulan" id="bulan" class="form-control" style="font-size: 14px;">
+                                        <option>Silahkan pilih bulan aktif</option>
+                                        <option value="1" selected="">Januari</option>
+                                        <option value="2">Februari</option>
+                                        <option value="3">Maret</option>
+                                        <option value="4">April</option>
+                                        <option value="5">Mei</option>
+                                        <option value="6">Juni</option>
+                                        <option value="7">Juli</option>
+                                        <option value="8">Agustus</option>
+                                        <option value="9">September</option>
+                                        <option value="10">Oktober</option>
+                                        <option value="11">November</option>
+                                        <option value="12">Desember</option>
                                     </select>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     @php
                                     $tahunSekarang = date('Y');
                                     @endphp
@@ -180,109 +190,55 @@
                                     </select>
                                 </div>
                                 <div class="col align-self-center pt-3">
-                                    <button type="submit" class="btn btn-sm btn-success">Cari</button>
+                                    <button type="submit" class="btn btn-sm btn-success">Tampilkan</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
 
+                <a href="{{ url('/penerimaan/create') }}" class="btn btn-primary mt-3" type="button" class="btn btn-primary">
+                                Tambah Data </a>
+
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered table-striped" id="table">
                         <thead>
                             <tr class="text-center">
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Bidang</th>
-                                <th>Kode</th>
-                                <th>Nama</th>
-                                <th>Qty</th>
-                                <th>Satuan</th>
-                                <th>Harga</th>
-                                <th>Total Harga</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
+                                <th>TGL PEMBUKUAN</th>
+                                <th>NO NOTA</th>
+                                <th>SUPPLIER</th>
+                                <th>NAMA BARANG (SATUAN)</th>
+                                <th>QTY</th>
+                                <th>HARGA SATUAN</th>
+                                <th>HARGA TOTAL</th>
+                                <th>SUMBER DANA</th>
+                                <th>ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($data as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->tgl_transaksi->format('d-m-Y') }}</td>
-                                <td>{{ $item->Department->nama }}</td>
-                                <td>{{ $item->kode_barang }}</td>
-                                <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->qty }}</td>
-                                <td>{{ $item->nama_satuan }}</td>
-                                <td>{{ currency($item->harga_satuan) }}</td>
-                                <td>{{ currency($item->total_harga) }}</td>
+                                <td>{{ $item->tgl_pembukuan->format('d-m-Y') }}</td>
+                                <td>{{ $item->no_nota }}</td>
+                                <td>{{ $item->supplier }}</td>
                                 <td>
-                                    @if ($item->status == 'pending')
-                                    <span class="badge bg-warning">Pending</span>
-                                    @elseif($item->status == 'selesai')
-                                    <span class="badge bg-primary">Selesai</span>
-                                    @else
-                                    <span class="badge bg-danger">Tolak</span>
-                                    @endif
+                                    {{ $item->kode_barang }} <br>
+                                    {{ $item->nama_barang }} ({{ $item->satuan }})
                                 </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-2">
-                                        @if (Auth::user()->jabatan_id == 3) {{-- user --}}
-                                        <div class="edit">
-                                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#update{{ $item->id }}" {{ ($item->status ==
-                                                'selesai' ||
-                                                $item->status == 'tolak')
-                                                ? 'disabled' : '' }}>
-                                                Edit
-                                            </button>
-                                        </div>
-
-                                        <div class="hapus">
-                                            <form action="{{ url('/penerimaan/hapus/'.$item->id) }}" method="post">
-                                                @csrf
-
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="deleteform(this)" {{ ($item->status == 'selesai' ||
-                                                    $item->status == 'tolak')
-                                                    ? 'disabled' : '' }}>
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                        @else
-                                        <div class="d-flex gap-2">
-                                            <div class="verifikasi">
-                                                <form form="verifikasiForm"
-                                                    action="{{ url('/penerimaan/verifikasi/'.$item->id) }}"
-                                                    method="post">
-                                                    @csrf
-
-                                                    <button type="submit" form="verifikasiForm"
-                                                        class="btn btn-sm btn-primary" onclick="verifikasiform(this)" {{
-                                                        ($item->status == 'selesai' ||
-                                                        $item->status == 'tolak')
-                                                        ? 'disabled' : '' }}>
-                                                        Verifikasi
-                                                    </button>
-                                                </form>
-                                            </div>
-
-                                            <div class="tolak">
-                                                <form form="tolakForm"
-                                                    action="{{ url('/penerimaan/tolak/'.$item->id) }}" method="post">
-                                                    @csrf
-
-                                                    <button type="submit" form="tolakForm" class="btn btn-sm btn-danger"
-                                                        onclick="tolakForm(this)" {{ ($item->status == 'selesai' ||
-                                                        $item->status == 'tolak')
-                                                        ? 'disabled' : '' }}>
-                                                        Tolak
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                        @endif
+                                <td class="text-center">{{ $item->qty }}</td>
+                                <td class="text-end">{{ currency($item->harga_satuan) }}</td>
+                                <td class="text-end">{{ currency($item->harga_total) }}</td>
+                                <td class="text-center">{{ $item->sumber_dana }}</td>
+                                <td class="text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ $item->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $item->id }}">
+                                            <li><a class="dropdown-item" href="#">Action</a></li>
+                                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                        </ul>
                                     </div>
                                 </td>
                             </tr>
