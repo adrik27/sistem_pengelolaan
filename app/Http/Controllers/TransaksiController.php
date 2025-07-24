@@ -7,6 +7,7 @@ use App\Models\SaldoAwal;
 use App\Models\Transaksi;
 use App\Models\DataBarang;
 use App\Models\MasterBarang;
+use App\Models\Penerimaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\StokPersediaanBidang;
@@ -21,44 +22,27 @@ class TransaksiController extends Controller
     {
         return view('Admin.penerimaan.tambah');
     }
-    public function tampil_transaksi_masuk(Request $request)
+    public function penerimaan(Request $request)
     {
-        $req_status = '';
-        $req_year = $request->input('tahun') ?? date('Y');
+        // 1. Ambil nilai filter dari request, jika tidak ada, gunakan bulan & tahun saat ini
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
 
-        if (Auth::user()->jabatan_id == 3) { // User
-            $req_status = $request->input('status') ?? 'pending';
-            $data = Transaksi::whereYear('tgl_transaksi', $req_year)
-                ->where('status', $req_status)
-                ->where('department_id', Auth::user()->department_id)
-                ->where('jenis_transaksi', 'masuk')
-                ->with('MasterBarang')
-                ->with('Department')
-                ->orderBy('tgl_transaksi', 'desc')
-                ->get();
-        } else { // Admin
-            $req_status = $request->input('status') ?? 'pending';
-            $data = Transaksi::whereYear('tgl_transaksi', $req_year)
-                ->where('status', $req_status)
-                ->where('jenis_transaksi', 'masuk')
-                ->with('MasterBarang')
-                ->with('Department')
-                ->orderBy('tgl_transaksi', 'desc')
-                ->get();
-        }
+        // 2. Mulai query ke model Penerimaan
+        $query = Penerimaan::query();
 
-        $Data_Barang = MasterBarang::orderBy('nama', 'asc')->get();
+        // 3. Terapkan filter berdasarkan bulan dan tahun pada kolom 'tanggal_pembukuan'
+        $query->whereMonth('tanggal_pembukuan', $bulan)
+            ->whereYear('tanggal_pembukuan', $tahun);
 
-        $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)
-            ->where('tahun', now()->year)
-            ->first();
+        // 4. Urutkan data berdasarkan tanggal terbaru, lalu ambil hasilnya
+        $data = $query->orderBy('tanggal_pembukuan', 'desc')->get();
 
+        // 5. Kirim data yang sudah difilter beserta nilai filter ke view
         return view('Admin.Transaksi.tampil_transaksi_masuk', [
-            'data'          =>  $data,
-            'data_barang'   =>  $Data_Barang,
-            'budget_awal'   =>  $Budget_Awal,
-            'req_status'    =>  $req_status,
-            'req_year'      =>  $req_year,
+            'data' => $data,
+            'selected_bulan' => $bulan,
+            'selected_tahun' => $tahun,
         ]);
     }
 

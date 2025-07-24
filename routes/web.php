@@ -3,8 +3,10 @@
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataMasterController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanPersediaanController;
 use App\Http\Controllers\MasterBarangController;
+use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\SaldoAwalController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\TransaksiController;
@@ -46,7 +48,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/get-harga-barang/{kode}', [DataMasterController::class, 'getHarga']);
     Route::get('/get-harga-barang-keluar/{kode}', [DataMasterController::class, 'getHargaKeluar']);
 
-    Route::get('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
+    Route::get('/penerimaan', [TransaksiController::class, 'penerimaan'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
     Route::get('/penerimaan/create', [TransaksiController::class, 'tambah_penerimaan'])->name('tambah_penerimaan');
     // Route::post('/penerimaan/create', [TransaksiController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk');
@@ -82,4 +84,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/riwayat-transaksi', [MasterBarangController::class, 'tampil_riwayat_transaksi'])->name('tampil_riwayat_transaksi');
 
     Route::get('/seluruh_data_barang', [MasterBarangController::class, 'search'])->name('seluruh_data_barang');
+
+    Route::post('/penerimaan/store', [PenerimaanController::class, 'store'])->name('penerimaan.store');
+    Route::get('/laporan/penerimaan/data', [LaporanController::class, 'getDataPenerimaan'])->name('laporan.penerimaan.data');
 });
