@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jabatan_id');
-            $table->foreignId('department_id');
+            $table->foreignId('bidang_id');
             $table->string('nama');
             $table->integer('nip')->unique();
             $table->string('email')->unique();

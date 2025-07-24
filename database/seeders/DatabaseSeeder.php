@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Bidang;
 use App\Models\User;
 use App\Models\Jabatan;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,7 +18,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Data Seeder Department
-        $departments = [
+        $bidangs = [
             [
                 'nama' => 'admin',
                 'status' => 'aktif'
@@ -39,7 +40,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 'aktif'
             ],
             [
-                'nama' => 'UPTD',
+                'nama' => 'Sekretariat',
                 'status' => 'aktif'
             ],
             [
@@ -48,8 +49,8 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-        foreach ($departments as $department) {
-            Department::create($department);
+        foreach ($bidangs as $bidang) {
+            Bidang::create($bidang);
         }
 
         // Data Seeder Jabatan
@@ -77,7 +78,7 @@ class DatabaseSeeder extends Seeder
             // administrator
             [
                 'jabatan_id' => 2,
-                'department_id' => 1,
+                'bidang_id' => 1,
                 'nip' => 111111111,
                 'nama' => 'Administrator',
                 'email' => 'administrator@gmail.com',
@@ -86,7 +87,7 @@ class DatabaseSeeder extends Seeder
             // peternakan
             [
                 'jabatan_id' => 3,
-                'department_id' => 2,
+                'bidang_id' => 2,
                 'nip' => 222222222,
                 'nama' => 'peternakan',
                 'email' => 'peternakan@gmail.com',

@@ -8,10 +8,10 @@ use App\Models\Transaksi;
 use App\Models\StokPersediaanBidang;
 use Illuminate\Database\Eloquent\Model;
 
-class Department extends Model
+class Bidang extends Model
 {
 
-    protected $table = 'departments';
+    protected $table = 'bidangs';
     protected $guarded = ['id'];
     public function User()
     {
