@@ -9,6 +9,7 @@ use App\Models\Transaksi;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class LaporanPersediaanController extends Controller
 {
@@ -115,9 +116,15 @@ class LaporanPersediaanController extends Controller
             }
         }
 
+        $bidangList = collect(); // Inisialisasi sebagai koleksi kosong
+        if (Gate::allows('admin')) {
+            // Ambil semua bidang kecuali 'admin' (yang biasanya memiliki id = 1)
+            $bidangList = Bidang::where('id', '!=', 1)->orderBy('nama')->get();
+        }
+
         return view('Admin.LaporanPersediaan.laporan_persediaan', [
             'laporan' => $laporan,
-
+            'bidangList' => $bidangList,
             'tahun_from' => $tahun_from,
             'tahun_to' => $tahun_to,
             'req_departments' => $req_department,

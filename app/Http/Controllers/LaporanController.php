@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class LaporanController extends Controller
 {
@@ -35,13 +36,27 @@ class LaporanController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $userBidangId = Auth::user()->bidang_id;
+        // 5. Query data
+        $query = Penerimaan::query();
 
-        // Query data berdasarkan rentang tanggal
-        $data = Penerimaan::where('bidang_id', $userBidangId)->whereBetween('tanggal_pembukuan', [
+        // 6. Terapkan filter berdasarkan hak akses
+        if (Gate::allows('admin')) {
+            // Jika admin, filter berdasarkan input dari form
+            if ($request->filled('bidang_id')) {
+                $query->where('bidang_id', $request->bidang_id);
+            }
+        } else {
+            // Jika bukan admin, paksa filter berdasarkan bidang user yang login
+            $query->where('bidang_id', Auth::user()->bidang_id);
+        }
+
+        // Terapkan filter tanggal
+        $data = $query->whereBetween('tanggal_pembukuan', [
             $request->tanggal_awal,
             $request->tanggal_akhir
-        ])->orderBy('tanggal_pembukuan', 'asc')->get();
+        ])
+            ->orderBy('tanggal_pembukuan', 'asc')
+            ->get();
 
         // Kembalikan data dalam format JSON yang dimengerti DataTables
         return response()->json(['data' => $data]);

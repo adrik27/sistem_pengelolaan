@@ -28,6 +28,17 @@
 
                 {{-- FORM FILTER --}}
                 <div id="filter-form">
+                    @can('admin')
+                    <div class="form-filter-row">
+                        <label for="bidang_id" class="form-label">Pilih Bidang</label>
+                        <select class="form-select" id="bidang_id" name="bidang_id">
+                            <option value="">-- Tampilkan Semua Bidang --</option>
+                            @foreach ($bidangList as $bidang)
+                                <option value="{{ $bidang->id }}">{{ $bidang->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endcan
                     <div class="form-filter-row">
                         <label for="tanggal_awal" class="form-label">Tanggal Awal Hitung</label>
                         <input type="text" class="form-control date-picker" id="tanggal_awal" name="tanggal_awal" placeholder="dd/mm/yyyy">
@@ -108,6 +119,12 @@
                     data: function(d) {
                         d.tanggal_awal = $('#tanggal_awal').val();
                         d.tanggal_akhir = $('#tanggal_akhir').val();
+
+                        // Kirim bidang_id jika elemennya ada di halaman
+                        if ($('#bidang_id').length) {
+                            d.bidang_id = $('#bidang_id').val();
+                        }
+                        
                         return d;
                     },
                     // Fungsi untuk menangani error

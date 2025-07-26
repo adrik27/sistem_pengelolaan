@@ -76,7 +76,11 @@
                                 </div>
                                 <div class="col-md-8 ps-md-0">
                                     <div class="auth-form-wrapper px-4 py-5">
-                                        <a href="#" class="noble-ui-logo d-block mb-1">PESAN SEDIA</a>
+                                        {{-- <a href="#" class="noble-ui-logo d-block mb-1">PESAN SEDIA</a> --}}
+                                        <a href="{{ url('/') }}" class="noble-ui-logo d-block mb-3">
+                                            {{-- Ganti 'logo.png' dengan nama file logo Anda di folder public/images --}}
+                                            <img src="{{ url('img/logo_pesan_sedia.png') }}" alt="Logo Pesan Sedia" style="max-width: 180px; height: auto;">
+                                        </a>
                                         <h6 class="text-muted fw-normal mb-4">Sistem Pengelolaan Stok dan Keuangan.</h6>
                                         <form class="forms-sample" method="POST" action="{{ url('/login') }}"
                                             enctype="multipart/form-data">

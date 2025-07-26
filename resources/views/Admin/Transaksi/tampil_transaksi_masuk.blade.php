@@ -110,8 +110,11 @@
                                 <td class="text-center">{{ $item->sumber_dana }}</td>
                                 <td class="text-center">
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ $item->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        {{-- <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ $item->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                             Aksi
+                                        </button> --}}
+                                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMenuButton{{ $item->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $item->id }}">
                                             {{-- Aksi Detail --}}
@@ -155,7 +158,8 @@
     $(document).ready(function() {
         $('#table').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+                // Arahkan ke file lokal menggunakan helper asset()
+                "url": "{{ asset('assets/js/id.json') }}"
             }
         });
     });
