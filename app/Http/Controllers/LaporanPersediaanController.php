@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bidang;
 use Carbon\Carbon;
 use App\Models\SaldoAwal;
 use App\Models\Transaksi;
@@ -33,7 +34,7 @@ class LaporanPersediaanController extends Controller
                 ->orderBy('tgl_transaksi')
                 ->get();
         } else {
-            $departments = Department::where('status', 'aktif')->where('id', '!=', 1)->get();
+            $departments = Bidang::where('status', 'aktif')->where('id', '!=', 1)->get();
             $transaksi = Transaksi::where('status', 'selesai')
                 ->where('department_id', $req_department)
                 ->whereBetween('tgl_transaksi', $range_tahun)
@@ -74,7 +75,7 @@ class LaporanPersediaanController extends Controller
                 ->first();
 
 
-            $department = Department::find($dept);
+            $department = Bidang::find($dept);
 
             $grouped[$key]['saldo_awal'] = $saldo ? $saldo->saldo_awal : 0;
         }

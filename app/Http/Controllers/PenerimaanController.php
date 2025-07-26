@@ -6,6 +6,7 @@ use App\Models\Penerimaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon; // Import Carbon untuk manipulasi tanggal
+use Illuminate\Support\Facades\Auth;
 
 class PenerimaanController extends Controller
 {
@@ -20,7 +21,7 @@ class PenerimaanController extends Controller
             'bookingMonth'    => 'required|string',
             'bookingYear'     => 'required|numeric|min:1900',
             'supplier'        => 'required|string|max:255',
-            'invoiceNo'       => 'required|string|max:255', // Diubah dari no_faktur
+            'invoiceNo'       => 'required|string|max:255',
             'receiptStatus'   => 'required',
             'noteNo'          => 'required|string|max:255',
             'receiveNo'       => 'required|string|max:255',
@@ -59,8 +60,10 @@ class PenerimaanController extends Controller
         list($kodeBarang, $namaBarang) = explode(' - ', $itemFullName, 2);
 
         // Simpan ke database dengan kunci yang sesuai
+        $bidangId = Auth::user()->bidang_id;
         try {
             $penerimaan = Penerimaan::create([
+                'bidang_id'         => $bidangId,
                 'tanggal_pembukuan' => $tanggalPembukuan,
                 'supplier'          => $request->supplier,
                 'no_faktur'         => $request->invoiceNo, // Gunakan $request->invoiceNo

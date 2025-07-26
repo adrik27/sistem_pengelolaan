@@ -18,6 +18,7 @@ class Penerimaan extends Model
      * Kolom yang boleh diisi secara massal.
      */
     protected $fillable = [
+        'bidang_id',
         'tanggal_pembukuan',
         'supplier',
         'no_faktur',

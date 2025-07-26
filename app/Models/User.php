@@ -59,7 +59,7 @@ class User extends Authenticatable
     }
     public function Department()
     {
-        return $this->belongsTo(Department::class, 'department_id', 'id');
+        return $this->belongsTo(Bidang::class, 'bidang_id', 'id');
     }
     public function Transaksi()
     {

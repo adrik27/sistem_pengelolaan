@@ -6,6 +6,7 @@ use App\Models\Penerimaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class LaporanController extends Controller
 {
@@ -34,8 +35,10 @@ class LaporanController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        $userBidangId = Auth::user()->bidang_id;
+
         // Query data berdasarkan rentang tanggal
-        $data = Penerimaan::whereBetween('tanggal_pembukuan', [
+        $data = Penerimaan::where('bidang_id', $userBidangId)->whereBetween('tanggal_pembukuan', [
             $request->tanggal_awal,
             $request->tanggal_akhir
         ])->orderBy('tanggal_pembukuan', 'asc')->get();

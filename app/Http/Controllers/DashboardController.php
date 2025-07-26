@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bidang;
 use App\Models\SaldoAwal;
 use App\Models\Transaksi;
 use App\Models\Department;
@@ -13,7 +14,7 @@ class DashboardController extends Controller
     public function tampil_dashboard()
     {
 
-        $departments = Department::where('status', 'aktif')
+        $departments = Bidang::where('status', 'aktif')
             ->whereNot('id', 1)
             ->get();
 
@@ -49,7 +50,7 @@ class DashboardController extends Controller
                 'Pengurangan'   => $pengeluaran ?? 0,
             ]);
         } else { // pengurus barang
-            $departments = Department::where('status', 'aktif')
+            $departments = Bidang::where('status', 'aktif')
                 ->whereNot('id', 1)
                 ->get();
 
