@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\SaldoAwal;
-use App\Models\Transaksi;
 use App\Models\DataBarang;
 use App\Models\MasterBarang;
 use App\Models\Penerimaan;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Pengeluaran;
+use App\Models\SaldoAwal;
 use App\Models\StokPersediaanBidang;
+use App\Models\Transaksi;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator; // <-- Tambahkan ini
 
 class TransaksiController extends Controller
@@ -280,70 +281,64 @@ class TransaksiController extends Controller
     // ### TRANSAKSI KELUAR ###
     public function tampil_transaksi_keluar(Request $request)
     {
-        $req_status = '';
+        $req_month = $request->input('bulan') ?? date('m');
         $req_year = $request->input('tahun') ?? date('Y');
 
         // tampil data barang jenis transaksi = keluar
         if (Auth::user()->jabatan_id == 3) { // user
-            $req_status = $request->input('status') ?? 'selesai';
-            $data = Transaksi::whereYear('tgl_transaksi', $req_year)
-                ->where('status', $req_status)
-                ->where('department_id', Auth::user()->department_id)
-                ->where('jenis_transaksi', 'keluar')
-                ->with('MasterBarang')
-                ->with('Department')
-                ->orderBy('tgl_transaksi', 'desc')
+            $data = Pengeluaran::whereMonth('tanggal_pembukuan', $req_month)
+                ->whereYear('tanggal_pembukuan', $req_year)
+                ->where('bidang_id', Auth::user()->bidang_id)
+                ->with('bidang')
+                ->orderBy('tanggal_pembukuan', 'desc')
                 ->get();
         } else { // admin
-            $req_status = $request->input('status') ?? 'selesai';
-            $data = Transaksi::whereYear('tgl_transaksi', $req_year)
-                ->where('status', $req_status)
-                ->where('jenis_transaksi', 'keluar')
-                ->with('MasterBarang')
-                ->with('Department')
-                ->orderBy('tgl_transaksi', 'desc')
-                ->get();
-        }
-
-
-        // ambil data barang berdasarkan transaksi masuk
-        if (Auth::user()->jabatan_id == 3) { //user
-            $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
-                ->select(
-                    'kode_barang',
-                    'nama_barang as nama',
-                    DB::raw('SUM(qty) as qty_digunakan')
-                )
-                ->where('department_id', Auth::user()->department_id)
-                ->where('status', 'selesai')
-                ->where('jenis_transaksi', 'masuk')
-                ->groupBy('kode_barang', 'nama_barang')
-                ->get();
-        } else { // admin
-            $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
-                ->select(
-                    'kode_barang',
-                    'nama_barang as nama',
-                    DB::raw('SUM(qty) as qty_digunakan')
-                )
-                ->where('status', 'selesai')
-                ->where('jenis_transaksi', 'masuk')
-                ->groupBy('kode_barang', 'nama_barang')
+            $data = Pengeluaran::whereMonth('tanggal_pembukuan', $req_month)
+                ->whereYear('tanggal_pembukuan', $req_year)
+                ->with('bidang')
+                ->orderBy('tanggal_pembukuan', 'desc')
                 ->get();
         }
 
         // ambil data barang
         $Data_Barang = DataBarang::orderBy('nama_barang', 'asc')->get();
 
+
+        // // ambil data barang berdasarkan transaksi masuk
+        // if (Auth::user()->jabatan_id == 3) { //user
+        //     $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
+        //         ->select(
+        //             'kode_barang',
+        //             'nama_barang as nama',
+        //             DB::raw('SUM(qty) as qty_digunakan')
+        //         )
+        //         ->where('department_id', Auth::user()->department_id)
+        //         ->where('status', 'selesai')
+        //         ->where('jenis_transaksi', 'masuk')
+        //         ->groupBy('kode_barang', 'nama_barang')
+        //         ->get();
+        // } else { // admin
+        //     $Data_Barang_By_Transaksi_Masuk = DB::table('transaksis')
+        //         ->select(
+        //             'kode_barang',
+        //             'nama_barang as nama',
+        //             DB::raw('SUM(qty) as qty_digunakan')
+        //         )
+        //         ->where('status', 'selesai')
+        //         ->where('jenis_transaksi', 'masuk')
+        //         ->groupBy('kode_barang', 'nama_barang')
+        //         ->get();
+        // }
+
+
+
         // ambil nilai budget awal tahun ini
-        $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)->where('tahun', now()->year)->first();
+        // $Budget_Awal = SaldoAwal::where('department_id', Auth::user()->department_id)->where('tahun', now()->year)->first();
 
         return view('Admin.Transaksi.tampil_transaksi_keluar', [
             'data'          =>  $data,
             'data_barang'   =>  $Data_Barang,
-            // 'data_barang'   =>  $Data_Barang_By_Transaksi_Masuk,
-            'budget_awal'   =>  $Budget_Awal,
-            'req_status'    =>  $req_status,
+            'req_month'     =>  $req_month,
             'req_year'      =>  $req_year,
         ]);
     }

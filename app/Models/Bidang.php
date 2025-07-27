@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\User;
+use App\Models\Penerimaan;
+use App\Models\Pengeluaran;
 use App\Models\SaldoAwal;
-use App\Models\Transaksi;
 use App\Models\StokPersediaanBidang;
+use App\Models\Transaksi;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Bidang extends Model
@@ -30,5 +32,15 @@ class Bidang extends Model
     public function StokPersediaan()
     {
         return $this->hasMany(StokPersediaanBidang::class);
+    }
+
+    public function Pengeluaran()
+    {
+        return $this->hasMany(Pengeluaran::class);
+    }
+
+    public function Penerimaan()
+    {
+        return $this->hasMany(Penerimaan::class);
     }
 }

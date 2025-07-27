@@ -7,6 +7,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanPersediaanController;
 use App\Http\Controllers\MasterBarangController;
 use App\Http\Controllers\PenerimaanController;
+use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\SaldoAwalController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\TransaksiController;
@@ -87,4 +88,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('/penerimaan/store', [PenerimaanController::class, 'store'])->name('penerimaan.store');
     Route::get('/laporan/penerimaan/data', [LaporanController::class, 'getDataPenerimaan'])->name('laporan.penerimaan.data');
+
+    Route::post('/pengeluaran/store', [PengeluaranController::class, 'store'])->name('pengeluaran.store');
+    Route::post('/pengeluaran/delete/{id}', [PengeluaranController::class, 'delete'])->name('pengeluaran.delete');
 });

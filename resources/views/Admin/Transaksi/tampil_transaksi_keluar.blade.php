@@ -4,6 +4,13 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+    <style>
+        .dropdown .dropdown-toggle::after {
+            display: none;
+
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -53,25 +60,29 @@
                                     <div class="col-2 align-self-center pt-3">
                                         <h5>Pilih Bulan Aktif</h5>
                                     </div>
-                                    <div class="col-3">
-                                        <label for="bulan">Bulan</label>
+                                    <div class="col-3 pt-3">
+                                        <label for="bulan" class="d-none">Bulan</label>
                                         <select name="bulan" id="bulan" class="form-control" style="font-size: 14px;">
-                                            <option>Silahkan pilih bulan aktif</option>
-                                            <option value="1" selected="">Januari</option>
-                                            <option value="2">Februari</option>
-                                            <option value="3">Maret</option>
-                                            <option value="4">April</option>
-                                            <option value="5">Mei</option>
-                                            <option value="6">Juni</option>
-                                            <option value="7">Juli</option>
-                                            <option value="8">Agustus</option>
-                                            <option value="9">September</option>
-                                            <option value="10">Oktober</option>
-                                            <option value="11">November</option>
-                                            <option value="12">Desember</option>
+                                            <option value="" disabled selected>Silahkan pilih bulan aktif</option>
+                                            <option value="1" {{ $req_month == 1 ? 'selected' : '' }}>Januari</option>
+                                            <option value="2" {{ $req_month == 2 ? 'selected' : '' }}>Februari</option>
+                                            <option value="3" {{ $req_month == 3 ? 'selected' : '' }}>Maret</option>
+                                            <option value="4" {{ $req_month == 4 ? 'selected' : '' }}>April</option>
+                                            <option value="5" {{ $req_month == 5 ? 'selected' : '' }}>Mei</option>
+                                            <option value="6" {{ $req_month == 6 ? 'selected' : '' }}>Juni</option>
+                                            <option value="7" {{ $req_month == 7 ? 'selected' : '' }}>Juli</option>
+                                            <option value="8" {{ $req_month == 8 ? 'selected' : '' }}>Agustus</option>
+                                            <option value="9" {{ $req_month == 9 ? 'selected' : '' }}>September
+                                            </option>
+                                            <option value="10" {{ $req_month == 10 ? 'selected' : '' }}>Oktober
+                                            </option>
+                                            <option value="11" {{ $req_month == 11 ? 'selected' : '' }}>November
+                                            </option>
+                                            <option value="12" {{ $req_month == 12 ? 'selected' : '' }}>Desember
+                                            </option>
                                         </select>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-3 d-none">
                                         @php
                                             $tahunSekarang = date('Y');
                                         @endphp
@@ -111,7 +122,7 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
-                                        <form id="formCreate" method="POST" action="{{ url('/pengeluaran/create') }}">
+                                        <form id="formCreate" method="POST" action="{{ url('/pengeluaran/store') }}">
                                             @csrf
                                             <div class="modal-body">
                                                 <div class="row">
@@ -125,16 +136,54 @@
                                                                     <div class="col-lg-3 col-md-4 col-sm-12">
                                                                         <input type="number" class="form-control"
                                                                             name="tanggal" id="tanggal" min="1"
-                                                                            max="31" required>
+                                                                            max="31" value="{{ date('d') }}"
+                                                                            required>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-md-4 col-sm-12">
+                                                                        <select class="form-select" id="bulan"
+                                                                            name="bulan">
+                                                                            <option value="1"
+                                                                                {{ date('m') == 1 ? 'selected' : '' }}>
+                                                                                Januari</option>
+                                                                            <option value="2"
+                                                                                {{ date('m') == 2 ? 'selected' : '' }}>
+                                                                                Februari</option>
+                                                                            <option value="3"
+                                                                                {{ date('m') == 3 ? 'selected' : '' }}>
+                                                                                Maret</option>
+                                                                            <option value="4"
+                                                                                {{ date('m') == 4 ? 'selected' : '' }}>
+                                                                                April</option>
+                                                                            <option value="5"
+                                                                                {{ date('m') == 5 ? 'selected' : '' }}>
+                                                                                Mei</option>
+                                                                            <option value="6"
+                                                                                {{ date('m') == 6 ? 'selected' : '' }}>
+                                                                                Juni</option>
+                                                                            <option value="7"
+                                                                                {{ date('m') == 7 ? 'selected' : '' }}>
+                                                                                Juli</option>
+                                                                            <option value="8"
+                                                                                {{ date('m') == 8 ? 'selected' : '' }}>
+                                                                                Agustus</option>
+                                                                            <option value="9"
+                                                                                {{ date('m') == 9 ? 'selected' : '' }}>
+                                                                                September</option>
+                                                                            <option value="10"
+                                                                                {{ date('m') == 10 ? 'selected' : '' }}>
+                                                                                Oktober</option>
+                                                                            <option value="11"
+                                                                                {{ date('m') == 11 ? 'selected' : '' }}>
+                                                                                November</option>
+                                                                            <option value="12"
+                                                                                {{ date('m') == 12 ? 'selected' : '' }}>
+                                                                                Desember</option>
+                                                                        </select>
                                                                     </div>
                                                                     <div class="col-lg-3 col-md-4 col-sm-12">
                                                                         <input type="number" class="form-control"
-                                                                            name="bulan" id="bulan" disabled>
-                                                                    </div>
-                                                                    <div class="col-lg-3 col-md-4 col-sm-12">
-                                                                        <input type="number" class="form-control"
-                                                                            name="year" id="year"
-                                                                            value="{{ date('Y') }}" disabled>
+                                                                            name="tahun" id="tahun"
+                                                                            value="{{ date('Y') }}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -148,8 +197,8 @@
                                                             <div class="col-12 mt-2">
                                                                 <div class="row">
                                                                     <div class="col-12">
-                                                                        <select name="status" id="status"
-                                                                            class="form-control">
+                                                                        <select name="status_pengeluaran"
+                                                                            id="status_pengeluaran" class="form-control">
                                                                             <option value="" selected>Pilih Status
                                                                             </option>
                                                                             <option value="pemakaian">Pemakaian</option>
@@ -170,7 +219,7 @@
                                                             <div class="col-12 mt-2">
                                                                 <div class="row">
                                                                     <div class="col-12">
-                                                                        <select name="nama_barang" id="NamaBarang"
+                                                                        <select name="kode_barang" id="NamaBarang"
                                                                             class="form-control">
                                                                         </select>
                                                                     </div>
@@ -220,727 +269,286 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- @if (Auth::user()->jabatan_id == 3)
-                                <div class="tambah-data">
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#TambahData">
-                                        Tambah Data </button>
-
-                                    <div class="modal fade" id="TambahData" tabindex="-1" aria-labelledby="TambahDataLabel"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog modal-xl">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="TambahDataLabel">Tambah Data Transaksi
-                                                        Pengeluaran
-                                                    </h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <form id="formCreate" method="POST"
-                                                    action="{{ url('/pengeluaran/create') }}">
-                                                    @csrf
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-12 d-flex justify-content-center gap-3">
-                                                                <div class="label">
-                                                                    Total Saldo Tersedia :
-                                                                </div>
-                                                                <div class="value-buget" id="budget-awal"
-                                                                    data-budget="{{ $budget_awal->saldo_digunakan ?? 0 }}">
-                                                                    {{ currency($budget_awal->saldo_digunakan ?? 0) }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <table
-                                                            class="table table-bordered table-hover table-responsive mt-3"
-                                                            id="table-create">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Nama</th>
-                                                                    <th>Harga</th>
-                                                                    <th>Qty</th>
-                                                                    <th>Total Harga</th>
-                                                                    <th>Aksi</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>
-                                                                        <select class="form-control" name="kode[]"
-                                                                            id="kode" required>
-                                                                            <option value="">Pilih Barang</option>
-                                                                            @foreach ($data_barang as $barang)
-                                                                                <option value="{{ $barang->kode_barang }}">
-                                                                                    {{ ucwords($barang->nama) }}</option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="text"
-                                                                            class="form-control harga currency-input"
-                                                                            readonly>
-                                                                        <input type="hidden" class="harga-hidden"
-                                                                            name="harga[]">
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="number" min="1"
-                                                                            class="form-control qty" name="qty[]"
-                                                                            id="qty" required>
-                                                                        <input type="hidden" class="stok-hidden"
-                                                                            value="">
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="hidden" class="form-control"
-                                                                            name="total_harga[]" id="total_harga_hidden"
-                                                                            readonly>
-                                                                        <input type="text" class="form-control"
-                                                                            id="total_harga" readonly>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-danger"
-                                                                            onclick="HapusRow(this)">X</button>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                            <tfoot>
-                                                                <tr class="bg-light">
-                                                                    <td colspan="3" class="text-end">
-                                                                        Total Biaya
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="total-biaya">
-                                                                            <input type="text" class="form-control"
-                                                                                readonly id="total_biaya" value="0">
-
-                                                                            <input type="hidden" name="saldo_awal"
-                                                                                class="form-control"
-                                                                                value="{{ $budget_awal->saldo_awal ?? 0 }}">
-                                                                            <input type="hidden" name="saldo_digunakan"
-                                                                                class="form-control"
-                                                                                id="total_biaya_hidden">
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="7">
-                                                                        <button type="button"
-                                                                            class="btn btn-primary d-block text-left"
-                                                                            onclick="TambahRow()">+ Tambah
-                                                                            Baris</button>
-                                                                    </td>
-                                                                </tr>
-                                                            </tfoot>
-                                                        </table>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="submit" form="formCreate"
-                                                            class="btn btn-primary simpan"
-                                                            onclick="createform(this)">Simpan</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @else
-                            @endif --}}
                         </div>
-                    </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered table-striped" id="table">
-                            <thead>
-                                <tr class="text-center">
-                                    <th>TGL PEMBUKUAN</th>
-                                    <th>NAMA BARANG(SATUAN)</th>
-                                    <th>STATUS</th>
-                                    <th>QTY</th>
-                                    <th>KETERANGAN</th>
-                                    <th>ACTION</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> <!-- row -->
-
-    <!-- Modal Update Data -->
-    @foreach ($data as $item)
-        <div class="modal fade" id="update{{ $item->id }}" tabindex="-1"
-            aria-labelledby="update{{ $item->id }}Label" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="update{{ $item->id }}Label">Edit Data Transaksi Pengeluaran
-                        </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form id="formUpdate{{ $item->id }}" method="POST"
-                        action="{{ url('/pengeluaran/update/' . $item->id) }}">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-12 d-flex justify-content-center gap-3">
-                                    <div class="label">
-                                        Total Saldo Tersedia :
-                                    </div>
-                                    <div class="value-buget" id="budget-awal-{{ $item->id }}"
-                                        data-budget="{{ $budget_awal->saldo_digunakan ?? 0 }}">
-                                        {{ currency($budget_awal->saldo_digunakan ?? 0) }}
-                                    </div>
-                                </div>
-                            </div>
-                            <table class="table table-bordered table-responsive mt-3"
-                                id="table-update-{{ $item->id }}">
+                        <div class="table-responsive">
+                            <table class="table table-group-dividered" id="table">
                                 <thead>
-                                    <tr>
-                                        <th>Nama</th>
-                                        <th>Harga</th>
-                                        <th>Qty</th>
-                                        <th>Total Harga</th>
+                                    <tr class="text-center">
+                                        <th class="text-dark">TGL PEMBUKUAN</th>
+                                        <th class="text-dark">NAMA BARANG (SATUAN)</th>
+                                        <th class="text-dark">STATUS</th>
+                                        <th class="text-dark">QTY</th>
+                                        <th class="text-dark">KETERANGAN</th>
+                                        <th class="text-dark">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <select class="form-control" name="kode" id="kode-{{ $item->id }}"
-                                                required disabled>
-                                                <option value="">Pilih Barang</option>
-                                                @foreach ($data_barang as $barang)
-                                                    <option value="{{ $barang->kode_barang }}"
-                                                        {{ $barang->kode_barang == $item->kode_barang ? 'selected' : '' }}
-                                                        data-stok="{{ $barang->qty_digunakan ?? 0 }}">
-                                                        {{ ucwords($barang->nama) }}
-                                                    </option>
-
-                                                    {{-- <input type="hidden" class="stok-hidden"
-                                            value="{{ $barang->qty_digunakan ?? 0  }}"> --}}
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control harga currency-input"
-                                                value="{{ currency($item->harga_satuan) }}" readonly>
-                                            <input type="hidden" class="harga-hidden" name="harga"
-                                                value="{{ $item->harga_satuan }}">
-                                        </td>
-                                        <td>
-                                            <input type="number" min="1" class="form-control qty" name="qty"
-                                                id="qty-{{ $item->id }}" value="{{ $item->qty }}" required>
-                                        </td>
-                                        <td>
-                                            <input type="hidden" class="form-control" name="total_harga"
-                                                id="total_harga_hidden-{{ $item->id }}"
-                                                value="{{ $item->total_harga }}">
-                                            <input type="text" class="form-control"
-                                                id="total_harga-{{ $item->id }}"
-                                                value="{{ currency($item->total_harga) }}" readonly>
-                                        </td>
-                                    </tr>
+                                    @foreach ($data as $item)
+                                        <tr class="text-center">
+                                            <td class="align-middle text-secondary">
+                                                {{ $item->tanggal_pembukuan->format('d-m-Y') }}</td>
+                                            <td class="align-middle text-secondary">
+                                                {{ $item->kode_barang }}
+                                                <br>
+                                                {{ $item->nama_barang }}
+                                            </td>
+                                            <td class="align-middle text-secondary">
+                                                {{ strtoupper($item->status_pengeluaran) }}</td>
+                                            <td class="align-middle text-secondary">{{ $item->qty }}</td>
+                                            <td class="align-middle text-secondary">{{ $item->keterangan }}</td>
+                                            <td class="align-middle text-secondary">
+                                                <div class="dropdown me-1 hide-arrow">
+                                                    <button class="btn btn-secondary btn-sm dropdown-toggle"
+                                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i data-feather="more-vertical"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <button type="button" data-bs-toggle="modal"
+                                                                data-bs-target="#ModalUpdate{{ $item->id }}"
+                                                                class="dropdown-item">
+                                                                <i class="bi bi-pencil-fill me-2"></i>
+                                                                Edit
+                                                            </button>
+                                                        </li>
+                                                        <li class="dropdown-divider"></li>
+                                                        <li>
+                                                            <form action="{{ url('pengeluaran/delete/' . $item->id) }}"
+                                                                method="post">
+                                                                @csrf
+                                                                <button onClick="deleteform(this)"
+                                                                    class="dropdown-item text-danger">
+                                                                    <i class="bi bi-trash-fill me-2"></i>
+                                                                    Delete
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
-                                <tfoot>
-                                    <tr class="bg-light">
-                                        <td colspan="3" class="text-end">Total Biaya</td>
-                                        <td>
-                                            <div class="total-biaya">
-                                                <input type="text" class="form-control" readonly
-                                                    id="total_biaya-{{ $item->id }}"
-                                                    value="{{ currency($item->total_harga) }}">
-                                                <input type="hidden" name="saldo_awal" class="form-control"
-                                                    value="{{ $budget_awal->saldo_awal ?? 0 }}">
-                                                <input type="hidden" name="saldo_digunakan" class="form-control"
-                                                    id="total_biaya_hidden-{{ $item->id }}"
-                                                    value="{{ $item->total_harga }}">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            <button type="submit" form="formUpdate{{ $item->id }}" class="btn btn-primary simpan"
-                                onclick="updateform(this, {{ $item->id }})">Simpan</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    @endforeach
-@endsection
+        </div> <!-- row -->
+
+        <!-- Modal Update Data -->
+        @foreach ($data as $item)
+            <div class="modal fade" id="ModalUpdate{{ $item->id }}" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Update Data</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="post" id="formUpdate">
+                                @csrf
+                                <div class="mb-3">
+                                    <label class="form-label">Tanggal Pembukuan</label>
+                                    <input type="date" class="form-control" name="tanggal_pembukuan">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Nama Barang</label>
+                                    <input type="text" class="form-control" name="NamaBarang">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Keterangan</label>
+                                    <input type="text" class="form-control" name="keterangan">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status Pengeluaran</label>
+                                    <select class="form-select" name="status_pengeluaran">
+                                        <option value="Pengeluaran">Pengeluaran</option>
+                                        <option value="Retur">Retur</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Qty</label>
+                                    <input type="number" class="form-control" name="qty">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endsection
 
 
 
-@section('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    @section('js')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            $('#table').DataTable();
-        });
-
-        $(document).ready(function() {
-            // Inisialisasi Select2 untuk dropdown NamaBarang
-            $('#NamaBarang').select2({
-                // Tentukan tema yang akan digunakan
-                theme: 'bootstrap-5',
-
-                // Targetkan elemen modal sebagai induk dari dropdown
-                // Ini SANGAT PENTING agar search box di dalam modal berfungsi
-                dropdownParent: $('#TambahData'),
-
-                // Teks placeholder
-                placeholder: 'Ketik untuk mencari barang...',
-
-                // Pengaturan AJAX untuk mengambil data
-                ajax: {
-                    url: '/seluruh_data_barang', // Route yang dituju
-                    dataType: 'json',
-                    delay: 250, // Jeda sebelum request dikirim setelah user mengetik
-
-                    // Fungsi untuk memproses data yang akan dikirim ke server
-                    data: function(params) {
-                        return {
-                            search: params
-                                .term // Kirim teks yang diketik user sebagai parameter 'search'
-                        };
-                    },
-
-                    // Fungsi untuk memformat data yang diterima dari server
-                    processResults: function(data) {
-
-                        // Ubah format data dari server agar sesuai dengan format Select2
-                        return {
-                            results: $.map(data, function(item) {
-                                return {
-                                    id: item.id, // ID barang
-                                    text: `${item.kode_barang} - ${item.nama_barang}` // Teks yang ditampilkan
-                                }
-                            })
-                        };
-                    },
-                    cache: true // Aktifkan cache untuk request yang sama
-                }
-            });
-        });
-
-        function tolakForm(button) {
-            event.preventDefault();
-
-            const form = button.closest("form");
-
-            Swal.fire({
-                title: "Apakah Anda yakin menolak data ini ?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, Tolak!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        }
-
-        function verifikasiform(button) {
-            event.preventDefault();
-
-            const form = button.closest("form");
-
-            Swal.fire({
-                title: "Apakah Anda yakin verifikasi data ?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, Verifikasi!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        }
-
-        function createform(button) {
-            event.preventDefault();
-
-            const form = document.getElementById(button.getAttribute("form"));
-
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            Swal.fire({
-                title: "Apakah Anda yakin menambah data ?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, save!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        }
-
-        function updateform(button) {
-            event.preventDefault();
-
-            const form = document.getElementById(button.getAttribute("form"));
-
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            Swal.fire({
-                title: "Apakah Anda yakin melakukan update ini ?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, update!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        }
-
-        function deleteform(button) {
-            event.preventDefault();
-
-            const form = button.closest('form');
-
-            Swal.fire({
-                title: "Apakah Anda yakin menghapus data ?",
-                text: "Data yang dihapus tidak dapat dikembalikan!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, hapus!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            // modal tambah
-            const tableBody = document.querySelector("#table-create tbody");
-
-            tableBody.addEventListener("change", function(e) {
-                if (e.target && e.target.matches("select[name='kode[]']")) {
-                    const row = e.target.closest("tr");
-                    const kode = e.target.value;
-
-                    // AJAX ambil harga barang
-                    fetch(`/get-harga-barang-keluar/${kode}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            const hargaInput = row.querySelector(".harga");
-                            const hargaHidden = row.querySelector(".harga-hidden");
-                            const stokHidden = row.querySelector(".stok-hidden");
-
-                            hargaHidden.value = data.harga;
-                            hargaInput.value = formatRupiah(data.harga);
-                            stokHidden.value = data.sisa_qty;
-
-                            updateTotalPerRow(row);
-                            updateTotalBiaya();
-                        })
-                }
+        <script>
+            $(document).ready(function() {
+                $('#table').DataTable();
             });
 
-            tableBody.addEventListener("input", function(e) {
-                if (e.target && e.target.matches("input[name='qty[]']")) {
-                    const row = e.target.closest("tr");
-                    const qtyInput = e.target;
-                    const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
-                    const kodeBarang = row.querySelector("select[name='kode[]']").value;
-                    const totalQty = getTotalQtyPerBarang(kodeBarang);
+            $(document).ready(function() {
+                // Inisialisasi Select2 untuk dropdown NamaBarang
+                $('#NamaBarang').select2({
+                    // Tentukan tema yang akan digunakan
+                    theme: 'bootstrap-5',
 
-                    if (totalQty > stok) {
-                        alert(
-                            `Total Qty untuk barang ini melebihi stok tersedia (${stok}). Total saat ini: ${totalQty}`
-                        );
-                        qtyInput.classList.add("is-invalid");
-                        qtyInput.setCustomValidity("Qty melebihi stok");
+                    // Targetkan elemen modal sebagai induk dari dropdown
+                    // Ini SANGAT PENTING agar search box di dalam modal berfungsi
+                    dropdownParent: $('#TambahData'),
 
-                        document.querySelector("button[onclick='TambahRow()']").disabled = true;
-                        document.querySelector(".simpan").disabled = true;
-                    } else {
-                        qtyInput.classList.remove("is-invalid");
-                        qtyInput.setCustomValidity("");
+                    // Teks placeholder
+                    placeholder: 'Ketik untuk mencari barang...',
 
-                        updateTotalPerRow(row);
-                        updateTotalBiaya();
-                    }
-                }
-            });
-            // end modal tambah
+                    // Pengaturan AJAX untuk mengambil data
+                    ajax: {
+                        url: '/seluruh_data_barang', // Route yang dituju
+                        dataType: 'json',
+                        delay: 250, // Jeda sebelum request dikirim setelah user mengetik
 
-            // modal update
-            document.querySelectorAll("table[id^='table-update-']").forEach(table => {
-                const tbody = table.querySelector("tbody");
-                const id = table.id.split("table-update-")[1];
+                        // Fungsi untuk memproses data yang akan dikirim ke server
+                        data: function(params) {
+                            return {
+                                search: params
+                                    .term // Kirim teks yang diketik user sebagai parameter 'search'
+                            };
+                        },
 
-                tbody.addEventListener("change", function(e) {
-                    if (e.target.matches("select[name='kode']")) {
-                        handleSelectUpdate(table, id, e.target);
-                    }
-                });
-                tbody.addEventListener("input", function(e) {
-                    if (e.target.matches("input[name='qty']")) {
-                        handleInputUpdate(table, id, e.target);
+                        // Fungsi untuk memformat data yang diterima dari server
+                        processResults: function(data) {
+
+                            // Ubah format data dari server agar sesuai dengan format Select2
+                            return {
+                                results: $.map(data, function(item) {
+                                    return {
+                                        id: item.id, // ID barang
+                                        text: `${item.kode_barang} - ${item.nama_barang}` // Teks yang ditampilkan
+                                    }
+                                })
+                            };
+                        },
+                        cache: true // Aktifkan cache untuk request yang sama
                     }
                 });
             });
-            // end modal update
 
-        });
+            function tolakForm(button) {
+                event.preventDefault();
 
-        // modal tambah
-        function getTotalBiaya() {
-            let total = 0;
-            document.querySelectorAll("#table-create tbody tr").forEach(row => {
-                const harga = parseAngka(row.querySelector(".harga-hidden").value);
-                const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
-                total += harga * qty;
-            });
-            return total;
-        }
+                const form = button.closest("form");
 
-        function getTotalQtyPerBarang(kodeBarang) {
-            let total = 0;
-            document.querySelectorAll("#table-create tbody tr").forEach(row => {
-                const kode = row.querySelector("select[name='kode[]']").value;
-                const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
-                if (kode === kodeBarang) {
-                    total += qty;
-                }
-            });
-            return total;
-        }
-
-        function updateTotalPerRow(row) {
-            const harga = parseAngka(row.querySelector(".harga-hidden").value);
-            const qty = parseInt(row.querySelector("input[name='qty[]']").value) || 0;
-            const total = harga * qty;
-
-            row.querySelector("#total_harga_hidden").value = total;
-            row.querySelector("#total_harga").value = formatRupiah(total);
-        }
-
-        function updateTotalBiaya() {
-            const total = getTotalBiaya();
-            const budget = parseInt(document.querySelector("#budget-awal").dataset.budget);
-
-            const btnTambah = document.querySelector("button[onclick='TambahRow()']");
-            const btnSimpan = document.querySelector(".simpan");
-
-            const isQtyValid = [...document.querySelectorAll("#table-create tbody tr")].every(row => {
-                const kode = row.querySelector("select[name='kode[]']").value;
-                const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
-                const totalQty = getTotalQtyPerBarang(kode);
-                return totalQty <= stok;
-            });
-
-            document.querySelector("#total_biaya").value = formatRupiah(total);
-            document.querySelector("#total_biaya_hidden").value = total;
-
-            if (total > budget || !isQtyValid) {
-                btnTambah.disabled = true;
-                btnSimpan.disabled = true;
-                document.querySelector("#total_biaya").style.color = 'red';
-            } else {
-                btnTambah.disabled = false;
-                btnSimpan.disabled = false;
-                document.querySelector("#total_biaya").style.color = 'black';
-            }
-        }
-
-        function TambahRow() {
-            const totalBiaya = getTotalBiaya(); // jumlah total harga semua baris
-            const budget = parseInt(document.querySelector("#budget-awal").dataset.budget);
-
-            if (totalBiaya >= budget) {
-                alert("Total biaya sudah mencapai batas budget. Tidak bisa menambah baris lagi.");
-                return;
-            }
-
-            const table = document.querySelector("#table-create tbody");
-            const newRow = table.rows[0].cloneNode(true);
-
-            newRow.querySelector("select").value = "";
-            newRow.querySelector(".harga").value = "";
-            newRow.querySelector(".harga-hidden").value = "";
-            newRow.querySelector(".stok-hidden").value = "";
-            newRow.querySelector("input[name='qty[]']").value = "";
-            newRow.querySelector("#total_harga").value = "";
-            newRow.querySelector("#total_harga_hidden").value = "";
-
-            table.appendChild(newRow);
-            updateTotalBiaya();
-        }
-
-        function HapusRow(button) {
-            const table = document.querySelector("#table-create tbody");
-            if (table.rows.length > 1) {
-                button.closest("tr").remove();
-                updateTotalBiaya();
-            } else {
-                alert("Minimal satu baris harus ada!");
-            }
-        }
-        // end modal tambah
-
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 0
-            }).format(angka);
-        }
-
-        function parseAngka(str) {
-            return parseInt(str.replace(/[^\d]/g, "")) || 0;
-        }
-        // _________________________________________________________________
-
-        // modal update
-        function updateTotalPerRowUpdate(row, id) {
-            const harga = parseAngka(row.querySelector(".harga-hidden").value);
-            const qty = parseInt(row.querySelector("input[name='qty']").value) || 0;
-            const total = harga * qty;
-
-            row.querySelector(`#total_harga_hidden-${id}`).value = total;
-            row.querySelector(`#total_harga-${id}`).value = formatRupiah(total);
-        }
-
-        function updateTotalBiayaUpdate(id) {
-            const table = document.querySelector(`#table-update-${id}`);
-            const rows = table.querySelectorAll("tbody tr");
-
-            let total = 0;
-            let isValid = true;
-
-            rows.forEach(row => {
-                const harga = parseAngka(row.querySelector(".harga-hidden").value);
-                const qty = parseInt(row.querySelector("input[name='qty']").value) || 0;
-                const kode = row.querySelector("select[name='kode']").value;
-                const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
-
-                if (qty > stok) {
-                    isValid = false;
-                    row.querySelector("input[name='qty']").classList.add("is-invalid");
-                    row.querySelector("input[name='qty']").setCustomValidity("Qty melebihi stok");
-                } else {
-                    row.querySelector("input[name='qty']").classList.remove("is-invalid");
-                    row.querySelector("input[name='qty']").setCustomValidity("");
-                }
-
-                total += harga * qty;
-
-                updateTotalPerRowUpdate(row, id); // perbarui tampilan total di setiap baris
-            });
-
-            const budget = parseInt(document.querySelector(`#budget-awal-${id}`).dataset.budget);
-            const btn = document.querySelector(`#update${id} .simpan`);
-            const totalBiayaInput = document.querySelector(`#total_biaya-${id}`);
-            const totalHiddenInput = document.querySelector(`#total_biaya_hidden-${id}`);
-
-            totalBiayaInput.value = formatRupiah(total);
-            totalHiddenInput.value = total;
-
-            if (total > budget || !isValid) {
-                btn.disabled = true;
-                totalBiayaInput.style.color = 'red';
-            } else {
-                btn.disabled = false;
-                totalBiayaInput.style.color = 'black';
-            }
-        }
-
-        function handleSelectUpdate(table, id, selectEl) {
-            const row = selectEl.closest("tr");
-            const kode = selectEl.value;
-
-            // Reset qty & total saat barang diganti
-            row.querySelector("input[name='qty']").value = "";
-            row.querySelector(".harga-hidden").value = "";
-            row.querySelector(".harga").value = "";
-            row.querySelector(".stok-hidden").value = "";
-            row.querySelector(`#total_harga_hidden-${id}`).value = "";
-            row.querySelector(`#total_harga-${id}`).value = "0";
-
-            fetch(`/get-harga-barang-keluar/${kode}`)
-                .then(res => res.json())
-                .then(data => {
-                    row.querySelector(".harga-hidden").value = data.harga;
-                    row.querySelector(".harga").value = formatRupiah(data.harga);
-                    row.querySelector(".stok-hidden").value = data.sisa_qty;
-
-                    // Ambil ulang qty jika sudah diisi, lalu hitung total
-                    const qty = parseInt(row.querySelector("input[name='qty']").value) || 0;
-                    if (qty > 0) {
-                        updateTotalPerRowUpdate(row);
-                        updateTotalBiayaUpdate(id);
+                Swal.fire({
+                    title: "Apakah Anda yakin menolak data ini ?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, Tolak!",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
                     }
                 });
-        }
-
-
-        function handleInputUpdate(table, id, qtyInput) {
-            const row = qtyInput.closest("tr");
-            // const stok = parseInt(row.querySelector(".stok-hidden").value) || 0;
-            // const kode = row.querySelector("select[name='kode']").value;
-            const select = document.getElementById('kode-{{ $item->id ?? '' }}');
-            const selectedOption = select.options[select.selectedIndex];
-            const stok = selectedOption.getAttribute('data-stok');
-            const totalQty = parseInt(qtyInput.value) || 0;
-
-            if (totalQty > stok) {
-                alert(`Qty melebihi stok tersedia (${stok}).`);
-                qtyInput.classList.add("is-invalid");
-                qtyInput.setCustomValidity("Qty melebihi stok");
-                document.querySelector("button[onclick='updateform(this, {{ $item->id ?? '' }})']").disabled = true;
-            } else {
-                qtyInput.classList.remove("is-invalid");
-                qtyInput.setCustomValidity("");
-                document.querySelector("button[onclick='updateform(this, {{ $item->id ?? '' }})']").disabled = false;
-
-                updateTotalPerRowUpdate(row, id);
-                updateTotalBiayaUpdate(id);
             }
-        }
-        // end modal update
-    </script>
-@endsection
+
+            function verifikasiform(button) {
+                event.preventDefault();
+
+                const form = button.closest("form");
+
+                Swal.fire({
+                    title: "Apakah Anda yakin verifikasi data ?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, Verifikasi!",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
+            function createform(button) {
+                event.preventDefault();
+
+                const form = document.getElementById(button.getAttribute("form"));
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Apakah Anda yakin menambah data ?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, save!",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
+            function updateform(button) {
+                event.preventDefault();
+
+                const form = document.getElementById(button.getAttribute("form"));
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Apakah Anda yakin melakukan update ini ?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, update!",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
+            function deleteform(button) {
+                event.preventDefault();
+
+                const form = button.closest('form');
+
+                Swal.fire({
+                    title: "Apakah Anda yakin menghapus data ?",
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, hapus!",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        </script>
+    @endsection
