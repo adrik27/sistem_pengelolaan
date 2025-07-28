@@ -90,5 +90,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/laporan/penerimaan/data', [LaporanController::class, 'getDataPenerimaan'])->name('laporan.penerimaan.data');
 
     Route::post('/pengeluaran/store', [PengeluaranController::class, 'store'])->name('pengeluaran.store');
+    Route::post('/pengeluaran/update/{id}', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
     Route::post('/pengeluaran/delete/{id}', [PengeluaranController::class, 'delete'])->name('pengeluaran.delete');
 });

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Bidang;
+use App\Models\DataBarang;
 use Illuminate\Database\Eloquent\Model;
 
 class Pengeluaran extends Model
@@ -19,5 +20,10 @@ class Pengeluaran extends Model
     public function bidang()
     {
         return $this->belongsTo(Bidang::class, 'bidang_id', 'id');
+    }
+
+    public function barang()
+    {
+        return $this->belongsTo(DataBarang::class, 'kode_barang', 'kode_barang');
     }
 }

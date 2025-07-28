@@ -53,6 +53,43 @@ class PengeluaranController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+    {
+        $tanggal    = $request->tanggal;
+        $bulan      = $request->bulan;
+        $bulan      = str_pad($bulan, 2, '0', STR_PAD_LEFT);
+        $tahun      = $request->tahun;
+
+        $tanggal_pembukuan = $tahun . '-' . $bulan . '-' . $tanggal;
+
+        $validasiData = $request->validate([
+            'qty' => 'required',
+        ]);
+
+        $validasiData['tanggal_pembukuan'] = $tanggal_pembukuan;
+        $validasiData['keterangan'] = $request->keterangan;
+        $validasiData['status_pengeluaran'] = $request->status_pengeluaran;
+
+        $dataBarang = DataBarang::where('id', $request->kode_barang)->first();
+
+        $validasiData['kode_barang'] = $dataBarang->kode_barang;
+        $validasiData['nama_barang'] = $dataBarang->nama_barang;
+        $validasiData['bidang_id'] = Auth::user()->bidang_id;
+
+        // update
+        $a = Pengeluaran::where('id', $id)->update($validasiData);
+
+        if ($a) {
+            return redirect()->back()->with('success', 'Pengeluaran berhasil diupdate.');
+        } else {
+            return redirect()->back()->with('error', 'Pengeluaran gagal diupdate.');
+        }
+
+        return redirect()->back()->with([
+            'error' => 'Pengeluaran gagal diupdate',
+        ]);
+    }
+
     public function delete($id)
     {
         $a = Pengeluaran::find($id)->delete();
