@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::create('stok_persediaan_bidangs', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_barang', 50)->nullable();
-            $table->foreignId('department_id')->nullable();
-            $table->decimal('qty', 15, 0)->default(0);
+            $table->string('kode_kelompok')->nullable();
+            $table->string('kode_barang', 50);
+            $table->foreignId('bidang_id')->nullable()->constrained('bidangs')->onDelete('set null');
+            $table->string('nama_barang');
+            $table->string('satuan');
+            $table->decimal('qty_sisa', 15, 2)->default(0);
+            $table->decimal('harga_satuan', 15, 2)->default(0);
             $table->timestamps();
         });
     }

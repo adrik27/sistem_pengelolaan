@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataBarang;
 use App\Models\Penerimaan;
+use App\Models\StokPersediaanBidang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon; // Import Carbon untuk manipulasi tanggal
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PenerimaanController extends Controller
@@ -30,6 +33,7 @@ class PenerimaanController extends Controller
             'itemQty'         => 'required|numeric|min:0',
             'itemPrice'       => 'required|numeric|min:0',
             'itemDescription' => 'nullable|string',
+            'kelompokBarang'  => 'required',
         ]);
 
         // ... (sisa kode validasi sama) ...
@@ -56,11 +60,17 @@ class PenerimaanController extends Controller
         $tanggalPembukuan = Carbon::create($request->bookingYear, $monthNumber, $request->bookingDay)->format('Y-m-d');
 
         // ... (kode untuk memproses nama barang tetap sama) ...
-        $itemFullName = $request->input('itemNameText');
-        list($kodeBarang, $namaBarang) = explode(' - ', $itemFullName, 2);
+        $itemFullName = $request->input('itemNameText') ?? '';
+        $itemParts = explode(' - ', $itemFullName, 2);
+        $kodeBarang = trim($itemParts[0] ?? '');
+        $namaBarang = trim($itemParts[1] ?? '');
 
         // Simpan ke database dengan kunci yang sesuai
         $bidangId = Auth::user()->bidang_id;
+        $qty = str_replace(',', '.', $request->itemQty);
+        $harga = str_replace(',', '.', $request->itemPrice);
+
+        DB::beginTransaction();
         try {
             $penerimaan = Penerimaan::create([
                 'bidang_id'         => $bidangId,
@@ -71,19 +81,46 @@ class PenerimaanController extends Controller
                 'no_nota'           => $request->noteNo,
                 'no_terima'         => $request->receiveNo,
                 'sumber_dana'       => $request->fundingSource,
-                'kode_barang'       => trim($kodeBarang),
-                'nama_barang'       => trim($namaBarang),
-                'qty'               => str_replace(',', '.', $request->itemQty), // Ganti koma dengan titik
-                'harga_satuan'      => str_replace(',', '.', $request->itemPrice), // Ganti koma dengan titik
+                'kode_barang'       => $kodeBarang,
+                'nama_barang'       => $namaBarang,
+                'qty'               => $qty, // Ganti koma dengan titik
+                'harga_satuan'      => $harga, // Ganti koma dengan titik
                 'keterangan'        => $request->itemDescription,
             ]);
 
+            // --- LOGIKA TAMBAHAN UNTUK STOK PERSEDIAAN BIDANG ---
+            $stokBidang = StokPersediaanBidang::where('kode_barang', $kodeBarang)
+                ->where('bidang_id', $bidangId)
+                ->first();
+
+            if ($stokBidang) {
+                // Jika stok sudah ada, update jumlahnya
+                $stokBidang->increment('qty_sisa', $qty);
+                $stokBidang->harga_satuan = $harga; // Perbarui dengan harga terbaru
+                $stokBidang->save();
+            } else {
+                // Jika stok belum ada, buat entri baru
+                $dataBarang = DataBarang::where('kode_barang', $kodeBarang)->first();
+
+                StokPersediaanBidang::create([
+                    'kode_kelompok' => $request->kelompokBarang,
+                    'kode_barang'   => $kodeBarang,
+                    'bidang_id'     => $bidangId,
+                    'nama_barang'   => $namaBarang,
+                    'satuan'        => $dataBarang->satuan ?? 'N/A', // Ambil satuan dari data barang
+                    'qty_sisa'      => $qty,
+                    'harga_satuan'  => $harga,
+                ]);
+            }
+            DB::commit();
+
             return response()->json([
                 'success' => true,
-                'message' => 'Item berhasil ditambahkan!',
+                'message' => 'Item berhasil ditambahkan dan stok telah diperbarui!',
                 'data'    => $penerimaan
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Gagal menyimpan data: ' . $e->getMessage()], 500);
         }
     }

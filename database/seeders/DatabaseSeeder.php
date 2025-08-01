@@ -73,31 +73,7 @@ class DatabaseSeeder extends Seeder
             Jabatan::create($jabatan);
         }
 
-        // Data Seeder User
-        $users = [
-            // administrator
-            [
-                'jabatan_id' => 2,
-                'bidang_id' => 1,
-                'nip' => 111111111,
-                'nama' => 'Administrator',
-                'email' => 'administrator@gmail.com',
-                'password' => Hash::make('password'),
-            ],
-            // peternakan
-            [
-                'jabatan_id' => 3,
-                'bidang_id' => 2,
-                'nip' => 222222222,
-                'nama' => 'peternakan',
-                'email' => 'peternakan@gmail.com',
-                'password' => Hash::make('password'),
-            ]
-
-        ];
-
-        foreach ($users as $user) {
-            User::create($user);
-        }
+        $this->call(UserSeeder::class);
+        $this->call(KelompokBarangSeeder::class);
     }
 }

@@ -87,10 +87,10 @@
                                             @csrf
 
                                             <div class="mb-3">
-                                                <label for="userEmail" class="form-label">Email address</label>
-                                                <input type="email"
+                                                <label for="userEmail" class="form-label">Username</label>
+                                                <input type="text"
                                                     class="form-control @error('email') is-invalid @enderror"
-                                                    id="userEmail" name="email" placeholder="Email" autocomplete="off"
+                                                    id="userEmail" name="email" placeholder="Username" autocomplete="off"
                                                     autofocus required>
                                                 @error('email')
                                                 <div class="invalid-feedback">

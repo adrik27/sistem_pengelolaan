@@ -185,19 +185,28 @@
 
             // 4. Event handler untuk tombol "Cetak BA"
             $('#cetak-btn').on('click', function(e) {
-                e.preventDefault();
-                const tglAwal = $('#tanggal_awal').val();
-                const tglAkhir = $('#tanggal_akhir').val();
-                const tglCetak = $('#tanggal_cetak').val();
+            e.preventDefault();
+            const tglAkhir = $('#tanggal_akhir').val();
+            const tglCetak = $('#tanggal_cetak').val();
+            let bidangId = '';
 
-                if(!tglAwal || !tglAkhir || !tglCetak) {
-                    Swal.fire('Input Kurang', 'Harap isi semua tanggal sebelum mencetak.', 'warning');
-                    return;
-                }
-                // Anda bisa arahkan ke route baru untuk generate PDF
-                // Contoh: window.open(`/laporan/penerimaan/cetak?tanggal_awal=${tglAwal}&tanggal_akhir=${tglAkhir}&tanggal_cetak=${tglCetak}`, '_blank');
-                alert('Fungsi cetak belum diimplementasikan.');
-            });
+            // Cek apakah filter bidang ada dan punya nilai
+            if ($('#bidang_id').length) {
+                bidangId = $('#bidang_id').val();
+            }
+            
+            // Validasi dasar di frontend
+            if (!tglAkhir || !tglCetak) {
+                Swal.fire('Input Kurang', 'Harap isi Tanggal Akhir Hitung dan Tanggal Cetak BA.', 'warning');
+                return;
+            }
+
+            // Buat URL dengan parameter
+            const printUrl = `{{ route('laporan.penerimaan.cetak') }}?tanggal_akhir=${tglAkhir}&tanggal_cetak=${tglCetak}&bidang_id=${bidangId}`;
+
+            // Buka URL di tab baru
+            window.open(printUrl, '_blank');
+        });
         });
     </script>
 @endsection

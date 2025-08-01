@@ -21,7 +21,7 @@
             {{-- menu user --}}
             @can('user')
             <li class="nav-item {{ request()->is('dashboard-admin/*') ? 'active' : '' }}">
-                <a href="{{ url('/dashboard-admin') }}" class="nav-link">
+                <a href="{{ url('/dashboard') }}" class="nav-link">
                     <i class="link-icon" data-feather="box"></i>
                     <span class="link-title">Dashboard</span>
                 </a>

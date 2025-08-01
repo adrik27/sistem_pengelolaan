@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataBarang;
-use App\Models\MasterBarang;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 
@@ -47,34 +46,7 @@ class MasterBarangController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(MasterBarang $masterBarang)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(MasterBarang $masterBarang)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, MasterBarang $masterBarang)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(MasterBarang $masterBarang)
-    {
-        //
-    }
 
     public function seluruh_data_barang()
     {
@@ -87,7 +59,7 @@ class MasterBarangController extends Controller
         $searchTerm = $request->input('search');
 
         $barangs = DataBarang::query()
-            ->select('id', 'kode_barang', 'nama_barang')
+            ->select('id', 'kode_kelompok', 'kode_barang', 'nama_barang')
             ->when($searchTerm, function ($query, $searchTerm) {
                 // Cari berdasarkan nama atau kode barang
                 $query->where('nama_barang', 'like', "%{$searchTerm}%")

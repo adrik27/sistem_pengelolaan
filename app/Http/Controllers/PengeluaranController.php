@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StokPersediaanBidang;
 use App\Models\DataBarang;
 use App\Models\Pengeluaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PengeluaranController extends Controller
 {
@@ -18,38 +20,52 @@ class PengeluaranController extends Controller
 
         $tanggal_pembukuan = $tahun . '-' . $bulan . '-' . $tanggal;
 
-        $validasiData = $request->validate([
+        $request->validate([
             'tanggal' => 'required',
             'bulan' => 'required',
             'tahun' => 'required',
-            'qty' => 'required',
+            'qty' => 'required|numeric|min:0.01',
+            'kode_barang' => 'required', // Ini adalah ID dari form
+            'status_pengeluaran' => 'required',
         ]);
 
-        $validasiData['tanggal_pembukuan'] = $tanggal_pembukuan;
-        $validasiData['keterangan'] = $request->keterangan;
-        $validasiData['status_pengeluaran'] = $request->status_pengeluaran;
+        $bidangId = Auth::user()->bidang_id;
+        $dataBarang = DataBarang::where('id', $request->kode_barang)->firstOrFail();
+        $qtyKeluar = (float) str_replace(',', '.', $request->qty);
 
-        $dataBarang = DataBarang::where('id', $request->kode_barang)->first();
+        DB::beginTransaction();
+        try {
+            // 1. Cari stok untuk barang spesifik di bidang ini
+            $stokBidang = StokPersediaanBidang::where('kode_barang', $dataBarang->kode_barang)
+                ->where('bidang_id', $bidangId)
+                ->lockForUpdate() // Mencegah race condition
+                ->first();
 
-        $validasiData['kode_barang'] = $dataBarang->kode_barang;
-        $validasiData['nama_barang'] = $dataBarang->nama_barang;
-        $validasiData['bidang_id'] = Auth::user()->bidang_id;
+            // 2. Cek apakah stok ada dan mencukupi
+            if (!$stokBidang || $stokBidang->qty_sisa < $qtyKeluar) {
+                DB::rollBack();
+                $stokTersedia = $stokBidang ? $stokBidang->qty_sisa : 0;
+                return redirect()->back()->with('error', 'Pengeluaran gagal: Stok tidak mencukupi. Stok tersedia: ' . $stokTersedia);
+            }
 
-        // dd($validasiData);
-        // create
-        $a = Pengeluaran::create($validasiData);
-        if ($a) {
+            // 3. Buat catatan pengeluaran
+            Pengeluaran::create([
+                'tanggal_pembukuan' => $tanggal_pembukuan,
+                'keterangan' => $request->keterangan,
+                'status_pengeluaran' => $request->status_pengeluaran,
+                'kode_barang' => $dataBarang->kode_barang,
+                'nama_barang' => $dataBarang->nama_barang,
+                'bidang_id' => $bidangId,
+                'qty' => $qtyKeluar,
+            ]);
 
-            // jika ada update qty saja
-
-            // $barang = Pengeluaran::where('kode_barang', $request->kode_barang)->first();
-            // $barang->update([
-            //     'qty_sisa' => $barang->qty_sisa - $request->qty,
-            // ]);
-
-            return redirect()->back()->with('success', 'Pengeluaran berhasil disimpan.');
-        } else {
-            return redirect()->back()->with('error', 'Pengeluaran gagal disimpan.');
+            // 4. Kurangi stok
+            $stokBidang->decrement('qty_sisa', $qtyKeluar);
+            DB::commit();
+            return redirect()->back()->with('success', 'Pengeluaran berhasil disimpan dan stok telah diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Pengeluaran gagal disimpan: ' . $e->getMessage());
         }
     }
 
@@ -62,41 +78,80 @@ class PengeluaranController extends Controller
 
         $tanggal_pembukuan = $tahun . '-' . $bulan . '-' . $tanggal;
 
-        $validasiData = $request->validate([
-            'qty' => 'required',
+        $request->validate([
+            'qty' => 'required|numeric|min:0.01',
+            'status_pengeluaran' => 'required',
         ]);
 
-        $validasiData['tanggal_pembukuan'] = $tanggal_pembukuan;
-        $validasiData['keterangan'] = $request->keterangan;
-        $validasiData['status_pengeluaran'] = $request->status_pengeluaran;
+        $newQty = (float) str_replace(',', '.', $request->qty);
+        $bidangId = Auth::user()->bidang_id;
 
-        $dataBarang = DataBarang::where('id', $request->kode_barang)->first();
+        DB::beginTransaction();
+        try {
+            // 1. Ambil data pengeluaran asli
+            $pengeluaran = Pengeluaran::findOrFail($id);
+            $oldQty = (float) $pengeluaran->qty;
 
-        $validasiData['kode_barang'] = $dataBarang->kode_barang;
-        $validasiData['nama_barang'] = $dataBarang->nama_barang;
-        $validasiData['bidang_id'] = Auth::user()->bidang_id;
+            // 2. Cari data stok
+            $stokBidang = StokPersediaanBidang::where('kode_barang', $pengeluaran->kode_barang)
+                ->where('bidang_id', $bidangId)
+                ->lockForUpdate()
+                ->first();
 
-        // update
-        $a = Pengeluaran::where('id', $id)->update($validasiData);
+            if (!$stokBidang) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Gagal update: Stok untuk barang ini tidak ditemukan.');
+            }
 
-        if ($a) {
-            return redirect()->back()->with('success', 'Pengeluaran berhasil diupdate.');
-        } else {
-            return redirect()->back()->with('error', 'Pengeluaran gagal diupdate.');
+            // 3. Hitung selisih kuantitas
+            $qtyDifference = $newQty - $oldQty;
+
+            // 4. Cek apakah stok mencukupi untuk perubahan
+            if ($qtyDifference > 0 && $qtyDifference > $stokBidang->qty_sisa) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Gagal update: Stok tidak mencukupi untuk menambah jumlah pengeluaran. Stok tersedia: ' . $stokBidang->qty_sisa);
+            }
+
+            // 5. Update data pengeluaran
+            $pengeluaran->update([
+                'tanggal_pembukuan' => $tanggal_pembukuan,
+                'keterangan' => $request->keterangan,
+                'status_pengeluaran' => $request->status_pengeluaran,
+                'qty' => $newQty,
+            ]);
+
+            // 6. Sesuaikan stok berdasarkan selisih
+            $stokBidang->decrement('qty_sisa', $qtyDifference);
+            DB::commit();
+            return redirect()->back()->with('success', 'Pengeluaran berhasil diupdate dan stok telah disesuaikan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal update: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with([
-            'error' => 'Pengeluaran gagal diupdate',
-        ]);
     }
 
     public function delete($id)
     {
-        $a = Pengeluaran::find($id)->delete();
-        if ($a) {
-            return redirect()->back()->with('success', 'Pengeluaran berhasil dihapus.');
-        } else {
-            return redirect()->back()->with('error', 'Pengeluaran gagal dihapus.');
+        DB::beginTransaction();
+        try {
+            $pengeluaran = Pengeluaran::findOrFail($id);
+            $qtyToReturn = (float) $pengeluaran->qty;
+
+            $stokBidang = StokPersediaanBidang::where('kode_barang', $pengeluaran->kode_barang)
+                ->where('bidang_id', $pengeluaran->bidang_id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($stokBidang) {
+                $stokBidang->increment('qty_sisa', $qtyToReturn);
+            }
+
+            $pengeluaran->delete();
+            DB::commit();
+            return redirect()->back()->with('success', 'Pengeluaran berhasil dihapus dan stok telah dikembalikan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Pengeluaran gagal dihapus: ' . $e->getMessage());
         }
     }
 }

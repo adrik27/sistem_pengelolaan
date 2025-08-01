@@ -194,6 +194,9 @@
                             <select class="form-control" name="itemName" id="itemName" style="width: 100%;">
                                 </select>
                         </div>
+                        <div>
+                            <input type="hidden" class="form-control" id="kelompokBarang" name="kelompokBarang" placeholder="kelompok barang" readonly>
+                        </div>
                         <div class="row">
                             <div class="col">
                                 <label for="itemQty" class="form-label">QTY</label>
@@ -229,47 +232,68 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+    // const kelompokBarang = document.getElementById('kelompokBarang'); // Anda bisa hapus ini jika menggunakan jQuery
+    
     $(document).ready(function() {
-    $('#itemName').select2({
-        // Tentukan tema yang akan digunakan
-        theme: 'bootstrap-5',
-        
-        // Targetkan elemen modal sebagai induk dari dropdown
-        // Ini SANGAT PENTING agar search box di dalam modal berfungsi
-        dropdownParent: $('#addItemModal'),
-
-        // Teks placeholder
-        placeholder: 'Ketik untuk mencari barang...',
-
-        // Pengaturan AJAX untuk mengambil data
-        ajax: {
-            url: '/seluruh_data_barang', // Route yang dituju
-            dataType: 'json',
-            delay: 250, // Jeda sebelum request dikirim setelah user mengetik
+        $('#itemName').select2({
+            // Tentukan tema yang akan digunakan
+            theme: 'bootstrap-5',
             
-            // Fungsi untuk memproses data yang akan dikirim ke server
-            data: function (params) {
-                return {
-                    search: params.term // Kirim teks yang diketik user sebagai parameter 'search'
-                };
-            },
+            // Targetkan elemen modal sebagai induk dari dropdown
+            dropdownParent: $('#addItemModal'),
+
+            // Teks placeholder
+            placeholder: 'Ketik untuk mencari barang...',
+
+            // Pengaturan AJAX untuk mengambil data
+            ajax: {
+                url: '/seluruh_data_barang', // Route yang dituju
+                dataType: 'json',
+                delay: 250,
+                
+                data: function (params) {
+                    return {
+                        search: params.term 
+                    };
+                },
+                
+                // Fungsi untuk memformat data yang diterima dari server
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                id: item.id,
+                                text: `${item.kode_barang} - ${item.nama_barang}`,
+                                // Pastikan data tambahan ini disertakan
+                                kode_kelompok: item.kode_kelompok 
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        // =======================================================
+        // ==          TAMBAHAN: LOGIKA UNTUK MENGISI INPUT       ==
+        // =======================================================
+
+        // Event listener saat item dipilih dari Select2
+        $('#itemName').on('select2:select', function (e) {
+            // Ambil seluruh data dari item yang dipilih
+            var data = e.params.data;
             
-            // Fungsi untuk memformat data yang diterima dari server
-            processResults: function (data) {
-                // Ubah format data dari server agar sesuai dengan format Select2
-                return {
-                    results: $.map(data, function(item) {
-                        return {
-                            id: item.id, // ID barang
-                            text: `${item.kode_barang} - ${item.nama_barang}` // Teks yang ditampilkan
-                        }
-                    })
-                };
-            },
-            cache: true // Aktifkan cache untuk request yang sama
-        }
+            // Cek jika data kode_kelompok ada, lalu isi inputnya
+            if (data && data.kode_kelompok) {
+                $('#kelompokBarang').val(data.kode_kelompok);
+            }
+        });
+
+        // Opsional: Jika Anda ingin input kembali kosong saat pilihan dihapus
+        $('#itemName').on('select2:unselect', function (e) {
+            $('#kelompokBarang').val('');
+        });
     });
-});
 </script>
 <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -287,50 +311,7 @@
             
 
 
-            // --- Functionality for Modal "Simpan Data" Button ---
-            // btnSaveItem.addEventListener('click', function() {
-            //     // Get values from the modal form
-            //     const itemName = document.getElementById('itemName').value.trim();
-            //     const itemQty = parseFloat(document.getElementById('itemQty').value.replace(',', '.')) || 0;
-            //     const itemPrice = parseFloat(document.getElementById('itemPrice').value.replace(',', '.')) || 0;
-            //     const bookingDate = `${document.getElementById('bookingDay').value}-${document.getElementById('bookingMonth').value.substring(0,3)}-${document.getElementById('bookingYear').value}`;
-
-            //     // Simple validation
-            //     if (!itemName || itemQty <= 0 || itemPrice <= 0) {
-            //         alert('Nama Barang, QTY, and Harga Satuan must be filled correctly.');
-            //         return;
-            //     }
-
-            //     // Calculate total for the item
-            //     const itemTotal = itemQty * itemPrice;
-
-            //     // Create a new table row
-            //     const newRow = document.createElement('tr');
-            //     newRow.innerHTML = `
-            //         <td>${bookingDate}</td>
-            //         <td>${itemName} (Unit)</td>
-            //         <td class="text-end">${formatCurrency(itemQty)}</td>
-            //         <td class="text-end">${formatCurrency(itemPrice)}</td>
-            //         <td class="text-end item-total">${formatCurrency(itemTotal)}</td>
-            //         <td class="text-center">
-            //             <button class="btn btn-sm btn-outline-danger btn-delete">Hapus</button>
-            //         </td>
-            //     `;
-
-            //     // Add the new row to the table
-            //     const noDataRow = itemsTableBody.querySelector('td[colspan="6"]');
-            //     if (noDataRow) {
-            //         itemsTableBody.innerHTML = ''; // Clear "tidak ada data" message
-            //     }
-            //     itemsTableBody.appendChild(newRow);
-
-            //     // Update the grand total
-            //     updateGrandTotal();
-
-            //     // Reset the modal form and close it
-            //     addItemForm.reset();
-            //     addItemModal.hide();
-            // });
+            
 
             btnSaveItem.addEventListener('click', function(event) {
             event.preventDefault(); // Mencegah aksi default

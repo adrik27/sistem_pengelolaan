@@ -14,9 +14,8 @@ class AuthenticateController extends Controller
 
     public function proses_login(Request $request)
     {
-        // Validasi inputnya
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required'],
             'password' => ['required', 'min:8'],
         ]);
 
@@ -24,7 +23,7 @@ class AuthenticateController extends Controller
             $request->session()->regenerate();
 
             // if (Auth::user()->jabatan_id == 1 && Auth::user()->department_id == 1) {
-            return redirect()->intended('/dashboard-admin');
+            return redirect()->intended('/dashboard');
             // } else {
             //     return redirect()->intended('/dashboard-admin');
             // }
