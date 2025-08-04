@@ -46,13 +46,17 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/penerimaan', [TransaksiController::class, 'penerimaan'])->name('tampil_transaksi_masuk');
     Route::post('/penerimaan', [TransaksiController::class, 'tampil_transaksi_masuk'])->name('tampil_transaksi_masuk');
+    Route::post('/ambil_penerimaan', [TransaksiController::class, 'ambil_penerimaan'])->name('ambil_penerimaan');
     Route::get('/penerimaan/create', [TransaksiController::class, 'tambah_penerimaan'])->name('tambah_penerimaan');
+    Route::post('/penerimaan/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_masuk'])->name('hapus_transaksi_masuk');
+    Route::get('/penerimaan/edit/{id}', [TransaksiController::class, 'edit_penerimaan'])->name('edit_penerimaan');
+    Route::post('/penerimaan/update/{id}', [TransaksiController::class, 'update_transaksi_masuk'])->name('update_transaksi_masuk');
+
     // Route::post('/penerimaan/create', [TransaksiController::class, 'create_transaksi_masuk'])->name('create_transaksi_masuk'); 
     // ^ Tidak terpakai: Sudah di-comment dari awal, fungsionalitasnya digantikan oleh 'penerimaan.store' yang menggunakan PenerimaanController.
     Route::post('/penerimaan/verifikasi/{id}', [TransaksiController::class, 'verifikasi_transaksi_masuk'])->name('verifikasi_transaksi_masuk');
     Route::post('/penerimaan/tolak/{id}', [TransaksiController::class, 'tolak_transaksi_masuk'])->name('tolak_transaksi_masuk');
-    Route::post('/penerimaan/update/{id}', [TransaksiController::class, 'update_transaksi_masuk'])->name('update_transaksi_masuk');
-    Route::post('/penerimaan/hapus/{id}', [TransaksiController::class, 'hapus_transaksi_masuk'])->name('hapus_transaksi_masuk');
+
 
     // ## Pengeluaran (Transaksi Keluar)
     Route::get('/pengeluaran', [TransaksiController::class, 'tampil_transaksi_keluar'])->name('tampil_transaksi_keluar');
@@ -90,4 +94,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/pengeluaran/delete/{id}', [PengeluaranController::class, 'delete'])->name('pengeluaran.delete');
 
     Route::get('/laporan/penerimaan/cetak', [LaporanController::class, 'cetakBeritaAcara'])->name('laporan.penerimaan.cetak');
+
+    Route::post('/change-password', [AuthenticateController::class, 'ChangePassword'])->name('ChangePassword');
 });

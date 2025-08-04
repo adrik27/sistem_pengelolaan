@@ -19,9 +19,32 @@ class TransaksiController extends Controller
 {
     // ### TRANSAKSI MASUK ###
 
+
+    public function edit_penerimaan($id)
+    {
+        $data = Penerimaan::find($id);
+        return view('Admin.penerimaan.edit', [
+            'data' => $data
+        ]);
+    }
+
     public function tambah_penerimaan(Request $request)
     {
         return view('Admin.penerimaan.tambah');
+    }
+
+    public function ambil_penerimaan(Request $request)
+    {
+        $data = Penerimaan::where('tanggal_pembukuan', $request->tanggal_pembukuan)
+            ->where('bidang_id', Auth::user()->bidang_id)
+            ->where('supplier', $request->supplier)
+            ->where('no_faktur', $request->no_faktur)
+            ->where('status_penerimaan', $request->status_penerimaan)
+            ->where('no_nota', $request->no_nota)
+            ->where('no_terima', $request->no_terima)
+            ->where('sumber_dana', $request->sumber_dana)
+            ->get();
+        return response()->json($data);
     }
     public function penerimaan(Request $request)
     {
@@ -251,14 +274,24 @@ class TransaksiController extends Controller
 
     public function update_transaksi_masuk(Request $request, $id)
     {
-        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'masuk')->first();
+        $data = $request->except('_token', 'bookingDay', 'bookingMonth', 'bookingYear');
+        $databarang = DataBarang::where('id', $data['kode_barang'])->first();
+
+
+        $day = $request->bookingDay;
+        $month = $request->bookingMonth;
+        $year = $request->bookingYear;
+
+        $data['tanggal_pembukuan'] = $year . '-' . $month . '-' . $day;
+        $data['kode_barang']    =    $databarang->kode_barang;
+        $data['nama_barang']    =    $databarang->nama_barang;
+        $data['bidang_id']    =    Auth::user()->bidang_id;
+
+        $Transaksi = Penerimaan::where('id', $id)->first();
 
         if ($Transaksi) {
-            $Transaksi->update([
-                'qty' => $request->qty,
-                'total_harga' => $request->total_harga,
-            ]);
-            return redirect()->back()->with('success', 'Transaksi penerimaan berhasil diperbarui.');
+            $Transaksi->update($data);
+            return redirect('/penerimaan')->with('success', 'Transaksi penerimaan berhasil diperbarui.');
         } else {
             return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
         }
@@ -266,13 +299,13 @@ class TransaksiController extends Controller
 
     public function hapus_transaksi_masuk($id)
     {
-        $Transaksi = Transaksi::where('id', $id)->where('jenis_transaksi', 'masuk')->first();
+        $Transaksi = Penerimaan::where('id', $id)->first();
 
-        if ($Transaksi && $Transaksi->status == 'pending') {
+        if ($Transaksi) {
             $Transaksi->delete();
             return redirect()->back()->with('success', 'Transaksi penerimaan berhasil dihapus.');
         } else {
-            return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan atau statusnya sudah terverifikasi.');
+            return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
         }
     }
     // ### END TRANSAKSI MASUK ###

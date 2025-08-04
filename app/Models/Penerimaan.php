@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Bidang;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -46,5 +47,9 @@ class Penerimaan extends Model
     public function bidang()
     {
         return $this->belongsTo(Bidang::class, 'bidang_id', 'id');
+    }
+    public function barang()
+    {
+        return $this->belongsTo(DataBarang::class, 'kode_barang', 'kode_barang');
     }
 }
