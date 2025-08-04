@@ -9,6 +9,7 @@ use App\Models\Transaksi;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\StokPersediaanBidang;
 use Illuminate\Support\Facades\Gate;
 
 class LaporanPersediaanController extends Controller
@@ -16,111 +17,57 @@ class LaporanPersediaanController extends Controller
 
     public function tampil_laporan_persediaan(Request $request)
     {
-
-        // proses filter
+        // Ambil parameter filter dari request untuk dikirim kembali ke view
         $req_department = $request->input('department_id');
         $tahun_from = $request->input('tahun_from') ?? date('Y');
         $tahun_to = $request->input('tahun_to') ?? date('Y');
 
-        $range_tahun = [
-            Carbon::createFromDate($tahun_from)->startOfYear()->toDateString(),
-            Carbon::createFromDate($tahun_to)->endOfYear()->toDateString()
-        ];
+        // Query dasar ke tabel stok persediaan bidang
+        $query = StokPersediaanBidang::query();
 
-        if (Auth::user()->jabatan_id == 3) { // pengguna
-            $departments = collect(); // kosong karena user hanya bisa akses departemen tertentu
-            $transaksi = Transaksi::where('status', 'selesai')
-                ->where('department_id', Auth::user()->department_id)
-                ->whereBetween('tgl_transaksi', $range_tahun)
-                ->orderBy('tgl_transaksi')
-                ->get();
+        // Filter berdasarkan hak akses
+        if (Gate::denies('admin')) {
+            // Jika BUKAN admin, paksa filter berdasarkan bidang_id user
+            $query->where('bidang_id', Auth::user()->bidang_id);
         } else {
-            $departments = Bidang::where('status', 'aktif')->where('id', '!=', 1)->get();
-            $transaksi = Transaksi::where('status', 'selesai')
-                ->where('department_id', $req_department)
-                ->whereBetween('tgl_transaksi', $range_tahun)
-                ->orderBy('tgl_transaksi')
-                ->get();
-        }
-
-
-        // proses olah data untuk di tampilkan
-        $grouped = [];
-
-        // Kelompokkan transaksi masuk & keluar per dept + kode_barang
-        foreach ($transaksi as $item) {
-            $key = $item->department_id . '-' . $item->kode_barang;
-
-            if (!isset($grouped[$key])) {
-                $grouped[$key] = [
-                    'masuk' => [],
-                    'keluar' => [],
-                    'saldo_awal' => 0,
-                ];
-            }
-
-            if ($item->jenis_transaksi === 'masuk') {
-                $grouped[$key]['masuk'][] = $item;
-            } elseif ($item->jenis_transaksi === 'keluar') {
-                $grouped[$key]['keluar'][] = $item;
+            // Jika ADMIN, filter berdasarkan pilihan dropdown (jika ada)
+            if ($req_department) {
+                $query->where('bidang_id', $req_department);
             }
         }
 
-        // Ambil saldo awal berdasarkan department & tahun
-        foreach ($grouped as $key => $value) {
-            [$dept, $kode] = explode('-', $key);
-            $tahun = $value['masuk'][0]->tgl_transaksi->format('Y') ?? now()->format('Y');
+        $stok_items = $query->get();
 
-            $saldo = SaldoAwal::where('department_id', $dept)
-                ->where('tahun', $tahun)
-                ->first();
-
-
-            $department = Bidang::find($dept);
-
-            $grouped[$key]['saldo_awal'] = $saldo ? $saldo->saldo_awal : 0;
-        }
-
-        // Gabungkan masuk dan keluar sejajar per baris
+        // Transformasi data agar sesuai dengan struktur yang diharapkan oleh view
         $laporan = [];
-        foreach ($grouped as $key => $data) {
-            $jumlahBaris = max((count($data['masuk']) ?? 0), (count($data['keluar']) ?? 0));
-            [$dept, $kode] = explode('-', $key);
-            $saldo_awal = $data['saldo_awal'];
+        foreach ($stok_items as $item) {
+            $bidang = Bidang::find($item->bidang_id);
+            $laporan[] = [
+                'department_id' => $bidang ? $bidang->nama : 'N/A',
+                'saldo_awal'    => 0, // Kolom ini tidak relevan lagi
 
-            for ($i = 0; $i < $jumlahBaris; $i++) {
-                $masuk = $data['masuk'][$i] ?? null;
-                $keluar = $data['keluar'][$i] ?? null;
+                'tgl_masuk'     => null, // Kolom ini tidak ada di tabel stok
+                'kode_masuk'    => $item->kode_barang,
+                'nama_masuk'    => $item->nama_barang,
+                'harga_masuk'   => $item->harga_satuan,
+                'qty_masuk'     => $item->qty_sisa,
+                'saldo_masuk'   => $item->harga_satuan * $item->qty_sisa,
 
-                $laporan[] = [
-                    'department_id' => $department->nama,
-                    'saldo_awal'    => $saldo_awal,
+                'tgl_keluar'    => null, // Kolom-kolom pengeluaran tidak relevan
+                'kode_keluar'   => null,
+                'nama_keluar'   => null,
+                'harga_keluar'  => 0,
+                'qty_keluar'    => 0,
+                'saldo_keluar'  => 0,
 
-                    'tgl_masuk'     => $masuk?->tgl_transaksi,
-                    'kode_masuk'    => $masuk?->kode_barang,
-                    'nama_masuk'    => $masuk?->nama_barang,
-                    'harga_masuk'   => $masuk?->harga_satuan,
-                    'qty_masuk'     => $masuk?->qty,
-                    'saldo_masuk'   => ($masuk?->harga_satuan ?? 0) * ($masuk?->qty ?? 0),
-
-                    'tgl_keluar'    => $keluar?->tgl_transaksi,
-                    'kode_keluar'   => $keluar?->kode_barang,
-                    'nama_keluar'   => $keluar?->nama_barang,
-                    'harga_keluar'  => $keluar?->harga_satuan,
-                    'qty_keluar'    => $keluar?->qty,
-                    'saldo_keluar'  => ($keluar?->harga_satuan ?? 0) * ($keluar?->qty ?? 0),
-
-                    'sisa_stok'     => ($masuk?->qty ?? 0) - ($keluar?->qty ?? 0),
-                    'sisa_saldo'    => (($masuk?->harga_satuan ?? 0) * ($masuk?->qty ?? 0)) - (($keluar?->harga_satuan ?? 0) * ($keluar?->qty ?? 0)),
-                ];
-            }
+                'sisa_stok'     => $item->qty_sisa,
+                'sisa_saldo'    => $item->harga_satuan * $item->qty_sisa,
+            ];
         }
 
-        $bidangList = collect(); // Inisialisasi sebagai koleksi kosong
-        if (Gate::allows('admin')) {
-            // Ambil semua bidang kecuali 'admin' (yang biasanya memiliki id = 1)
-            $bidangList = Bidang::where('id', '!=', 1)->orderBy('nama')->get();
-        }
+        // Siapkan data untuk filter dropdown di view
+        $departments = Bidang::where('status', 'aktif')->where('id', '!=', 1)->get();
+        $bidangList = Gate::allows('admin') ? Bidang::where('id', '!=', 1)->orderBy('nama')->get() : collect();
 
         return view('Admin.LaporanPersediaan.laporan_persediaan', [
             'laporan' => $laporan,
@@ -129,8 +76,6 @@ class LaporanPersediaanController extends Controller
             'tahun_to' => $tahun_to,
             'req_departments' => $req_department,
             'departments' => $departments,
-
-            // 'jumlah_merge' => $jumlahBaris,
         ]);
     }
 
