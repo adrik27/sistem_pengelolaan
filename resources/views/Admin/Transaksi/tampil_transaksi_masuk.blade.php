@@ -15,7 +15,7 @@
                     </div>
 
                     {{-- Menampilkan notifikasi sukses atau error --}}
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-12 mt-2">
                             @if (session('success'))
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -32,7 +32,7 @@
                                 </div>
                             @endif
                         </div>
-                    </div>
+                    </div> --}}
 
                     {{-- Form Filter Data --}}
                     <div class="row my-4">
@@ -47,18 +47,20 @@
                                         <label for="bulan" class="form-label">Bulan</label>
                                         <select name="bulan" id="bulan" class="form-select form-select-sm">
                                             {{-- Menggunakan request() untuk mendapatkan nilai filter aktif --}}
-                                            <option value="1" @selected(request('bulan') == 1)>Januari</option>
-                                            <option value="2" @selected(request('bulan') == 2)>Februari</option>
-                                            <option value="3" @selected(request('bulan') == 3)>Maret</option>
-                                            <option value="4" @selected(request('bulan') == 4)>April</option>
-                                            <option value="5" @selected(request('bulan') == 5)>Mei</option>
-                                            <option value="6" @selected(request('bulan') == 6)>Juni</option>
-                                            <option value="7" @selected(request('bulan', date('m')) == 7)>Juli</option>
-                                            <option value="8" @selected(request('bulan') == 8)>Agustus</option>
-                                            <option value="9" @selected(request('bulan') == 9)>September</option>
-                                            <option value="10" @selected(request('bulan') == 10)>Oktober</option>
-                                            <option value="11" @selected(request('bulan') == 11)>November</option>
-                                            <option value="12" @selected(request('bulan') == 12)>Desember</option>
+                                            <option value="1" {{ date('m') == 1 ? 'selected' : '' }}>Januari</option>
+                                            <option value="2" {{ date('m') == 2 ? 'selected' : '' }}>Februari</option>
+                                            <option value="3" {{ date('m') == 3 ? 'selected' : '' }}>Maret</option>
+                                            <option value="4" {{ date('m') == 4 ? 'selected' : '' }}>April</option>
+                                            <option value="5" {{ date('m') == 5 ? 'selected' : '' }}>Mei</option>
+                                            <option value="6" {{ date('m') == 6 ? 'selected' : '' }}>Juni</option>
+                                            <option value="7" {{ date('m') == 7 ? 'selected' : '' }}>Juli</option>
+                                            <option value="8" {{ date('m') == 8 ? 'selected' : '' }}>Agustus</option>
+                                            <option value="9" {{ date('m') == 9 ? 'selected' : '' }}>September</option>
+                                            <option value="10" {{ date('m') == 10 ? 'selected' : '' }}>Oktober</option>
+                                            <option value="11" {{ date('m') == 11 ? 'selected' : '' }}>November
+                                            </option>
+                                            <option value="12" {{ date('m') == 12 ? 'selected' : '' }}>Desember
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
@@ -68,7 +70,8 @@
                                         <label for="tahun" class="form-label">Tahun</label>
                                         <select name="tahun" id="tahun" class="form-select form-select-sm" required>
                                             @for ($i = 0; $i <= 5; $i++)
-                                                <option value="{{ $tahunSekarang - $i }}" @selected(request('tahun', $tahunSekarang) == $tahunSekarang - $i)>
+                                                <option value="{{ $tahunSekarang - $i }}"
+                                                    {{ $tahunSekarang == $tahunSekarang - $i ? 'selected' : '' }}>
                                                     {{ $tahunSekarang - $i }}
                                                 </option>
                                             @endfor

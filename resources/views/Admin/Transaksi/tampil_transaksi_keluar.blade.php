@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="col-12 mt-2">
+                        {{-- <div class="col-12 mt-2">
                             @if (session('success'))
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                                     {{ session('success') }}
@@ -51,7 +51,7 @@
                                         aria-label="Close"></button>
                                 </div>
                             @endif
-                        </div>
+                        </div> --}}
 
                         {{-- jabatan_id == 2 (pengurus barang) --}}
                         {{-- @if (Auth::user()->jabatan_id == 2)

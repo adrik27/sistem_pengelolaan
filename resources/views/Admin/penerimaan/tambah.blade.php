@@ -54,25 +54,25 @@
                                     <label for="bookingDay" class="col-sm-4 col-form-label">TANGGAL PEMBUKUAN</label>
                                     <div class="col-sm-8">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="23" id="bookingDay"
-                                                name="bookingDay" onchange="Filtering()">
+                                            <input type="text" class="form-control" placeholder="{{ date('d') }}"
+                                                id="bookingDay" name="bookingDay" onchange="Filtering()">
                                             <select class="form-select" id="bookingMonth" name="bookingMonth"
                                                 onchange="Filtering()">
-                                                <option>Januari</option>
-                                                <option>Februari</option>
-                                                <option>Maret</option>
-                                                <option>April</option>
-                                                <option>Mei</option>
-                                                <option>Juni</option>
-                                                <option selected>Juli</option>
-                                                <option>Agustus</option>
-                                                <option>September</option>
-                                                <option>Oktober</option>
-                                                <option>November</option>
-                                                <option>Desember</option>
+                                                <option {{ date('m') == 1 ? 'selected' : '' }}>Januari</option>
+                                                <option {{ date('m') == 2 ? 'selected' : '' }}>Februari</option>
+                                                <option {{ date('m') == 3 ? 'selected' : '' }}>Maret</option>
+                                                <option {{ date('m') == 4 ? 'selected' : '' }}>April</option>
+                                                <option {{ date('m') == 5 ? 'selected' : '' }}>Mei</option>
+                                                <option {{ date('m') == 6 ? 'selected' : '' }}>Juni</option>
+                                                <option {{ date('m') == 7 ? 'selected' : '' }}>Juli</option>
+                                                <option {{ date('m') == 8 ? 'selected' : '' }}>Agustus</option>
+                                                <option {{ date('m') == 9 ? 'selected' : '' }}>September</option>
+                                                <option {{ date('m') == 10 ? 'selected' : '' }}>Oktober</option>
+                                                <option {{ date('m') == 11 ? 'selected' : '' }}>November</option>
+                                                <option {{ date('m') == 12 ? 'selected' : '' }}>Desember</option>
                                             </select>
-                                            <input type="text" class="form-control" placeholder="2025" id="bookingYear"
-                                                name="bookingYear" onchange="Filtering()">
+                                            <input type="text" class="form-control" placeholder="{{ date('Y') }}"
+                                                id="bookingYear" name="bookingYear" onchange="Filtering()">
                                         </div>
                                     </div>
                                 </div>
@@ -158,7 +158,8 @@
                             </button>
                         </div>
                         <div>
-                            <a href="#" class="btn btn-outline-warning">Kembali ke Menu Penerimaan</a>
+                            <a href="{{ url('/penerimaan') }}" class="btn btn-outline-warning">Kembali ke Menu
+                                Penerimaan</a>
                         </div>
                     </div>
 
