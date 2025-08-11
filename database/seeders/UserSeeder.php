@@ -33,6 +33,14 @@ class UserSeeder extends Seeder
         // ]);
 
         User::create([
+            'jabatan_id' => 2,
+            'bidang_id' => 1,
+            'nama' => 'administrator',
+            'nip' => '111111111',
+            'email' => 'administrator',
+            'password' => Hash::make('password'),
+        ]);
+        User::create([
             'jabatan_id' => 3,
             'bidang_id' => 3,
             'nama' => 'Tanaman Pangan',

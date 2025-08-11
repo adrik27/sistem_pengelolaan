@@ -102,18 +102,21 @@ class PengeluaranController extends Controller
                 ->first();
 
             if (!$stokBidang) {
+                DB::rollBack();
                 return redirect()->back()->with('error', 'Gagal update: Stok untuk barang ini tidak ditemukan.');
             }
 
             $stok_sebenarnya = $stokBidang->qty_sisa + $oldQty;
 
             if ($stok_sebenarnya < $newQty) {
+                DB::rollBack();
                 return redirect()->back()->with('error', 'Pengeluaran gagal: Stok tidak mencukupi. Stok tersedia: ' . $stokBidang->qty_sisa);
             }
 
             $qtyDifference = $newQty - $oldQty;
 
             if ($qtyDifference > 0 && $qtyDifference > $stokBidang->qty_sisa) {
+                DB::rollBack();
                 return redirect()->back()->with('error', 'Gagal update: Stok tidak mencukupi untuk menambah jumlah pengeluaran. Stok tersedia: ' . $stokBidang->qty_sisa);
             }
 

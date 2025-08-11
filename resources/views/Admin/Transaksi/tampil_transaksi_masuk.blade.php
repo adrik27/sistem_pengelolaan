@@ -98,7 +98,7 @@
                                     <th>TGL PEMBUKUAN</th>
                                     <th>NO NOTA</th>
                                     <th>SUPPLIER</th>
-                                    <th>NAMA BARANG</th>
+                                    <th>NAMA BARANG (SATUAN)</th>
                                     <th>QTY</th>
                                     <th>HARGA SATUAN</th>
                                     <th>HARGA TOTAL</th>
@@ -112,7 +112,7 @@
                                         <td class="text-center">{{ $item->tanggal_pembukuan->format('d-m-Y') }}</td>
                                         <td>{{ $item->no_nota }}</td>
                                         <td>{{ $item->supplier }}</td>
-                                        <td>{{ $item->nama_barang }}</td>
+                                        <td>{{ $item->kode_barang }} - {{ $item->nama_barang }}</td>
                                         <td class="text-center">{{ $item->qty }}</td>
                                         <td class="text-end">{{ number_format($item->harga_satuan, 2, ',', '.') }}</td>
                                         <td class="text-end">

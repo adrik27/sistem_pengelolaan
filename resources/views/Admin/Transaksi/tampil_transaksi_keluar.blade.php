@@ -302,8 +302,7 @@
                                             <td class="align-middle text-secondary">
                                                 {{ $item->tanggal_pembukuan->format('d-m-Y') }}</td>
                                             <td class="align-middle text-secondary">
-                                                {{ $item->kode_barang }}
-                                                <br>
+                                                {{ $item->kode_barang }} -
                                                 {{ $item->nama_barang }}
                                             </td>
                                             <td class="align-middle text-secondary">
