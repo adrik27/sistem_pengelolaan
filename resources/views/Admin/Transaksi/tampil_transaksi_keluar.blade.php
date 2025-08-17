@@ -676,6 +676,16 @@
                     cancelButtonText: "Batal"
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Tampilkan spinner loading
+                        Swal.fire({
+                            title: 'Proses Tambah Data...',
+                            text: 'Mohon tunggu sebentar',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
                         form.submit();
                     }
                 });
