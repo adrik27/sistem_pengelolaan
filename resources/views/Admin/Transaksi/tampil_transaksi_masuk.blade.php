@@ -183,8 +183,7 @@
 
         // Fungsi konfirmasi hapus data
         function deleteform(button) {
-            // Mencegah form dikirim langsung
-            event.preventDefault();
+            event.preventDefault(); // cegah submit langsung
 
             const form = button.closest('form');
 
@@ -199,7 +198,17 @@
                 cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Jika user menekan "Ya, hapus!", maka kirim form-nya
+                    // Tampilkan spinner loading
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Kirim form setelah spinner muncul
                     form.submit();
                 }
             });

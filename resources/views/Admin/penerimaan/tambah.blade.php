@@ -236,7 +236,11 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="button" class="btn btn-primary" id="btnSaveItem">Simpan Data</button>
+                        <button type="button" class="btn btn-primary" id="btnSaveItem">
+                            <span class="spinner-border spinner-border-sm d-none" role="status"
+                                aria-hidden="true"></span>
+                            <span class="btn-text">Simpan Data</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -406,6 +410,7 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+        
             // Get references to elements
             const btnNewTransaction = document.getElementById('btnNewTransaction');
             const mainReceiptForm = document.getElementById('mainReceiptForm');
@@ -424,6 +429,13 @@
 
             btnSaveItem.addEventListener('click', function(event) {
                 event.preventDefault(); // Mencegah aksi default
+
+                 // --- Aktifkan loader & disable tombol ---
+    const spinner = btnSaveItem.querySelector('.spinner-border');
+    const btnText = btnSaveItem.querySelector('.btn-text');
+    spinner.classList.remove('d-none');
+    btnText.textContent = 'Menyimpan...';
+    btnSaveItem.disabled = true;
 
                 // Gabungkan data dari form utama dan form modal
                 const mainFormData = new FormData(mainReceiptForm);
@@ -461,6 +473,11 @@
                     })
                     .then(response => response.json())
                     .then(result => {
+                        // --- Matikan loader & aktifkan tombol lagi ---
+        spinner.classList.add('d-none');
+        btnText.textContent = 'Simpan Data';
+        btnSaveItem.disabled = false;
+
                         if (result.success) {
                             // Jika server merespons sukses
                             Swal.fire({
@@ -522,6 +539,11 @@
                     .catch(error => {
                         // Jika ada error jaringan atau server
                         console.error('Error:', error);
+
+                        spinner.classList.add('d-none');
+        btnText.textContent = 'Simpan Data';
+        btnSaveItem.disabled = false;
+        
                         Swal.fire({
                             icon: 'error',
                             title: 'Error Jaringan',

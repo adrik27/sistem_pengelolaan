@@ -232,7 +232,11 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <button type="submit" form="formUpdate" class="btn btn-sm btn-primary"
-                                    onclick="updateform(this)">Update</button>
+                                    onclick="updateform(event, this)">
+                                    <span class="spinner-border spinner-border-sm d-none" role="status"
+                                        aria-hidden="true"></span>
+                                    <span class="btn-text">Update Data</span>
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -285,9 +289,11 @@
             });
         });
 
-        function updateform(button) {
-            event.preventDefault();
+        function updateform(e, button) {
+            e.preventDefault();
 
+            const spinner = button.querySelector('.spinner-border');
+            const btnText = button.querySelector('.btn-text');
             const form = document.getElementById(button.getAttribute("form"));
 
             if (!form.checkValidity()) {
@@ -305,6 +311,11 @@
                 cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // --- Aktifkan loader & disable tombol ---
+                    spinner.classList.remove('d-none');
+                    btnText.textContent = 'Menyimpan...';
+                    button.disabled = true;
+
                     form.submit();
                 }
             });

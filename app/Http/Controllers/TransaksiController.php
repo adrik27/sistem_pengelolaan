@@ -272,6 +272,45 @@ class TransaksiController extends Controller
         }
     }
 
+    private function postPenerimaanUpdate($data)
+    {
+        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/editpenerimaan.php";
+        $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
+
+        try {
+            $ch = curl_init($url);
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer " . $token,
+                "Content-Type: application/json",
+                "Accept: application/json",
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+            // 🚨 Abaikan SSL (jika server belum ada sertifikat valid)
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+            $response = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                throw new \Exception(curl_error($ch));
+            }
+
+            curl_close($ch);
+
+            return json_decode($response, true);
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal memanggil API: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+
     public function update_transaksi_masuk(Request $request, $id)
     {
         $data = $request->except('_token', 'bookingDay', 'bookingMonth', 'bookingYear');
@@ -291,21 +330,123 @@ class TransaksiController extends Controller
 
         if ($Transaksi) {
             $Transaksi->update($data);
-            return redirect('/penerimaan')->with('success', 'Transaksi penerimaan berhasil diperbarui.');
+
+
+            // --- Siapkan data untuk dikirim ke API eksternal ---
+            // --- LOGIKA TAMBAHAN UNTUK API EKSTERNAL ---
+            if ($data['status_penerimaan'] === 'Pembelian') {
+                $status = 1;
+            } else if ($data['status_penerimaan'] === 'Hibah') {
+                $status = 2;
+            } else {
+                $status = 3;
+            }
+
+            if ($data['sumber_dana'] === 'DAU/APBD') {
+                $sumberdanan = 1;
+            } else if ($data['sumber_dana'] === 'BLUD') {
+                $sumberdanan = 2;
+            } else if ($data['sumber_dana'] === 'BOK') {
+                $sumberdanan = 3;
+            } else if ($data['sumber_dana'] === 'BOS') {
+                $sumberdanan = 7;
+            } else if ($data['sumber_dana'] === 'Droping') {
+                $sumberdanan = 4;
+            } else if ($data['sumber_dana'] === 'Hibah') {
+                $sumberdanan = 5;
+            } else {
+                $sumberdanan = 6;
+            }
+
+            $apiData = [
+                "id_trx_terima_sififo" => $Transaksi->id_trx_terima_sififo, // harus sesuai API
+                "no_nota"      => $data['no_nota'],
+                "tgl_buku"     => $data['tanggal_pembukuan'],
+                "bulan"        => $month,
+                "status"       => $status,
+                "supplier"     => $data['supplier'],
+                "dok_faktur"   => $data['no_faktur'],
+                "id_barang"    => $databarang->id,
+                "qty"          => $data['qty'],
+                "harga_satuan" => $data['harga_satuan'],
+                "nilai"         => $data['qty'] * $data['harga_satuan'],
+                "bukti_terima" => $data['no_terima'],
+                "tgl_terima"   => $data['tanggal_pembukuan'],
+                "ket"          => $data['keterangan'],
+                "sumberdana"   => $sumberdanan,
+            ];
+
+            // --- Kirim ke API eksternal ---
+            $apiResponse = $this->postPenerimaanUpdate($apiData);
+
+            if ($apiResponse && isset($apiResponse['success']) && $apiResponse['success']) {
+                return redirect('/penerimaan')->with('success', 'Transaksi berhasil diperbarui & sinkron dengan API.');
+            } else {
+                return redirect('/penerimaan')->with('error', 'Data lokal terupdate, tapi gagal update ke API: ' . ($apiResponse['message'] ?? 'Tidak ada response'));
+            }
+
+            // return redirect('/penerimaan')->with('success', 'Transaksi penerimaan berhasil diperbarui.');
         } else {
             return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
         }
+    }
+
+    private function postPenerimaanDelete($id_trx_terima_sififo)
+    {
+        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/deletepenerimaan.php"; // ganti sesuai endpoint asli
+
+        $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
+
+        $payload = json_encode([
+            "id_trx_terima_sififo" => $id_trx_terima_sififo
+        ]);
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Content-Type: application/json",
+            "Authorization: Bearer " . $token,
+            "Content-Length: " . strlen($payload)
+        ]);
+
+        // 🚨 Abaikan SSL (jika server belum ada sertifikat valid)
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return [
+                "success" => false,
+                "message" => "cURL Error: " . curl_error($ch)
+            ];
+        }
+
+        curl_close($ch);
+
+        return json_decode($response, true);
     }
 
     public function hapus_transaksi_masuk($id)
     {
         $Transaksi = Penerimaan::where('id', $id)->first();
 
-        if ($Transaksi) {
+        if (!$Transaksi) {
+            return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
+        }
+
+        // kirim request ke API eksternal
+        $apiResponse = $this->postPenerimaanDelete($Transaksi->id_trx_terima_sififo);
+
+        if ($apiResponse['success']) {
+            // hapus juga di database lokal
             $Transaksi->delete();
             return redirect()->back()->with('success', 'Transaksi penerimaan berhasil dihapus.');
         } else {
-            return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
+            $msg = $apiResponse['message'] ?? 'Gagal menghapus data di API eksternal.';
+            return redirect()->back()->with('error', $msg);
         }
     }
     // ### END TRANSAKSI MASUK ###

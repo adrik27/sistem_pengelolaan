@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('penerimaan', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_trx_terima_sififo')->nullable();
             $table->date('tanggal_pembukuan');
             $table->string('supplier');
             $table->string('no_faktur')->nullable();
