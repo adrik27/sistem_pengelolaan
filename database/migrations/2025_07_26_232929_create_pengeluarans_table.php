@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pengeluarans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bidang_id')->nullable();
-            $table->integer('id_trx_terima_sififo')->nullable();
+            $table->integer('id_trx_keluar_sififo')->nullable();
             $table->date('tanggal_pembukuan');
             $table->string('status_pengeluaran');
             $table->string('kode_barang'); // Akan kita ambil dari Select2

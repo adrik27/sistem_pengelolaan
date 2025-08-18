@@ -517,125 +517,127 @@ class TransaksiController extends Controller
         ]);
     }
 
-    public function create_transaksi_keluar(Request $request)
-    {
-        DB::beginTransaction();
 
-        try {
-            $tgl_transaksi = now()->format('Y-m-d');
-            $department_id = Auth::user()->department_id;
 
-            $mergedItems = [];
+    // public function create_transaksi_keluar(Request $request)
+    // {
+    //     DB::beginTransaction();
 
-            foreach ($request->kode as $index => $kode) {
-                if (!$kode) continue; // skip jika kosong
+    //     try {
+    //         $tgl_transaksi = now()->format('Y-m-d');
+    //         $department_id = Auth::user()->department_id;
 
-                $qty    = (int) $request->qty[$index];
-                $harga  = (int) $request->harga[$index];
-                $total  = (int) $request->total_harga[$index];
+    //         $mergedItems = [];
 
-                // proses merge
-                if (isset($mergedItems[$kode])) {
-                    $mergedItems[$kode]['qty'] += $qty;
-                    $mergedItems[$kode]['total_harga'] += $total;
-                } else {
-                    $mergedItems[$kode] = [
-                        'kode_barang' => $kode,
-                        'qty' => $qty,
-                        'harga' => $harga,
-                        'total_harga' => $total,
-                    ];
-                }
-            }
+    //         foreach ($request->kode as $index => $kode) {
+    //             if (!$kode) continue; // skip jika kosong
 
-            foreach ($mergedItems as $item) {
-                $kode_barang = $item['kode_barang'];
-                $qty = $item['qty'];
-                $harga = $item['harga'];
-                $total_harga = $item['total_harga'];
+    //             $qty    = (int) $request->qty[$index];
+    //             $harga  = (int) $request->harga[$index];
+    //             $total  = (int) $request->total_harga[$index];
 
-                $barang = DB::table('master_barangs')->where('kode_barang', $kode_barang)->first();
-                if (!$barang) continue;
+    //             // proses merge
+    //             if (isset($mergedItems[$kode])) {
+    //                 $mergedItems[$kode]['qty'] += $qty;
+    //                 $mergedItems[$kode]['total_harga'] += $total;
+    //             } else {
+    //                 $mergedItems[$kode] = [
+    //                     'kode_barang' => $kode,
+    //                     'qty' => $qty,
+    //                     'harga' => $harga,
+    //                     'total_harga' => $total,
+    //                 ];
+    //             }
+    //         }
 
-                // cek barang di stok_persediaan berdasarkan bidangnya
-                $stok_persediaan_bidang = StokPersediaanBidang::where('kode_barang', $kode_barang)
-                    ->where('department_id', $department_id)
-                    ->first();
+    //         foreach ($mergedItems as $item) {
+    //             $kode_barang = $item['kode_barang'];
+    //             $qty = $item['qty'];
+    //             $harga = $item['harga'];
+    //             $total_harga = $item['total_harga'];
 
-                // jika barang di stok_persediaan berdasarkan bidangnya ada, maka stok kurangi
-                if ($stok_persediaan_bidang) {
-                    $stok_persediaan_bidang->qty -= $qty;
-                    $stok_persediaan_bidang->save();
-                } else {
-                    StokPersediaanBidang::create([
-                        'kode_barang' => $kode_barang,
-                        'department_id' => $department_id,
-                        'qty' => $qty,
-                    ]);
-                }
+    //             $barang = DB::table('master_barangs')->where('kode_barang', $kode_barang)->first();
+    //             if (!$barang) continue;
 
-                // cek saldo awal mencukupi tidak
-                $saldo_awal = SaldoAwal::where('department_id', $department_id)->where('tahun', now()->year)->first();
-                if ($total > $saldo_awal->saldo_digunakan) {
-                    DB::rollback();
-                    return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
-                }
+    //             // cek barang di stok_persediaan berdasarkan bidangnya
+    //             $stok_persediaan_bidang = StokPersediaanBidang::where('kode_barang', $kode_barang)
+    //                 ->where('department_id', $department_id)
+    //                 ->first();
 
-                // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
-                $existing = Transaksi::where('department_id', $department_id)
-                    // ->where('tgl_transaksi', $tgl_transaksi)
-                    ->where('kode_barang', $kode_barang)
-                    ->where('status', 'pending')
-                    ->where('jenis_transaksi', 'keluar')
-                    ->first();
+    //             // jika barang di stok_persediaan berdasarkan bidangnya ada, maka stok kurangi
+    //             if ($stok_persediaan_bidang) {
+    //                 $stok_persediaan_bidang->qty -= $qty;
+    //                 $stok_persediaan_bidang->save();
+    //             } else {
+    //                 StokPersediaanBidang::create([
+    //                     'kode_barang' => $kode_barang,
+    //                     'department_id' => $department_id,
+    //                     'qty' => $qty,
+    //                 ]);
+    //             }
 
-                if ($existing) {
-                    // cek saldo di database
-                    $total_saldo_exist = $total_harga + $existing->total_harga ?? 0;
-                    if ($total_saldo_exist > ($saldo_awal->saldo_digunakan ?? 0)) {
-                        DB::rollback();
-                        return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
-                    }
+    //             // cek saldo awal mencukupi tidak
+    //             $saldo_awal = SaldoAwal::where('department_id', $department_id)->where('tahun', now()->year)->first();
+    //             if ($total > $saldo_awal->saldo_digunakan) {
+    //                 DB::rollback();
+    //                 return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+    //             }
 
-                    // cek ketersediaan stok di database
-                    $total_qty_exis = $qty + $existing->qty ?? 0;
-                    if ($total_qty_exis > $barang->sisa_qty) {
-                        DB::rollback();
-                        return redirect()->back()->with('error', 'Terjadi kesalahan: Stok barang ' . ucwords($barang->nama) . ' tidak mencukupi.');
-                    }
+    //             // Cek jika sudah ada transaksi dengan kode & tgl & departemen & status & jenis_transaksi yg sama
+    //             $existing = Transaksi::where('department_id', $department_id)
+    //                 // ->where('tgl_transaksi', $tgl_transaksi)
+    //                 ->where('kode_barang', $kode_barang)
+    //                 ->where('status', 'pending')
+    //                 ->where('jenis_transaksi', 'keluar')
+    //                 ->first();
 
-                    // Update qty dan saldo_digunakan
-                    $existing->qty += $qty;
-                    $existing->total_harga += $total_harga;
-                    $existing->save();
-                } else {
+    //             if ($existing) {
+    //                 // cek saldo di database
+    //                 $total_saldo_exist = $total_harga + $existing->total_harga ?? 0;
+    //                 if ($total_saldo_exist > ($saldo_awal->saldo_digunakan ?? 0)) {
+    //                     DB::rollback();
+    //                     return redirect()->back()->with('error', 'Terjadi kesalahan: Saldo tidak mencukupi.');
+    //                 }
 
-                    Transaksi::create([
-                        'tgl_transaksi'     => $tgl_transaksi,
-                        'department_id'     => $department_id,
-                        'kode_barang'       => $kode_barang,
-                        'nama_barang'       => $barang->nama,
-                        'nama_satuan'       => $barang->satuan,
-                        'qty'               => $qty,
-                        'harga_satuan'      => $harga,
-                        'total_harga'       => $total_harga,
-                        'status'            => 'selesai',
-                        'jenis_transaksi'   => 'keluar',
-                        'pembuat_id'        => Auth::user()->id,
-                        'verifikator_id'    => Auth::user()->id,
-                        'keterangan'        => "Transaksi User",
-                    ]);
-                }
-            }
+    //                 // cek ketersediaan stok di database
+    //                 $total_qty_exis = $qty + $existing->qty ?? 0;
+    //                 if ($total_qty_exis > $barang->sisa_qty) {
+    //                     DB::rollback();
+    //                     return redirect()->back()->with('error', 'Terjadi kesalahan: Stok barang ' . ucwords($barang->nama) . ' tidak mencukupi.');
+    //                 }
 
-            DB::commit();
+    //                 // Update qty dan saldo_digunakan
+    //                 $existing->qty += $qty;
+    //                 $existing->total_harga += $total_harga;
+    //                 $existing->save();
+    //             } else {
 
-            return redirect()->back()->with('success', 'Transaksi pengeluaran berhasil disimpan.');
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
-    }
+    //                 Transaksi::create([
+    //                     'tgl_transaksi'     => $tgl_transaksi,
+    //                     'department_id'     => $department_id,
+    //                     'kode_barang'       => $kode_barang,
+    //                     'nama_barang'       => $barang->nama,
+    //                     'nama_satuan'       => $barang->satuan,
+    //                     'qty'               => $qty,
+    //                     'harga_satuan'      => $harga,
+    //                     'total_harga'       => $total_harga,
+    //                     'status'            => 'selesai',
+    //                     'jenis_transaksi'   => 'keluar',
+    //                     'pembuat_id'        => Auth::user()->id,
+    //                     'verifikator_id'    => Auth::user()->id,
+    //                     'keterangan'        => "Transaksi User",
+    //                 ]);
+    //             }
+    //         }
+
+    //         DB::commit();
+
+    //         return redirect()->back()->with('success', 'Transaksi pengeluaran berhasil disimpan.');
+    //     } catch (\Exception $e) {
+    //         DB::rollback();
+    //         return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    //     }
+    // }
 
     // public function verifikasi_transaksi_keluar($id)
     // {
