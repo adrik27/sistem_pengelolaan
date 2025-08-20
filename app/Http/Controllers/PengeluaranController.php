@@ -251,14 +251,13 @@ class PengeluaranController extends Controller
 
             $apiResponse = $this->postTransaksiKeluarUpdate($apiData);
 
-            if (!$apiResponse) {
+            if ($apiResponse) {
+                DB::commit();
+                return redirect()->back()->with('success', 'Pengeluaran berhasil diupdate dan stok telah disesuaikan.');
+            } else {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Gagal sinkron ke API pusat: ' . ($apiResponse['message'] ?? 'Unknown error'));
             }
-
-            DB::commit();
-
-            return redirect()->back()->with('success', 'Pengeluaran berhasil diupdate dan stok telah disesuaikan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal update: ' . $e->getMessage());
