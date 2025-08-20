@@ -323,14 +323,15 @@ class PengeluaranController extends Controller
             // kirim request ke API eksternal
             $apiResponse = $this->postPenerimaanDelete($pengeluaran->id_trx_keluar_sififo);
 
-            if (!$apiResponse) {
+            if ($apiResponse) {
                 $pengeluaran->delete();
 
+                DB::commit();
+                return redirect()->back()->with('success', 'Pengeluaran berhasil dihapus dan stok telah dikembalikan.');
+            } else {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Gagal menghapus pengeluaran: ' . ($apiResponse['message'] ?? 'Unknown error'));
             }
-            DB::commit();
-            return redirect()->back()->with('success', 'Pengeluaran berhasil dihapus dan stok telah dikembalikan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Pengeluaran gagal dihapus: ' . $e->getMessage());
