@@ -20,6 +20,7 @@ class Admin
         if (Auth::check()) {
             return $next($request);
         }
-        return abort(403);
+        return redirect()->route('tampil_login')
+            ->with('error', 'Sesi anda habis atau akses ditolak, silakan login lagi.');
     }
 }

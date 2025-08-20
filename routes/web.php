@@ -14,6 +14,11 @@ use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
 
 
+Route::fallback(function () {
+    return redirect()->route('tampil_login')
+        ->with('error', 'Halaman tidak ditemukan, silakan login.');
+});
+
 Route::get('/', function () {
     return redirect('/login');
 });
