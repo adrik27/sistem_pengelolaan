@@ -13,7 +13,7 @@ class PengeluaranController extends Controller
 {
     private function postTransaksiKeluar($data)
     {
-        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/createkeluar.php";
+        $url = "https://sififo.kuduskab.go.id/fifonew/api/createkeluar.php";
         $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
 
         try {
@@ -143,7 +143,7 @@ class PengeluaranController extends Controller
 
     private function postTransaksiKeluarUpdate($data)
     {
-        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/editkeluar.php";
+        $url = "https://sififo.kuduskab.go.id/fifonew/api/editkeluar.php";
         $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
 
         try {
@@ -266,7 +266,7 @@ class PengeluaranController extends Controller
 
     private function postPenerimaanDelete($id_trx_keluar_sififo)
     {
-        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/deletekeluar.php"; // ganti sesuai endpoint asli
+        $url = "https://sififo.kuduskab.go.id/fifonew/api/deletekeluar.php"; // ganti sesuai endpoint asli
 
         $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
 

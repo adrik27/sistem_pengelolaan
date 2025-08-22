@@ -20,7 +20,7 @@ class PenerimaanController extends Controller
 
     private function postPenerimaan($data)
     {
-        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/createpenerimaan.php";
+        $url = "https://sififo.kuduskab.go.id/fifonew/api/createpenerimaan.php";
         $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
 
         try {

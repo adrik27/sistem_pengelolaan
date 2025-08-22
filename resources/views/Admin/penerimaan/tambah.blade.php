@@ -54,25 +54,26 @@
                                     <label for="bookingDay" class="col-sm-4 col-form-label">TANGGAL PEMBUKUAN</label>
                                     <div class="col-sm-8">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="{{ date('d') }}"
+                                            <input type="text" class="form-control" 
                                                 id="bookingDay" name="bookingDay" onchange="Filtering()">
                                             <select class="form-select" id="bookingMonth" name="bookingMonth"
                                                 onchange="Filtering()">
-                                                <option {{ date('m') == 1 ? 'selected' : '' }}>Januari</option>
-                                                <option {{ date('m') == 2 ? 'selected' : '' }}>Februari</option>
-                                                <option {{ date('m') == 3 ? 'selected' : '' }}>Maret</option>
-                                                <option {{ date('m') == 4 ? 'selected' : '' }}>April</option>
-                                                <option {{ date('m') == 5 ? 'selected' : '' }}>Mei</option>
-                                                <option {{ date('m') == 6 ? 'selected' : '' }}>Juni</option>
-                                                <option {{ date('m') == 7 ? 'selected' : '' }}>Juli</option>
-                                                <option {{ date('m') == 8 ? 'selected' : '' }}>Agustus</option>
-                                                <option {{ date('m') == 9 ? 'selected' : '' }}>September</option>
-                                                <option {{ date('m') == 10 ? 'selected' : '' }}>Oktober</option>
-                                                <option {{ date('m') == 11 ? 'selected' : '' }}>November</option>
-                                                <option {{ date('m') == 12 ? 'selected' : '' }}>Desember</option>
+                                                <option value="" selected>-- Pilih Bulan --</option>
+                                                <option value="Januari" {{ ($selected_bulan ?? null) == 1 ? 'selected' : '' }}>Januari</option>
+                                                <option value="Februari" {{ ($selected_bulan ?? null) == 2 ? 'selected' : '' }}>Februari</option>
+                                                <option value="Maret" {{ ($selected_bulan ?? null) == 3 ? 'selected' : '' }}>Maret</option>
+                                                <option value="April" {{ ($selected_bulan ?? null) == 4 ? 'selected' : '' }}>April</option>
+                                                <option value="Mei" {{ ($selected_bulan ?? null) == 5 ? 'selected' : '' }}>Mei</option>
+                                                <option value="Juni" {{ ($selected_bulan ?? null) == 6 ? 'selected' : '' }}>Juni</option>
+                                                <option value="Juli" {{ ($selected_bulan ?? null) == 7 ? 'selected' : '' }}>Juli</option>
+                                                <option value="Agustus" {{ ($selected_bulan ?? null) == 8 ? 'selected' : '' }}>Agustus</option>
+                                                <option value="September" {{ ($selected_bulan ?? null) == 9 ? 'selected' : '' }}>September</option>
+                                                <option value="Oktober" {{ ($selected_bulan ?? null) == 10 ? 'selected' : '' }}>Oktober</option>
+                                                <option value="November" {{ ($selected_bulan ?? null) == 11 ? 'selected' : '' }}>November</option>
+                                                <option value="Desember" {{ ($selected_bulan ?? null) == 12 ? 'selected' : '' }}>Desember</option>
                                             </select>
-                                            <input type="text" class="form-control" placeholder="{{ date('Y') }}"
-                                                id="bookingYear" name="bookingYear" onchange="Filtering()">
+                                            <input type="number" class="form-control" value="{{ $selected_tahun ?? date('Y') }}"
+                                                id="bookingYear" name="bookingYear" onchange="Filtering()" required>
                                         </div>
                                     </div>
                                 </div>

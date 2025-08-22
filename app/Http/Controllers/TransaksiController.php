@@ -30,7 +30,14 @@ class TransaksiController extends Controller
 
     public function tambah_penerimaan(Request $request)
     {
-        return view('Admin.penerimaan.tambah');
+        // Ambil bulan dan tahun dari query parameter, jika ada.
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
+
+        return view('Admin.penerimaan.tambah', [
+            'selected_bulan' => $bulan,
+            'selected_tahun' => $tahun,
+        ]);
     }
 
     public function ambil_penerimaan(Request $request)
@@ -46,23 +53,29 @@ class TransaksiController extends Controller
             ->get();
         return response()->json($data);
     }
+
     public function penerimaan(Request $request)
     {
-        // 1. Ambil nilai filter dari request, jika tidak ada, gunakan bulan & tahun saat ini
-        $bulan = $request->input('bulan', date('m'));
-        $tahun = $request->input('tahun', date('Y'));
+        // 1. Ambil nilai filter dari request TANPA nilai default.
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
 
-        // 2. Mulai query ke model Penerimaan
-        $query = Penerimaan::query();
+        // 2. Inisialisasi data sebagai koleksi kosong.
+        // Data hanya akan diisi jika ada filter yang diterapkan.
+        $data = collect();
 
-        // 3. Terapkan filter berdasarkan bulan dan tahun pada kolom 'tanggal_pembukuan'
-        $query->whereMonth('tanggal_pembukuan', $bulan)
-            ->whereYear('tanggal_pembukuan', $tahun);
+        // 3. Cek apakah pengguna sudah memilih bulan dan tahun.
+        if ($bulan && $tahun) {
+            // Jika ya, jalankan query untuk mengambil data.
+            $data = Penerimaan::query()
+                ->whereMonth('tanggal_pembukuan', $bulan)
+                ->whereYear('tanggal_pembukuan', $tahun)
+                ->orderBy('tanggal_pembukuan', 'desc')
+                ->get();
+        }
 
-        // 4. Urutkan data berdasarkan tanggal terbaru, lalu ambil hasilnya
-        $data = $query->orderBy('tanggal_pembukuan', 'desc')->get();
-
-        // 5. Kirim data yang sudah difilter beserta nilai filter ke view
+        // 4. Kirim data (bisa berisi hasil query atau koleksi kosong) beserta
+        //    nilai filter yang dipilih ke view.
         return view('Admin.Transaksi.tampil_transaksi_masuk', [
             'data' => $data,
             'selected_bulan' => $bulan,
@@ -274,7 +287,7 @@ class TransaksiController extends Controller
 
     private function postPenerimaanUpdate($data)
     {
-        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/editpenerimaan.php";
+        $url = "https://sififo.kuduskab.go.id/fifonew/api/editpenerimaan.php";
         $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
 
         try {
@@ -393,7 +406,7 @@ class TransaksiController extends Controller
 
     private function postPenerimaanDelete($id_trx_terima_sififo)
     {
-        $url = "https://e-planning.kuduskab.go.id/sififo2/files/api/deletepenerimaan.php"; // ganti sesuai endpoint asli
+        $url = "https://sififo.kuduskab.go.id/fifonew/api/deletepenerimaan.php"; // ganti sesuai endpoint asli
 
         $token = "7b89a011ce9d3bb448e2d726e12a2b35425aa6edeaf49b414b33eac7cf4f1ee9";
 
