@@ -56,6 +56,7 @@ class TransaksiController extends Controller
 
     public function penerimaan(Request $request)
     {
+        $bidang = Auth::user()->bidang_id;
         // 1. Ambil nilai filter dari request TANPA nilai default.
         $bulan = $request->input('bulan');
         $tahun = $request->input('tahun');
@@ -70,6 +71,7 @@ class TransaksiController extends Controller
             $data = Penerimaan::query()
                 ->whereMonth('tanggal_pembukuan', $bulan)
                 ->whereYear('tanggal_pembukuan', $tahun)
+                ->where('bidang_id', $bidang)
                 ->orderBy('tanggal_pembukuan', 'desc')
                 ->get();
         }
