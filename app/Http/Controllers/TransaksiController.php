@@ -468,23 +468,27 @@ class TransaksiController extends Controller
     // ### TRANSAKSI KELUAR ###
     public function tampil_transaksi_keluar(Request $request)
     {
-        $req_month = $request->input('bulan') ?? date('m');
+        // 1. Ambil nilai filter dari request. Bulan tidak punya nilai default.
+        $req_month = $request->input('bulan');
         $req_year = $request->input('tahun') ?? date('Y');
 
-        // tampil data barang jenis transaksi = keluar
-        if (Auth::user()->jabatan_id == 3) { // user
-            $data = Pengeluaran::whereMonth('tanggal_pembukuan', $req_month)
-                ->whereYear('tanggal_pembukuan', $req_year)
-                ->where('bidang_id', Auth::user()->bidang_id)
-                ->with('bidang')
-                ->orderBy('tanggal_pembukuan', 'desc')
-                ->get();
-        } else { // admin
-            $data = Pengeluaran::whereMonth('tanggal_pembukuan', $req_month)
+        // 2. Inisialisasi data sebagai koleksi kosong.
+        $data = collect();
+
+        // 3. Hanya jalankan query jika user sudah memilih bulan.
+        if ($req_month) {
+            $query = Pengeluaran::query()
+                ->whereMonth('tanggal_pembukuan', $req_month)
                 ->whereYear('tanggal_pembukuan', $req_year)
                 ->with('bidang')
-                ->orderBy('tanggal_pembukuan', 'desc')
-                ->get();
+                ->orderBy('tanggal_pembukuan', 'desc');
+
+            // Filter berdasarkan hak akses jika bukan admin
+            if (Auth::user()->jabatan_id == 3) { // user
+                $query->where('bidang_id', Auth::user()->bidang_id);
+            }
+
+            $data = $query->get();
         }
 
         // ambil data barang

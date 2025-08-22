@@ -133,8 +133,14 @@ class PengeluaranController extends Controller
                 ]);
             }
 
+            // Siapkan parameter untuk redirect kembali ke halaman pengeluaran dengan filter yang sama
+            $queryParams = [
+                'bulan' => $request->bulan,
+                'tahun' => $request->tahun,
+            ];
+
             DB::commit();
-            return redirect()->back()->with('success', 'Pengeluaran berhasil disimpan dan stok telah diperbarui.');
+            return redirect()->route('tampil_transaksi_keluar', $queryParams)->with('success', 'Pengeluaran berhasil disimpan dan stok telah diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Pengeluaran gagal disimpan: ' . $e->getMessage());
