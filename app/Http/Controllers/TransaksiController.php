@@ -447,7 +447,6 @@ class TransaksiController extends Controller
     public function hapus_transaksi_masuk($id)
     {
         $Transaksi = Penerimaan::where('id', $id)->first();
-
         if (!$Transaksi) {
             return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
         }

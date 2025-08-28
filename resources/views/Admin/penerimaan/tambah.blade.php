@@ -54,26 +54,42 @@
                                     <label for="bookingDay" class="col-sm-4 col-form-label">TANGGAL PEMBUKUAN</label>
                                     <div class="col-sm-8">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" 
-                                                id="bookingDay" name="bookingDay" onchange="Filtering()">
+                                            <input type="text" class="form-control" id="bookingDay" name="bookingDay"
+                                                onchange="Filtering()">
                                             <select class="form-select" id="bookingMonth" name="bookingMonth"
                                                 onchange="Filtering()">
                                                 <option value="" selected>-- Pilih Bulan --</option>
-                                                <option value="Januari" {{ ($selected_bulan ?? null) == 1 ? 'selected' : '' }}>Januari</option>
-                                                <option value="Februari" {{ ($selected_bulan ?? null) == 2 ? 'selected' : '' }}>Februari</option>
-                                                <option value="Maret" {{ ($selected_bulan ?? null) == 3 ? 'selected' : '' }}>Maret</option>
-                                                <option value="April" {{ ($selected_bulan ?? null) == 4 ? 'selected' : '' }}>April</option>
-                                                <option value="Mei" {{ ($selected_bulan ?? null) == 5 ? 'selected' : '' }}>Mei</option>
-                                                <option value="Juni" {{ ($selected_bulan ?? null) == 6 ? 'selected' : '' }}>Juni</option>
-                                                <option value="Juli" {{ ($selected_bulan ?? null) == 7 ? 'selected' : '' }}>Juli</option>
-                                                <option value="Agustus" {{ ($selected_bulan ?? null) == 8 ? 'selected' : '' }}>Agustus</option>
-                                                <option value="September" {{ ($selected_bulan ?? null) == 9 ? 'selected' : '' }}>September</option>
-                                                <option value="Oktober" {{ ($selected_bulan ?? null) == 10 ? 'selected' : '' }}>Oktober</option>
-                                                <option value="November" {{ ($selected_bulan ?? null) == 11 ? 'selected' : '' }}>November</option>
-                                                <option value="Desember" {{ ($selected_bulan ?? null) == 12 ? 'selected' : '' }}>Desember</option>
+                                                <option value="Januari"
+                                                    {{ ($selected_bulan ?? null) == 1 ? 'selected' : '' }}>Januari</option>
+                                                <option value="Februari"
+                                                    {{ ($selected_bulan ?? null) == 2 ? 'selected' : '' }}>Februari</option>
+                                                <option value="Maret"
+                                                    {{ ($selected_bulan ?? null) == 3 ? 'selected' : '' }}>Maret</option>
+                                                <option value="April"
+                                                    {{ ($selected_bulan ?? null) == 4 ? 'selected' : '' }}>April</option>
+                                                <option value="Mei"
+                                                    {{ ($selected_bulan ?? null) == 5 ? 'selected' : '' }}>Mei</option>
+                                                <option value="Juni"
+                                                    {{ ($selected_bulan ?? null) == 6 ? 'selected' : '' }}>Juni</option>
+                                                <option value="Juli"
+                                                    {{ ($selected_bulan ?? null) == 7 ? 'selected' : '' }}>Juli</option>
+                                                <option value="Agustus"
+                                                    {{ ($selected_bulan ?? null) == 8 ? 'selected' : '' }}>Agustus</option>
+                                                <option value="September"
+                                                    {{ ($selected_bulan ?? null) == 9 ? 'selected' : '' }}>September
+                                                </option>
+                                                <option value="Oktober"
+                                                    {{ ($selected_bulan ?? null) == 10 ? 'selected' : '' }}>Oktober</option>
+                                                <option value="November"
+                                                    {{ ($selected_bulan ?? null) == 11 ? 'selected' : '' }}>November
+                                                </option>
+                                                <option value="Desember"
+                                                    {{ ($selected_bulan ?? null) == 12 ? 'selected' : '' }}>Desember
+                                                </option>
                                             </select>
-                                            <input type="number" class="form-control" value="{{ $selected_tahun ?? date('Y') }}"
-                                                id="bookingYear" name="bookingYear" onchange="Filtering()" required>
+                                            <input type="number" class="form-control"
+                                                value="{{ $selected_tahun ?? date('Y') }}" id="bookingYear"
+                                                name="bookingYear" onchange="Filtering()" required>
                                         </div>
                                     </div>
                                 </div>
@@ -250,7 +266,6 @@
 @endsection
 
 
-
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -373,6 +388,7 @@
                 success: function(response) {
                     let html = '';
                     let total = 0;
+                    const baseUrl = "{{ url('/penerimaan/hapus') }}";
 
                     if (response.length > 0) {
                         response.forEach((item, index) => {
@@ -391,8 +407,13 @@
                             <td class="text-end">${formatRupiah(item.harga_satuan)}</td>
                             <td class="text-end">${formatRupiah(hargaTotal)}</td>
                             <td class="text-center">
-                                 <button class="btn btn-sm btn-outline-danger btn-delete">Hapus</button>
+                                <form action="${baseUrl}/${item.id}" method="POST" class="d-inline form-hapus">
+                                    @csrf
+                                    
+                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">Hapus</button>
+                                </form>
                             </td>
+
                         </tr>
                     `;
                         });
@@ -411,7 +432,7 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        
+
             // Get references to elements
             const btnNewTransaction = document.getElementById('btnNewTransaction');
             const mainReceiptForm = document.getElementById('mainReceiptForm');
@@ -431,12 +452,12 @@
             btnSaveItem.addEventListener('click', function(event) {
                 event.preventDefault(); // Mencegah aksi default
 
-                 // --- Aktifkan loader & disable tombol ---
-    const spinner = btnSaveItem.querySelector('.spinner-border');
-    const btnText = btnSaveItem.querySelector('.btn-text');
-    spinner.classList.remove('d-none');
-    btnText.textContent = 'Menyimpan...';
-    btnSaveItem.disabled = true;
+                // --- Aktifkan loader & disable tombol ---
+                const spinner = btnSaveItem.querySelector('.spinner-border');
+                const btnText = btnSaveItem.querySelector('.btn-text');
+                spinner.classList.remove('d-none');
+                btnText.textContent = 'Menyimpan...';
+                btnSaveItem.disabled = true;
 
                 // Gabungkan data dari form utama dan form modal
                 const mainFormData = new FormData(mainReceiptForm);
@@ -475,9 +496,9 @@
                     .then(response => response.json())
                     .then(result => {
                         // --- Matikan loader & aktifkan tombol lagi ---
-        spinner.classList.add('d-none');
-        btnText.textContent = 'Simpan Data';
-        btnSaveItem.disabled = false;
+                        spinner.classList.add('d-none');
+                        btnText.textContent = 'Simpan Data';
+                        btnSaveItem.disabled = false;
 
                         if (result.success) {
                             // Jika server merespons sukses
@@ -488,6 +509,8 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
+
+                            const baseUrl = "{{ url('/penerimaan/hapus') }}";
 
                             // Ambil data yang dikembalikan server
                             const newItem = result.data;
@@ -505,7 +528,10 @@
                         <td class="text-end">${formatCurrency(newItem.harga_satuan)}</td>
                         <td class="text-end item-total">${formatCurrency(itemTotal)}</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-outline-danger btn-delete">Hapus</button>
+                            <form action="${baseUrl}/${newItem.id}" method="POST" class="d-inline form-hapus">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">Hapus</button>
+                            </form>
                         </td>
                     `;
 
@@ -542,9 +568,9 @@
                         console.error('Error:', error);
 
                         spinner.classList.add('d-none');
-        btnText.textContent = 'Simpan Data';
-        btnSaveItem.disabled = false;
-        
+                        btnText.textContent = 'Simpan Data';
+                        btnSaveItem.disabled = false;
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error Jaringan',
@@ -556,6 +582,12 @@
             // --- Functionality for "Hapus" button using Event Delegation ---
             itemsTableBody.addEventListener('click', function(event) {
                 if (event.target.classList.contains('btn-delete')) {
+                    event.preventDefault(); // jangan langsung submit
+
+                    if (confirm('Yakin ingin menghapus data ini?')) {
+                        event.target.closest('form').submit(); // submit form ke Laravel
+                    }
+
                     // Find the row and remove it
                     const rowToRemove = event.target.closest('tr');
                     rowToRemove.remove();
