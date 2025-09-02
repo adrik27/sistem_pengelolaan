@@ -75,23 +75,36 @@
                                     </div>
                                     <div class="col-3 pt-3">
                                         <label for="bulan" class="d-none">Bulan</label>
-                                        <select name="bulan" id="bulan" class="form-control" style="font-size: 14px;" required>
-                                            <option value="" {{ empty($req_month) ? 'selected' : '' }}>Silahkan pilih bulan aktif</option>
-                                            <option value="1" {{ ($req_month ?? '') == 1 ? 'selected' : '' }}>Januari</option>
-                                            <option value="2" {{ ($req_month ?? '') == 2 ? 'selected' : '' }}>Februari</option>
-                                            <option value="3" {{ ($req_month ?? '') == 3 ? 'selected' : '' }}>Maret</option>
-                                            <option value="4" {{ ($req_month ?? '') == 4 ? 'selected' : '' }}>April</option>
-                                            <option value="5" {{ ($req_month ?? '') == 5 ? 'selected' : '' }}>Mei</option>
-                                            <option value="6" {{ ($req_month ?? '') == 6 ? 'selected' : '' }}>Juni</option>
-                                            <option value="7" {{ ($req_month ?? '') == 7 ? 'selected' : '' }}>Juli</option>
-                                            <option value="8" {{ ($req_month ?? '') == 8 ? 'selected' : '' }}>Agustus</option>
-                                            <option value="9" {{ ($req_month ?? '') == 9 ? 'selected' : '' }}>September
+                                        <select name="bulan" id="bulan" class="form-control" style="font-size: 14px;"
+                                            required>
+                                            <option value="" {{ empty($req_month) ? 'selected' : '' }}>Silahkan pilih
+                                                bulan aktif</option>
+                                            <option value="1" {{ ($req_month ?? '') == 1 ? 'selected' : '' }}>Januari
+                                            </option>
+                                            <option value="2" {{ ($req_month ?? '') == 2 ? 'selected' : '' }}>Februari
+                                            </option>
+                                            <option value="3" {{ ($req_month ?? '') == 3 ? 'selected' : '' }}>Maret
+                                            </option>
+                                            <option value="4" {{ ($req_month ?? '') == 4 ? 'selected' : '' }}>April
+                                            </option>
+                                            <option value="5" {{ ($req_month ?? '') == 5 ? 'selected' : '' }}>Mei
+                                            </option>
+                                            <option value="6" {{ ($req_month ?? '') == 6 ? 'selected' : '' }}>Juni
+                                            </option>
+                                            <option value="7" {{ ($req_month ?? '') == 7 ? 'selected' : '' }}>Juli
+                                            </option>
+                                            <option value="8" {{ ($req_month ?? '') == 8 ? 'selected' : '' }}>Agustus
+                                            </option>
+                                            <option value="9" {{ ($req_month ?? '') == 9 ? 'selected' : '' }}>
+                                                September
                                             </option>
                                             <option value="10" {{ ($req_month ?? '') == 10 ? 'selected' : '' }}>Oktober
                                             </option>
-                                            <option value="11" {{ ($req_month ?? '') == 11 ? 'selected' : '' }}>November
+                                            <option value="11" {{ ($req_month ?? '') == 11 ? 'selected' : '' }}>
+                                                November
                                             </option>
-                                            <option value="12" {{ ($req_month ?? '') == 12 ? 'selected' : '' }}>Desember
+                                            <option value="12" {{ ($req_month ?? '') == 12 ? 'selected' : '' }}>
+                                                Desember
                                             </option>
                                         </select>
                                     </div>
@@ -147,40 +160,57 @@
                                                             <div class="col-12 mt-2">
                                                                 <div class="row">
                                                                     <div class="col-lg-3 col-md-4 col-sm-12">
-                                                                        <input type="number" class="form-control" name="tanggal" id="modalTanggal"
-                                                                            min="1" max="31" value="{{ date('d') }}" required>
+                                                                        <input type="number" class="form-control"
+                                                                            name="tanggal" id="modalTanggal" min="1"
+                                                                            max="31" value="{{ date('d') }}"
+                                                                            required>
                                                                     </div>
                                                                     <div class="col-lg-3 col-md-4 col-sm-12">
-                                                                        <select class="form-select" id="modalBulan" name="bulan" required>
-                                                                            <option value="" selected disabled>Pilih Bulan</option>
-                                                                            <option value="1" {{ ($req_month ?? '') == 1 ? 'selected' : '' }}>
+                                                                        <select class="form-select" id="modalBulan"
+                                                                            name="bulan" required>
+                                                                            <option value="" selected disabled>Pilih
+                                                                                Bulan</option>
+                                                                            <option value="1"
+                                                                                {{ ($req_month ?? '') == 1 ? 'selected' : '' }}>
                                                                                 Januari</option>
-                                                                            <option value="2" {{ ($req_month ?? '') == 2 ? 'selected' : '' }}>
+                                                                            <option value="2"
+                                                                                {{ ($req_month ?? '') == 2 ? 'selected' : '' }}>
                                                                                 Februari</option>
-                                                                            <option value="3" {{ ($req_month ?? '') == 3 ? 'selected' : '' }}>
+                                                                            <option value="3"
+                                                                                {{ ($req_month ?? '') == 3 ? 'selected' : '' }}>
                                                                                 Maret</option>
-                                                                            <option value="4" {{ ($req_month ?? '') == 4 ? 'selected' : '' }}>
+                                                                            <option value="4"
+                                                                                {{ ($req_month ?? '') == 4 ? 'selected' : '' }}>
                                                                                 April</option>
-                                                                            <option value="5" {{ ($req_month ?? '') == 5 ? 'selected' : '' }}>
+                                                                            <option value="5"
+                                                                                {{ ($req_month ?? '') == 5 ? 'selected' : '' }}>
                                                                                 Mei</option>
-                                                                            <option value="6" {{ ($req_month ?? '') == 6 ? 'selected' : '' }}>
+                                                                            <option value="6"
+                                                                                {{ ($req_month ?? '') == 6 ? 'selected' : '' }}>
                                                                                 Juni</option>
-                                                                            <option value="7" {{ ($req_month ?? '') == 7 ? 'selected' : '' }}>
+                                                                            <option value="7"
+                                                                                {{ ($req_month ?? '') == 7 ? 'selected' : '' }}>
                                                                                 Juli</option>
-                                                                            <option value="8" {{ ($req_month ?? '') == 8 ? 'selected' : '' }}>
+                                                                            <option value="8"
+                                                                                {{ ($req_month ?? '') == 8 ? 'selected' : '' }}>
                                                                                 Agustus</option>
-                                                                            <option value="9" {{ ($req_month ?? '') == 9 ? 'selected' : '' }}>
+                                                                            <option value="9"
+                                                                                {{ ($req_month ?? '') == 9 ? 'selected' : '' }}>
                                                                                 September</option>
-                                                                            <option value="10" {{ ($req_month ?? '') == 10 ? 'selected' : '' }}>
+                                                                            <option value="10"
+                                                                                {{ ($req_month ?? '') == 10 ? 'selected' : '' }}>
                                                                                 Oktober</option>
-                                                                            <option value="11" {{ ($req_month ?? '') == 11 ? 'selected' : '' }}>
+                                                                            <option value="11"
+                                                                                {{ ($req_month ?? '') == 11 ? 'selected' : '' }}>
                                                                                 November</option>
-                                                                            <option value="12" {{ ($req_month ?? '') == 12 ? 'selected' : '' }}>
+                                                                            <option value="12"
+                                                                                {{ ($req_month ?? '') == 12 ? 'selected' : '' }}>
                                                                                 Desember</option>
                                                                         </select>
                                                                     </div>
                                                                     <div class="col-lg-3 col-md-4 col-sm-12">
-                                                                        <input type="number" class="form-control" name="tahun" id="modalTahun"
+                                                                        <input type="number" class="form-control"
+                                                                            name="tahun" id="modalTahun"
                                                                             value="{{ $req_year ?? date('Y') }}">
                                                                     </div>
                                                                 </div>
@@ -316,6 +346,8 @@
                                                             <form action="{{ url('pengeluaran/delete/' . $item->id) }}"
                                                                 method="post">
                                                                 @csrf
+                                                                <input type="hidden" name="bulan"
+                                                                    value="{{ $req_month ?? '' }}">
                                                                 <button onClick="deleteform(this)"
                                                                     class="dropdown-item text-danger">
                                                                     <i class="bi bi-trash-fill me-2"></i> Delete

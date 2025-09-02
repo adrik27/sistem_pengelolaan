@@ -259,8 +259,13 @@ class PengeluaranController extends Controller
             $apiResponse = $this->postTransaksiKeluarUpdate($apiData);
 
             if ($apiResponse) {
+                $queryParams = [
+                    'req_month' => $request->bulan,
+                    'bulan' => $request->bulan,
+                ];
+
                 DB::commit();
-                return redirect()->back()->with('success', 'Pengeluaran berhasil diupdate dan stok telah disesuaikan.');
+                return redirect()->route('tampil_transaksi_keluar', $queryParams)->with('success', 'Pengeluaran berhasil diupdate dan stok telah disesuaikan.');
             } else {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Gagal sinkron ke API pusat: ' . ($apiResponse['message'] ?? 'Unknown error'));
@@ -309,10 +314,11 @@ class PengeluaranController extends Controller
         return json_decode($response, true);
     }
 
-    public function delete($id)
+    public function delete(Request $request, $id)
     {
         DB::beginTransaction();
         try {
+
             $pengeluaran = Pengeluaran::findOrFail($id);
             $qtyToReturn = (float) $pengeluaran->qty;
 
@@ -332,8 +338,13 @@ class PengeluaranController extends Controller
             if ($apiResponse) {
                 $pengeluaran->delete();
 
+                $queryParams = [
+                    'req_month' => $request->bulan,
+                    'bulan' => $request->bulan,
+                ];
+
                 DB::commit();
-                return redirect()->back()->with('success', 'Pengeluaran berhasil dihapus dan stok telah dikembalikan.');
+                return redirect()->route('tampil_transaksi_keluar', $queryParams)->with('success', 'Pengeluaran berhasil dihapus dan stok telah dikembalikan.');
             } else {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Gagal menghapus pengeluaran: ' . ($apiResponse['message'] ?? 'Unknown error'));
