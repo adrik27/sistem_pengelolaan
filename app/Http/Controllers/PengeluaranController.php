@@ -135,6 +135,7 @@ class PengeluaranController extends Controller
 
             // Siapkan parameter untuk redirect kembali ke halaman pengeluaran dengan filter yang sama
             $queryParams = [
+                'req_month' => $request->bulan,
                 'bulan' => $request->bulan,
                 'tahun' => $request->tahun,
             ];
