@@ -115,10 +115,13 @@
                                 @foreach ($data as $item)
                                     <tr>
                                         <td class="text-center">{{ $item->tanggal_pembukuan->format('d-m-Y') }}</td>
-                                        <td>{{ $item->no_nota }}</td>
+                                        <td>{{ Str::limit($item->no_nota, 30) }}</td>
                                         <td>{{ $item->supplier }}</td>
-                                        <td>{{ $item->kode_barang }} - {{ $item->nama_barang }}</td>
-                                        <td class="text-center">{{ $item->qty }}</td>
+                                        <td>
+                                            <mark>{{ $item->kode_barang }}</mark> </br>
+                                                {{ Str::limit($item->nama_barang, 30) }}
+                                        </td>
+                                        <td class="text-center">{{ (int) $item->qty }}</td>
                                         <td class="text-end">{{ number_format($item->harga_satuan, 2, ',', '.') }}</td>
                                         <td class="text-end">
                                             {{ number_format($item->qty * $item->harga_satuan, 2, ',', '.') }}</td>

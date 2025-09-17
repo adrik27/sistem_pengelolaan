@@ -119,8 +119,8 @@ class LaporanController extends Controller
                 'pangkat' => 'Pembina Utama Muda'
             ],
             'pengurus_barang' => (object) [
-                'nama' => 'HARTOMO',
-                'nip' => '198003162010011004',
+                'nama' => 'EBIM',
+                'nip' => '199404042025211075',
                 'jabatan' => 'Pengurus Barang',
                 'pangkat' => 'Pengatur Tingkat I'
             ]

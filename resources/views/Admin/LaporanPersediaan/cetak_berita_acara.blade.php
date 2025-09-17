@@ -121,7 +121,7 @@
                 <td class="text-center signature-box">
                     <p>Kudus, {{ $tanggalCetakSingkat }}<br>Yang memeriksa,<br>(Pengguna Barang)</p>
                     <br><br><br>
-                    <p><strong><u>{{ $pejabat['pengguna_barang']->nama }}</u></strong><br>{{ $pejabat['pengguna_barang']->pangkat }}<br>NIP. {{ $pejabat['pengguna_barang']->nip }}</p>
+                    <p><strong><u>{{ $pejabat['pengguna_barang']->nama }}</u></strong><br>{{ $pejabat['pengguna_barang']->pangkat }}<br>NIP PPK. {{ $pejabat['pengguna_barang']->nip }}</p>
                 </td>
             </tr>
         </table>

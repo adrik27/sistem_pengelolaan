@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Str;
+@endphp
 @extends('templates.master')
 
 @section('css')
@@ -317,13 +320,13 @@
                                             <td class="align-middle text-secondary">
                                                 {{ $item->tanggal_pembukuan->format('d-m-Y') }}</td>
                                             <td class="align-middle text-secondary">
-                                                {{ $item->kode_barang }} -
-                                                {{ $item->nama_barang }}
+                                                <mark>{{ $item->kode_barang }}</mark> </br>
+                                                {{ Str::limit($item->nama_barang, 30) }}
                                             </td>
                                             <td class="align-middle text-secondary">
                                                 {{ strtoupper($item->status_pengeluaran) }}</td>
                                             <td class="align-middle text-secondary">{{ $item->qty }}</td>
-                                            <td class="align-middle text-secondary">{{ $item->keterangan }}</td>
+                                            <td class="align-middle text-secondary">{{ Str::limit($item->keterangan, 30) }}</td>
                                             <td class="align-middle text-secondary">
                                                 <div class="dropdown">
                                                     <button class="btn btn-sm btn-light p-1 dropdown-toggle"

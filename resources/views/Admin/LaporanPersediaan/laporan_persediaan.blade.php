@@ -160,8 +160,11 @@
                         name: 'no_nota'
                     },
                     {
-                        data: 'nama_barang',
-                        name: 'nama_barang'
+                        data: 'nama_barang', // Data utama untuk sorting
+                        name: 'nama_barang',
+                        render: function(data, type, row) {
+                            return `${row.nama_barang}<br><small class="">(${row.kode_barang})</small>`;
+                        }
                     },
                     {
                         data: 'qty',
@@ -227,115 +230,5 @@
     </script>
 
 
-    {{-- <script>
-        $(document).ready(function() {
-            // 1. Inisialisasi Flatpickr (Date Picker)
-            flatpickr(".date-picker", {
-                altInput: true,
-                altFormat: "d/m/Y", // Format yang dilihat user
-                dateFormat: "Y-m-d", // Format yang dikirim ke server
-                locale: "id" // Bahasa Indonesia
-            });
-
-            // 2. Inisialisasi DataTables
-            const table = $('#laporan-penerimaan-table').DataTable({
-                processing: true,
-                serverSide: false, // Kita gunakan client-side karena data diambil sekaligus
-                ajax: {
-                    url: "{{ route('laporan.penerimaan.data') }}",
-                    type: "GET",
-                    // Fungsi untuk mengirim parameter filter tambahan
-                    data: function(d) {
-                        d.tanggal_awal = $('#tanggal_awal').val();
-                        d.tanggal_akhir = $('#tanggal_akhir').val();
-
-                        // Kirim bidang_id jika elemennya ada di halaman
-                        if ($('#bidang_id').length) {
-                            d.bidang_id = $('#bidang_id').val();
-                        }
-                        
-                        return d;
-                    },
-                    // Fungsi untuk menangani error
-                    error: function(xhr, error, code) {
-                         // Kosongkan tabel dan tampilkan notifikasi jika ada error
-                        $('#laporan-penerimaan-table').dataTable().fnClearTable();
-                        $('#cetak-btn').prop('disabled', true); // Non-aktifkan tombol cetak
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal Memuat Data',
-                            text: 'Pastikan rentang tanggal sudah terisi dengan benar.',
-                        });
-                    }
-                },
-                // Hentikan proses load data saat halaman pertama kali dibuka
-                deferLoading: 0,
-                columns: [
-                    { data: 'tanggal_pembukuan', name: 'tanggal_pembukuan',
-                      render: function(data, type, row) {
-                        // Format tanggal menjadi dd-mm-yyyy
-                        const date = new Date(data);
-                        return ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
-                      }
-                    },
-                    { data: 'supplier', name: 'supplier' },
-                    { data: 'no_nota', name: 'no_nota' },
-                    { data: 'nama_barang', name: 'nama_barang' },
-                    { data: 'qty', name: 'qty', className: 'text-center' },
-                    { data: 'harga_satuan', name: 'harga_satuan', className: 'text-end', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp ') },
-                    {
-                        data: null,
-                        name: 'total_harga',
-                        className: 'text-end',
-                        render: function(data, type, row) {
-                            // Hitung total harga dari qty * harga_satuan
-                            const total = parseFloat(row.qty) * parseFloat(row.harga_satuan);
-                            return $.fn.dataTable.render.number('.', ',', 2, 'Rp ').display(total);
-                        }
-                    }
-                ],
-                // Aktifkan tombol cetak setelah data berhasil dimuat
-                "drawCallback": function( settings ) {
-                    const api = this.api();
-                    if (api.rows( {page:'current'} ).data().length > 0) {
-                        $('#cetak-btn').prop('disabled', false);
-                    } else {
-                        $('#cetak-btn').prop('disabled', true);
-                    }
-                }
-            });
-
-            // 3. Event handler untuk tombol "Tampilkan Data"
-            $('#filter-btn').on('click', function(e) {
-                e.preventDefault();
-                // Muat ulang data tabel dengan parameter filter baru
-                table.ajax.reload();
-            });
-
-            // 4. Event handler untuk tombol "Cetak BA"
-            $('#cetak-btn').on('click', function(e) {
-            e.preventDefault();
-            const tglAkhir = $('#tanggal_akhir').val();
-            const tglCetak = $('#tanggal_cetak').val();
-            let bidangId = '';
-
-            // Cek apakah filter bidang ada dan punya nilai
-            if ($('#bidang_id').length) {
-                bidangId = $('#bidang_id').val();
-            }
-            
-            // Validasi dasar di frontend
-            if (!tglAkhir || !tglCetak) {
-                Swal.fire('Input Kurang', 'Harap isi Tanggal Akhir Hitung dan Tanggal Cetak BA.', 'warning');
-                return;
-            }
-
-            // Buat URL dengan parameter
-            const printUrl = `{{ route('laporan.penerimaan.cetak') }}?tanggal_akhir=${tglAkhir}&tanggal_cetak=${tglCetak}&bidang_id=${bidangId}`;
-
-            // Buka URL di tab baru
-            window.open(printUrl, '_blank');
-        });
-        });
-    </script> --}}
+    
 @endsection
