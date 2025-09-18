@@ -60,6 +60,7 @@ class LaporanController extends Controller
             ->orderBy('tanggal_pembukuan', 'asc')
             ->get();
 
+
         // Kembalikan data dalam format JSON yang dimengerti DataTables
         return response()->json(['data' => $data]);
     }

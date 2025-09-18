@@ -46,19 +46,31 @@
                                         <label for="bulan" class="form-label">Bulan</label>
                                         <select name="bulan" id="bulan" class="form-select form-select-sm" required>
                                             {{-- Opsi default yang terpilih jika belum ada filter --}}
-                                            <option value="" {{ empty($selected_bulan) ? 'selected' : '' }}>-- Pilih Bulan --</option>
-                                            <option value="1" {{ $selected_bulan == 1 ? 'selected' : '' }}>Januari</option>
-                                            <option value="2" {{ $selected_bulan == 2 ? 'selected' : '' }}>Februari</option>
-                                            <option value="3" {{ $selected_bulan == 3 ? 'selected' : '' }}>Maret</option>
-                                            <option value="4" {{ $selected_bulan == 4 ? 'selected' : '' }}>April</option>
+                                            <option value="" {{ empty($selected_bulan) ? 'selected' : '' }}>-- Pilih
+                                                Bulan --</option>
+                                            <option value="1" {{ $selected_bulan == 1 ? 'selected' : '' }}>Januari
+                                            </option>
+                                            <option value="2" {{ $selected_bulan == 2 ? 'selected' : '' }}>Februari
+                                            </option>
+                                            <option value="3" {{ $selected_bulan == 3 ? 'selected' : '' }}>Maret
+                                            </option>
+                                            <option value="4" {{ $selected_bulan == 4 ? 'selected' : '' }}>April
+                                            </option>
                                             <option value="5" {{ $selected_bulan == 5 ? 'selected' : '' }}>Mei</option>
-                                            <option value="6" {{ $selected_bulan == 6 ? 'selected' : '' }}>Juni</option>
-                                            <option value="7" {{ $selected_bulan == 7 ? 'selected' : '' }}>Juli</option>
-                                            <option value="8" {{ $selected_bulan == 8 ? 'selected' : '' }}>Agustus</option>
-                                            <option value="9" {{ $selected_bulan == 9 ? 'selected' : '' }}>September</option>
-                                            <option value="10" {{ $selected_bulan == 10 ? 'selected' : '' }}>Oktober</option>
-                                            <option value="11" {{ $selected_bulan == 11 ? 'selected' : '' }}>November</option>
-                                            <option value="12" {{ $selected_bulan == 12 ? 'selected' : '' }}>Desember</option>
+                                            <option value="6" {{ $selected_bulan == 6 ? 'selected' : '' }}>Juni
+                                            </option>
+                                            <option value="7" {{ $selected_bulan == 7 ? 'selected' : '' }}>Juli
+                                            </option>
+                                            <option value="8" {{ $selected_bulan == 8 ? 'selected' : '' }}>Agustus
+                                            </option>
+                                            <option value="9" {{ $selected_bulan == 9 ? 'selected' : '' }}>September
+                                            </option>
+                                            <option value="10" {{ $selected_bulan == 10 ? 'selected' : '' }}>Oktober
+                                            </option>
+                                            <option value="11" {{ $selected_bulan == 11 ? 'selected' : '' }}>November
+                                            </option>
+                                            <option value="12" {{ $selected_bulan == 12 ? 'selected' : '' }}>Desember
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
@@ -67,10 +79,12 @@
                                         @endphp
                                         <label for="tahun" class="form-label">Tahun</label>
                                         <select name="tahun" id="tahun" class="form-select form-select-sm" required>
-                                            <option value="" {{ empty($selected_tahun) ? 'selected' : '' }}>-- Pilih Tahun --</option>
+                                            <option value="" {{ empty($selected_tahun) ? 'selected' : '' }}>-- Pilih
+                                                Tahun --</option>
                                             @for ($i = 0; $i <= 5; $i++)
                                                 @php $tahunLoop = $tahunSekarang - $i; @endphp
-                                                <option value="{{ $tahunLoop }}" {{ $selected_tahun == $tahunLoop ? 'selected' : '' }}>
+                                                <option value="{{ $tahunLoop }}"
+                                                    {{ $selected_tahun == $tahunLoop ? 'selected' : '' }}>
                                                     {{ $tahunLoop }}
                                                 </option>
                                             @endfor
@@ -87,9 +101,15 @@
                     {{-- Tombol Tambah Data --}}
                     @php
                         $queryParams = [];
-                        if (!empty($selected_bulan)) $queryParams['bulan'] = $selected_bulan;
-                        if (!empty($selected_tahun)) $queryParams['tahun'] = $selected_tahun;
-                        $createUrl = url('/penerimaan/create') . (!empty($queryParams) ? '?' . http_build_query($queryParams) : '');
+                        if (!empty($selected_bulan)) {
+                            $queryParams['bulan'] = $selected_bulan;
+                        }
+                        if (!empty($selected_tahun)) {
+                            $queryParams['tahun'] = $selected_tahun;
+                        }
+                        $createUrl =
+                            url('/penerimaan/create') .
+                            (!empty($queryParams) ? '?' . http_build_query($queryParams) : '');
                     @endphp
                     <a href="{{ $createUrl }}" class="btn btn-primary mb-3">
                         <i class="bi bi-plus-circle-fill me-2"></i> Tambah Penerimaan
@@ -119,7 +139,7 @@
                                         <td>{{ $item->supplier }}</td>
                                         <td>
                                             <mark>{{ $item->kode_barang }}</mark> </br>
-                                                {{ Str::limit($item->nama_barang, 30) }}
+                                            {{ Str::limit($item->nama_barang, 30) }}
                                         </td>
                                         <td class="text-center">{{ (int) $item->qty }}</td>
                                         <td class="text-end">{{ number_format($item->harga_satuan, 2, ',', '.') }}</td>

@@ -331,7 +331,6 @@ class TransaksiController extends Controller
         $data = $request->except('_token', 'bookingDay', 'bookingMonth', 'bookingYear');
         $databarang = DataBarang::where('id', $data['kode_barang'])->first();
 
-
         $day = $request->bookingDay;
         $month = $request->bookingMonth;
         $year = $request->bookingYear;
@@ -342,6 +341,26 @@ class TransaksiController extends Controller
         $data['bidang_id']    =    Auth::user()->bidang_id;
 
         $Transaksi = Penerimaan::where('id', $id)->first();
+
+        $stokPersediaan = StokPersediaanBidang::where('kode_barang', $databarang->kode_barang)
+            ->where('bidang_id', Auth::user()->bidang_id)
+            ->first();
+
+        // cek stok ada atau tidak
+        if (!$stokPersediaan) {
+            // dd($Transaksi);
+            return redirect()->back()->with('error', 'Stok persediaan untuk barang ini tidak ditemukan. Silakan tambah stok terlebih dahulu.');
+        }
+
+        // cek qty yang baru dengan yang lama
+        if ($request->qty > $Transaksi->qty) {
+            $stokPersediaan->qty_sisa += $request->qty - $Transaksi->qty;
+            $stokPersediaan->save();
+        } else {
+            $stokPersediaan->qty_sisa -= $Transaksi->qty - $request->qty;
+            $stokPersediaan->save();
+        }
+
 
         if ($Transaksi) {
             $Transaksi->update($data);
@@ -394,13 +413,15 @@ class TransaksiController extends Controller
             // --- Kirim ke API eksternal ---
             $apiResponse = $this->postPenerimaanUpdate($apiData);
 
+            $queryParams = [
+                'bulan' => $month,
+                'tahun' => $year,
+            ];
             if ($apiResponse && isset($apiResponse['success']) && $apiResponse['success']) {
-                return redirect('/penerimaan')->with('success', 'Transaksi berhasil diperbarui & sinkron dengan API.');
+                return redirect()->route('tampil_transaksi_masuk', $queryParams)->with('success', 'Transaksi berhasil diperbarui & sinkron dengan API.');
             } else {
-                return redirect('/penerimaan')->with('error', 'Data lokal terupdate, tapi gagal update ke API: ' . ($apiResponse['message'] ?? 'Tidak ada response'));
+                return redirect()->route('tampil_transaksi_masuk', $queryParams)->with('error', 'Data lokal terupdate, tapi gagal update ke API: ' . ($apiResponse['message'] ?? 'Tidak ada response'));
             }
-
-            // return redirect('/penerimaan')->with('success', 'Transaksi penerimaan berhasil diperbarui.');
         } else {
             return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
         }
@@ -451,10 +472,26 @@ class TransaksiController extends Controller
             return redirect()->back()->with('error', 'Transaksi penerimaan tidak ditemukan.');
         }
 
+        $stokPersediaan = StokPersediaanBidang::where('kode_barang', $Transaksi->kode_barang)
+            ->where('bidang_id', $Transaksi->bidang_id)
+            ->first();
+
+
         // kirim request ke API eksternal
         $apiResponse = $this->postPenerimaanDelete($Transaksi->id_trx_terima_sififo);
 
+
         if ($apiResponse['success']) {
+            // kurangi stok di persediaan bidang
+            $stokPersediaan = StokPersediaanBidang::where('kode_barang', $Transaksi->kode_barang)
+                ->where('bidang_id', $Transaksi->bidang_id)
+                ->first();
+
+            if ($stokPersediaan) {
+                $stokPersediaan->qty_sisa -= $Transaksi->qty;
+                $stokPersediaan->save();
+            }
+
             // hapus juga di database lokal
             $Transaksi->delete();
             return redirect()->back()->with('success', 'Transaksi penerimaan berhasil dihapus.');

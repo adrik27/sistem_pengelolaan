@@ -206,8 +206,9 @@
                                 <tbody id="itemsTableBody">
                                     <tr>
                                         <td>
+                                            <input type="hidden" name="kode_barang" value="{{ $data->barang->id }}">
                                             <select name="kode_barang" id="NamaBarang"
-                                                class="form-control nama-barang-select">
+                                                class="form-control nama-barang-select" disabled>
                                                 @if ($data->barang)
                                                     <option value="{{ $data->barang->id }}" selected>
                                                         {{ $data->barang->nama_barang }} -
