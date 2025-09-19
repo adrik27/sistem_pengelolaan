@@ -326,7 +326,8 @@
                                             <td class="align-middle text-secondary">
                                                 {{ strtoupper($item->status_pengeluaran) }}</td>
                                             <td class="align-middle text-secondary">{{ $item->qty }}</td>
-                                            <td class="align-middle text-secondary">{{ Str::limit($item->keterangan, 30) }}</td>
+                                            <td class="align-middle text-secondary">
+                                                {{ Str::limit($item->keterangan, 30) }}</td>
                                             <td class="align-middle text-secondary">
                                                 <div class="dropdown">
                                                     <button class="btn btn-sm btn-light p-1 dropdown-toggle"
@@ -484,9 +485,11 @@
                                             <div class="col-12 mt-2">
                                                 <div class="row">
                                                     <div class="col-12">
+                                                        <input type="hidden" name="kode_barang"
+                                                            value="{{ $item->barang->id }}">
                                                         <select name="kode_barang" id="NamaBarang{{ $item->id }}"
                                                             class="form-control nama-barang-select"
-                                                            data-modal="#ModalUpdate{{ $item->id }}">
+                                                            data-modal="#ModalUpdate{{ $item->id }}" disabled>
                                                             @if ($item->barang)
                                                                 <option value="{{ $item->barang->id }}" selected>
                                                                     {{ $item->barang->kode_barang }} -
